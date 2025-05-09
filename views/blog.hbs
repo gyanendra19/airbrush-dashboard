@@ -302,7 +302,7 @@
       font-size: 1rem;
     }
   }
-</style>
+</style> 
 
 <!-- Add marked library -->
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
@@ -331,11 +331,6 @@ async function fetchAndRenderBlogContent() {
             return fieldTitle.toLowerCase() === title.toLowerCase();
         });
 
-        if (!blogPost) {
-            console.error('Blog post not found');
-            window.location.href = '/404';
-            return;
-        }
   
         // Update the page content
         document.querySelector('.blog-hero-image').src = blogPost.value.url || '/images/placeholder.png';
@@ -353,9 +348,8 @@ async function fetchAndRenderBlogContent() {
         document.querySelector('.author-role').textContent = authorRole;
         document.querySelector('.author-avatar').src = authorAvatar;
         
-        // Update content using marked.parse()
-        const contentHtml = marked.parse(blogPost.value.content || '');
-        document.querySelector('.blog-content').innerHTML = contentHtml;
+        // Update content
+        document.querySelector('.blog-content').innerHTML = marked.parse(blogPost.value.content || '');
         
         // Update tags
         const tagsContainer = document.querySelector('.blog-tags');
@@ -380,7 +374,6 @@ async function fetchAndRenderBlogContent() {
 
     } catch (error) {
         console.error('Error fetching blog content:', error);
-        window.location.href = '/404';
     }
 }
 

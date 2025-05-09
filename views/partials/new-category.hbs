@@ -29,11 +29,11 @@
       </div>
       <div class="step">
         <div class="step-icon"><i class="fas fa-lightbulb"></i></div>
-        <span>Features</span>
+        <span>Why use Tool</span>
       </div>
       <div class="step">
         <div class="step-icon"><i class="fas fa-sync"></i></div>
-        <span>Transform</span>
+        <span>Text to Anything</span>
       </div>
       <div class="step">
         <div class="step-icon"><i class="fas fa-blog"></i></div>
@@ -379,11 +379,7 @@
     const categoryImagePreview = document.querySelector('.image-preview');
     const heroImageInput = document.getElementById('heroImage');
     const heroImagePreview = document.querySelector('#heroSectionForm .image-preview');
-    const CONFIG = {
-    apiKey: {{env.DEEPINFRA_TOKEN}}
-  };
-  console.log(CONFIG, 'config');
-    // Define token once at the top level
+        // Define token once at the top level
     const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4MDQ5MWRmMzljZmYwNTljMDY1NWZkMSIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc0NTI5ODM4MCwiZXhwIjoxNzQ1Mzg0NzgwfQ._XjN76nKvPZcxOT8TLWvfdfA-0KzqGjHwnZWX5YdntA";
 
     const showAlert = (message, type = 'success') => {
@@ -914,9 +910,7 @@
                 size: "1024x1024",
                 model: "black-forest-labs/FLUX-1-dev",
                 n: 1,
-                response_format: "b64_json",
-                guidance_scale: 20,
-                num_inference_steps: 50
+                response_format: "b64_json"
               })
             });
 
@@ -1016,12 +1010,12 @@
                   },
                   body: JSON.stringify({
                     prompt: promptData.candidates[0].content.parts[0].text.split('**Prompt:**')[1]?.trim() || promptData.candidates[0].content.parts[0].text,
-                size: "1024x1024",
-                model: "black-forest-labs/FLUX-1-dev",
-                n: 1,
-                response_format: "b64_json"
-              })
-            });
+                    size: "1024x1024",
+                    model: "black-forest-labs/FLUX-1-dev",
+                    n: 1,
+                    response_format: "b64_json"
+                  })
+                });
 
                 if (!imageResponse.ok) {
                   throw new Error('Image generation failed');
@@ -1090,11 +1084,11 @@
               const base64Data = imageData.data[0].b64_json;
               const byteCharacters = atob(base64Data);
               const byteArrays = [];
-              
+
               for (let j = 0; j < byteCharacters.length; j++) {   
                 byteArrays.push(byteCharacters.charCodeAt(j));
               }
-              
+
               const byteArray = new Uint8Array(byteArrays);
               const blob = new Blob([byteArray], { type: 'image/png' });
               
