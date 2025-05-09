@@ -1,0 +1,1214 @@
+<!-- New Category Form -->
+<script src="https://unpkg.com/lucide@latest"></script>
+<script>
+  lucide.createIcons();
+</script>
+
+<!-- Add loader HTML -->
+<div id="aiGenerationLoader" class="loader-container d-none">
+  <div class="loader-content">
+    <div class="loader-animation">
+      <div class="pulse-ring"></div>
+      <div class="icon-container">
+        <i class="fas fa-magic"></i>
+      </div>
+    </div>
+    <h4 class="mt-4 text-primary generation-title">Generating AI Content</h4>
+    <div class="progress mt-3" style="height: 6px;">
+      <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%"></div>
+    </div>
+    <p class="text-muted mt-3 mb-0" id="loaderStatus">Initializing...</p>
+    <div class="steps-indicator mt-3">
+      <div class="step active">
+        <div class="step-icon"><i class="fas fa-image"></i></div>
+        <span>Hero</span>
+      </div>
+      <div class="step">
+        <div class="step-icon"><i class="fas fa-images"></i></div>
+        <span>Gallery</span>
+      </div>
+      <div class="step">
+        <div class="step-icon"><i class="fas fa-lightbulb"></i></div>
+        <span>Features</span>
+      </div>
+      <div class="step">
+        <div class="step-icon"><i class="fas fa-sync"></i></div>
+        <span>Transform</span>
+      </div>
+      <div class="step">
+        <div class="step-icon"><i class="fas fa-blog"></i></div>
+        <span>Blogs</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="card shadow-sm border-0 mb-4">
+  <div class="card-header bg-white py-3">
+    <h5 class="card-title mb-0 fw-semibold">Create New Category</h5>
+  </div>
+  <div class="card-body">
+    <form id="newCategoryForm" class="category-needs-validation" novalidate>
+      <div class="category-row">
+      <div class="mb-3">
+        <label for="categoryName" class="form-label">Category Name</label>
+        <input type="text" class="form-control" id="categoryName" name="categoryName" 
+                 placeholder="Enter category name" required>
+          <div class="invalid-feedback">
+            Please provide a category name.
+          </div>
+        </div>
+
+      <div class="mb-3">
+        <label for="categorySlug" class="form-label">Category Slug</label>
+        <input type="text" class="form-control" id="categorySlug" name="categorySlug" 
+                 placeholder="Enter category slug (e.g., my-category)" required>
+        <div class="form-text">
+          The slug will be used in the URL. Use lowercase letters, numbers, and hyphens only.
+          </div>
+          <div class="invalid-feedback">
+            Please provide a valid category slug.
+        </div>
+      </div>
+
+
+      <div class="mb-3">
+        <label for="categoryDescription" class="form-label">Description</label>
+        <textarea class="form-control" id="categoryDescription" name="categoryDescription" 
+                  rows="3" placeholder="Enter category description" required></textarea>
+        </div>
+      </div>
+
+        <div style="display: flex; gap: 20px; margin-top: 20px;" class="mb-3">
+          <div>
+        <label for="categoryImage" class="form-label">Category Image</label>
+        <input type="file" class="form-control" id="categoryImage" name="categoryImage" 
+        accept="image/*" required />
+            <div class="invalid-feedback">
+              Please select a category image.
+            </div>
+            </div>
+        <div class="image-preview bg-light rounded overflow-hidden mt-2" style="width: 200px; height: 200px;">
+            <div class="d-flex align-items-center justify-content-center text-muted h-100">
+            <i class="bi bi-image me-2"></i> 
+            <i data-lucide="image" class="me-2"></i>
+            No image selected
+          </div>
+        </div>
+      </div>
+      
+      
+      <div style="margin-top: 40px;" class="d-grid gap-2">
+        <button type="submit" class="btn btn-primary catgoey-btn">
+          <i class="bi bi-plus-circle me-2"></i>
+          <i data-lucide="plus-circle" class="me-2"></i>
+          Create Category
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Hero Section Form -->
+<div class="card shadow-sm border-0 mb-4 d-none" id="heroSectionForm">
+        <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+          <h5 class="card-title mb-0 fw-semibold">Hero Section</h5>
+          <span class="badge bg-primary">Required</span>
+        </div>
+        <div class="card-body">
+    <form id="heroForm" class="needs-validation" novalidate>
+            <input type="hidden" id="categoryId" name="categoryId">
+            <input type="hidden" id="sectionType" name="sectionType" value="hero-section">
+            
+            <div class="mb-3">
+              <label for="heroTitle" class="form-label">Title</label>
+              <input type="text" class="form-control" id="heroTitle" name="title" 
+                    placeholder="Enter hero section title" required>
+              <div class="invalid-feedback">
+                Please provide a title.
+              </div>
+            </div>
+            
+            <div class="mb-3">
+              <label for="heroDescription" class="form-label">Description</label>
+              <textarea class="form-control" id="heroDescription" name="description" 
+                       rows="3" placeholder="Enter description" required></textarea>
+              <div class="invalid-feedback">
+                Please provide a description.
+              </div>
+            </div>
+            
+            <div class="mb-3">
+              <label for="heroImage" class="form-label">Background Image</label>
+              <input type="file" class="form-control" id="heroImage" name="image" accept="image/*" required>
+              <div class="form-text">
+                Recommended size: 1920x1080px. Max file size: 2MB.
+              </div>
+              <div class="invalid-feedback">
+                Please select an image.
+              </div>
+              <div class="image-preview bg-light rounded overflow-hidden mt-2" style="width: 200px; height: 150px;">
+                <div class="d-flex align-items-center justify-content-center text-muted h-100">
+                  <i class="bi bi-image me-2"></i> No image selected
+                </div>
+              </div>
+            </div>
+            <div class="d-grid gap-2">
+              <button type="submit" class="btn btn-primary">
+                <i class="bi bi-save me-2"></i> Save Hero Section
+              </button>
+            </div>
+          </form>
+  </div>
+</div>
+
+<!-- Add alert container at the end of the body -->
+<div class="alert-container position-fixed bottom-0 end-0 p-3" style="z-index: 1050;">
+  <div id="categorySuccessAlert" class="alert alert-success d-flex align-items-center mb-0 d-none">
+    <i class="bi bi-check-circle-fill me-2"></i>
+    <div>
+      <strong>Category created successfully!</strong>
+    </div>
+  </div>
+</div>
+
+<style>
+  /* Alert container styles */
+  .alert-container {
+    min-width: 300px;
+    max-width: 500px;
+  }
+
+  .alert-container .alert {
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    border: none;
+    animation: slideIn 0.3s ease-out;
+    margin-bottom: 0;
+  }
+
+  @keyframes slideIn {
+    from {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+
+  /* Add styles for Lucide icons */
+  [data-lucide] {
+    width: 1em;
+    height: 1em;
+    stroke-width: 1.5;
+    vertical-align: -0.125em;
+  }
+
+  /* Loader styles */
+  .loader-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.95);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    backdrop-filter: blur(5px);
+  }
+
+  .loader-content {
+    text-align: center;
+    padding: 2.5rem;
+    background-color: white;
+    border-radius: 1.5rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    min-width: 320px;
+    max-width: 90%;
+    width: 480px;
+  }
+
+  .loader-animation {
+    position: relative;
+    width: 80px;
+    height: 80px;
+    margin: 0 auto;
+  }
+
+  .pulse-ring {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    border: 3px solid var(--bs-primary);
+    opacity: 0;
+    animation: pulse 2s ease-out infinite;
+  }
+
+  .icon-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 50px;
+    height: 50px;
+    background: var(--bs-primary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .icon-container i {
+    color: white;
+    font-size: 24px;
+    animation: bounce 1s ease infinite;
+  }
+
+  .generation-title {
+    font-weight: 600;
+    background: linear-gradient(45deg, var(--bs-primary), #4a90e2);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 0;
+  }
+
+  .progress {
+    background-color: rgba(var(--bs-primary-rgb), 0.1);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .steps-indicator {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 1.5rem;
+    padding: 0 1rem;
+  }
+
+  .step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    opacity: 0.5;
+    transition: opacity 0.3s ease;
+  }
+
+  .step.active {
+    opacity: 1;
+  }
+
+  .step.completed {
+    opacity: 1;
+    color: var(--bs-primary);
+  }
+
+  .step-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #f8f9fa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+  }
+
+  .step.active .step-icon {
+    background: var(--bs-primary);
+    color: white;
+    transform: scale(1.1);
+  }
+
+  .step.completed .step-icon {
+    background: var(--bs-primary);
+    color: white;
+  }
+
+  @keyframes pulse {
+    0% {
+      transform: scale(0.8);
+      opacity: 0.5;
+    }
+    100% {
+      transform: scale(1.5);
+      opacity: 0;
+    }
+  }
+
+  @keyframes bounce {
+    0%, 100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-5px);
+    }
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 576px) {
+    .loader-content {
+      padding: 1.5rem;
+      width: 90%;
+    }
+
+    .steps-indicator {
+      flex-wrap: wrap;
+      gap: 1rem;
+      justify-content: center;
+    }
+
+    .step {
+      flex: 0 0 auto;
+      width: 60px;
+    }
+  }
+</style>
+
+<script>
+  
+  document.addEventListener('DOMContentLoaded', function() {
+    const categoryForm = document.getElementById('newCategoryForm');
+    const heroSectionForm = document.getElementById('heroSectionForm');
+    const heroForm = document.getElementById('heroForm');
+    const categoryImageInput = document.getElementById('categoryImage');
+    const categoryImagePreview = document.querySelector('.image-preview');
+    const heroImageInput = document.getElementById('heroImage');
+    const heroImagePreview = document.querySelector('#heroSectionForm .image-preview');
+    const CONFIG = {
+    apiKey: {{env.DEEPINFRA_TOKEN}}
+  };
+  console.log(CONFIG, 'config');
+    // Define token once at the top level
+    const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4MDQ5MWRmMzljZmYwNTljMDY1NWZkMSIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc0NTI5ODM4MCwiZXhwIjoxNzQ1Mzg0NzgwfQ._XjN76nKvPZcxOT8TLWvfdfA-0KzqGjHwnZWX5YdntA";
+
+    const showAlert = (message, type = 'success') => {
+        // Create alert container if it doesn't exist
+        let alertContainer = document.querySelector('.alert-container');
+        if (!alertContainer) {
+          alertContainer = document.createElement('div');
+          alertContainer.className = 'alert-container';
+          document.body.appendChild(alertContainer);
+        }
+
+        const alertDiv = document.createElement('div');
+        alertDiv.className = `alert alert-${type} alert-dismissible fade show py-2 px-3 mb-2`;
+        alertDiv.style.fontSize = '0.875rem';
+        alertDiv.innerHTML = `
+          <strong>${type === 'success' ? 'Success!' : type === 'danger' ? 'Error!' : 'Note:'}</strong> ${message}
+          <button type="button" class="btn-close btn-close-sm" data-bs-dismiss="alert" aria-label="Close"></button>
+        `;
+        
+        // Add alert to the container
+        alertContainer.appendChild(alertDiv);
+        
+        // Remove alert after 4 seconds
+        setTimeout(() => {
+          alertDiv.classList.add('fade');
+          setTimeout(() => {
+            alertDiv.remove();
+            // Remove container if it's empty
+            if (alertContainer.children.length === 0) {
+              alertContainer.remove();
+            }
+          }, 300);
+        }, 4000);
+      };
+
+    // Handle category image preview
+    if (categoryImageInput && categoryImagePreview) {
+      categoryImageInput.addEventListener('change', function(event) {
+        const file = event.target.files[0];
+            if (file) {
+              const objectUrl = URL.createObjectURL(file);
+          categoryImagePreview.innerHTML = `
+            <img src="${objectUrl}" class="w-100 h-100 object-fit-contain" alt="Category Preview">
+          `;
+          categoryImageInput.addEventListener('change', function() {
+            URL.revokeObjectURL(objectUrl);
+          });
+        } else {
+          categoryImagePreview.innerHTML = `
+                  <div class="d-flex align-items-center justify-content-center text-muted h-100">
+                    <i class="bi bi-image me-2"></i> 
+                    <i data-lucide="image" class="me-2"></i>
+                    No image selected
+                  </div>
+                `;
+        }
+      });
+    }
+
+    // Handle hero image preview
+    if (heroImageInput && heroImagePreview) {
+      heroImageInput.addEventListener('change', function(event) {
+        const file = event.target.files[0];
+            if (file) {
+              const objectUrl = URL.createObjectURL(file);
+          heroImagePreview.innerHTML = `
+            <img src="${objectUrl}" class="w-100 h-100 object-fit-contain" alt="Hero Preview">
+          `;
+          heroImageInput.addEventListener('change', function() {
+            URL.revokeObjectURL(objectUrl);
+          });
+        } else {
+          heroImagePreview.innerHTML = `
+              <div class="d-flex align-items-center justify-content-center text-muted h-100">
+                <i class="bi bi-image me-2"></i> No image selected
+              </div>
+            `;
+        }
+      });
+    }
+
+    // Handle category form submission
+    categoryForm.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      
+      if (!this.checkValidity()) {
+        this.classList.add('was-validated');
+        return;
+      }
+      
+      const submitBtn = this.querySelector('button[type="submit"]');
+      const originalBtnText = submitBtn.innerHTML;
+      submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Creating...';
+      submitBtn.disabled = true;
+      
+      try {
+        // Get form data
+        const formData = new FormData(this);
+        const categoryName = formData.get('categoryName');
+        const categorySlug = formData.get('categorySlug') || categoryName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+        const categoryDescription = formData.get('categoryDescription');
+        
+        const categoryData = {
+          name: categoryName,
+          slug: categorySlug,
+          description: categoryDescription,
+          isActive: true
+        };
+        
+        // Upload category image
+        const categoryImage = formData.get('categoryImage');
+        if (!categoryImage) {
+          throw new Error('Please select a category image');
+        }
+
+        // Validate image file
+        if (!categoryImage.type.startsWith('image/')) {
+          throw new Error('Please select a valid image file');
+        }
+
+        // Check file size (max 2MB)
+        const maxSize = 2 * 1024 * 1024; // 2MB in bytes
+        if (categoryImage.size > maxSize) {
+          throw new Error('Image size should be less than 2MB');
+        }
+
+
+        console.log('Uploading category image...');
+        const imageUrl = await uploadImage(categoryImage, token);
+        if (!imageUrl) {
+          throw new Error('Failed to upload category image');
+        }
+        console.log('Category image uploaded:', imageUrl);
+        
+        // Add image URL to category data
+        categoryData.image = imageUrl;
+
+        // Create category
+        console.log('Creating category with data:', categoryData);
+        const response = await fetch('https://airbrush-admin-backend.onrender.com/api/categories', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify(categoryData)
+        });
+        
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => response.text());
+          throw new Error(typeof errorData === 'string' ? errorData : errorData.message || 'Failed to create category');
+        }
+        
+        const result = await response.json();
+        console.log('Category created:', result);
+            
+        if (!result._id) {
+          throw new Error('Category created but no ID returned');
+        }
+            
+        // Show initial success message
+        showAlert('Category created successfully! Starting AI image generation...', 'success');
+
+        // Start AI image generation in the background
+        Promise.resolve(generateImageAndContent('', categoryName, categoryDescription, result._id))
+          .catch(error => {
+            console.error('Error in generateImageAndContent:', error);
+            showAlert('Category created but there was an error generating AI content. Please try again later.', 'warning');
+          });
+      
+            
+        // Reset form
+        this.reset();
+        this.classList.remove('was-validated');
+        const previewContainer = document.querySelector('.image-preview');
+        if (previewContainer) {
+          previewContainer.innerHTML = `
+            <div class="d-flex align-items-center justify-content-center text-muted h-100">
+              <i class="bi bi-image me-2"></i> 
+              <i data-lucide="image" class="me-2"></i>
+              No image selected
+            </div>
+          `;
+        }
+        
+      } catch (error) {
+        console.error('Error creating category:', error);
+        showErrorAlert(error);
+      } finally {
+        submitBtn.innerHTML = originalBtnText;
+        submitBtn.disabled = false;
+      }
+    });
+
+    {{!-- // Handle hero section form submission
+    heroForm.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      if (!this.checkValidity()) {
+        e.stopPropagation();
+        this.classList.add('was-validated');
+        return;
+      }
+      
+      const submitBtn = this.querySelector('button[type="submit"]');
+        const originalBtnText = submitBtn.innerHTML;
+      submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Saving...';
+        submitBtn.disabled = true;
+        
+        try {
+        const categoryId = document.getElementById('categoryId').value;
+        if (!categoryId) {
+          throw new Error('Category ID is missing. Please create a category first.');
+        }
+
+        // Get hero image
+        const heroImage = document.getElementById('heroImage').files[0];
+        if (!heroImage) {
+          throw new Error('Please select a hero image');
+        }
+
+        // Validate hero image
+        if (!heroImage.type.startsWith('image/')) {
+          throw new Error('Please select a valid image file');
+        }
+
+        // Check file size (max 2MB)
+        const maxSize = 2 * 1024 * 1024; // 2MB in bytes
+        if (heroImage.size > maxSize) {
+          throw new Error('Image size should be less than 2MB');
+        }
+
+           // Create section first
+        console.log('Creating hero section...');
+            const sectionData = {
+              name: 'Hero Section',
+              slug: 'hero-section',
+              description: 'Hero section for the category',
+          category: categoryId,
+              isFolder: false,
+              order: 1,
+              isActive: true
+            };
+            
+            const sectionResponse = await fetch('https://airbrush-admin-backend.onrender.com/api/sections', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+              },
+              body: JSON.stringify(sectionData)
+            });
+            
+            if (!sectionResponse.ok) {
+          const errorText = await sectionResponse.text();
+          console.error('Section creation failed:', errorText);
+          throw new Error(`Failed to create section: ${errorText}`);
+            }
+            
+            const sectionResult = await sectionResponse.json();
+            console.log('Section created:', sectionResult);
+          
+          // Upload hero image
+        console.log('Uploading hero image...');
+          const imageUrl = await uploadImage(heroImage, token);
+          if (!imageUrl) {
+            throw new Error('Failed to upload hero image');
+          }
+        console.log('Hero image uploaded:', imageUrl);
+
+        // Create content
+        console.log('Creating hero content...');
+          const contentData = {
+            section: sectionResult._id,
+          slug: 'hero-section',
+          title: document.getElementById('heroTitle').value,
+          subtitle: document.getElementById('heroDescription').value,
+            images: [{
+              url: imageUrl,
+            alt: document.getElementById('heroTitle').value,
+              width: 1920,
+              height: 1080
+            }],
+            fields: [],
+            isActive: true
+          };
+          
+        const contentResponse = await fetch('https://airbrush-admin-backend.onrender.com/api/content', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify(contentData)
+          });
+          
+          if (!contentResponse.ok) {
+            const errorText = await contentResponse.text();
+            console.error('Content creation failed:', errorText);
+          throw new Error(`Failed to create content: ${errorText}`);
+          }
+          
+          const contentResult = await contentResponse.json();
+        console.log('Content created:', contentResult);
+          
+        // Show success message
+          const successAlert = document.createElement('div');
+          successAlert.className = 'alert alert-success d-flex align-items-center mb-0';
+          successAlert.innerHTML = `
+            <i class="bi bi-check-circle-fill me-2"></i>
+            <div>
+            <strong>Hero Section created successfully!</strong>
+            <p class="mb-0">You can now proceed to add more sections.</p>
+            </div>
+          `;
+          
+          const alertContainer = document.querySelector('.alert-container');
+          if (alertContainer) {
+            alertContainer.appendChild(successAlert);
+            setTimeout(() => {
+              successAlert.remove();
+            }, 3000);
+          }
+          
+          // Reset form
+        this.reset();
+        this.classList.remove('was-validated');
+            heroImagePreview.innerHTML = `
+              <div class="d-flex align-items-center justify-content-center text-muted h-100">
+                <i class="bi bi-image me-2"></i> No image selected
+              </div>
+            `;
+          
+        } catch (error) {
+        console.error('Error creating hero section:', error);
+          showErrorAlert(error);
+        } finally {
+        submitBtn.innerHTML = originalBtnText;
+        submitBtn.disabled = false;
+      }
+    }); --}}
+
+    // Helper function to upload images
+    async function uploadImage(file, token) {
+      if (!file) return null;
+
+      try {
+        console.log('Starting image upload...');
+        const formData = new FormData();
+        formData.append('images', file);
+
+        const response = await fetch('https://airbrush-admin-backend.onrender.com/api/images', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`
+          },
+          body: formData
+        });
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error('Image upload failed:', errorText);
+          throw new Error(`Failed to upload image: ${errorText}`);
+        }
+
+        const result = await response.json();
+        console.log('Image upload response:', result);
+        
+        if (!result || !result.files || !result.files[0]) {
+          throw new Error('Invalid image upload response format');
+        }
+
+        return result.files[0].url;
+      } catch (error) {
+        console.error('Error uploading image:', error);
+        throw error;
+      }
+    }
+
+    // Helper function to show error alerts
+    function showErrorAlert(error) {
+      const errorAlert = document.createElement('div');
+      errorAlert.className = 'alert alert-danger d-flex align-items-center mb-0';
+      errorAlert.innerHTML = `
+        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+            <div>
+          <strong>Error!</strong>
+          <p class="mb-0">${error.message}</p>
+            </div>
+          `;
+          
+          const alertContainer = document.querySelector('.alert-container');
+          if (alertContainer) {
+        alertContainer.appendChild(errorAlert);
+            setTimeout(() => {
+          errorAlert.remove();
+        }, 5000);
+      }
+    }
+
+    // Add AI image generation function
+    async function generateImageAndContent(prompt, categoryName, categoryDescription, categoryId) {
+      if (!categoryId) {
+        showAlert('Category ID is missing', 'warning');
+        return;
+      }
+
+      if (!categoryName || !categoryDescription) {
+        showAlert('Category details are missing', 'warning');
+        return;
+      }
+
+      // Show loader
+      const loader = document.getElementById('aiGenerationLoader');
+      const loaderStatus = document.getElementById('loaderStatus');
+      const progressBar = loader.querySelector('.progress-bar');
+      const steps = loader.querySelectorAll('.step');
+      loader.classList.remove('d-none');
+
+      function updateProgress(sectionIndex, subProgress = 0) {
+        const totalSections = 5;
+        const progressPerSection = 100 / totalSections;
+        const progress = (sectionIndex * progressPerSection) + (subProgress * progressPerSection);
+        progressBar.style.width = `${progress}%`;
+        
+        // Update steps
+        steps.forEach((step, index) => {
+          if (index < sectionIndex) {
+            step.classList.remove('active');
+            step.classList.add('completed');
+          } else if (index === sectionIndex) {
+            step.classList.add('active');
+            step.classList.remove('completed');
+          } else {
+            step.classList.remove('active', 'completed');
+          }
+        });
+      }
+
+      try {
+        // Define sections with their specific prompts
+        const sections = [
+          {
+            name: 'Hero Section',
+            slug: 'hero-section',
+            description: 'Hero section for the category',
+            order: 1,
+            promptTemplate: `Create a hero section image for ${categoryName}.
+              Context: ${categoryDescription}.`
+          },
+          {
+            name: 'Images Gallery',
+            slug: 'images-gallery',
+            description: 'Showcase of images and examples',
+            order: 2,
+            promptTemplate: `Create a gallery showcase image for ${categoryName}.
+              Context: ${categoryDescription}.`
+          },
+          {
+            name: `Why Use tool`,
+            slug: 'why-use-tool',
+            description: 'Benefits and features section',
+            order: 3,
+            promptTemplate: `Create an image highlighting why users should use ${categoryName}.
+              Context: ${categoryDescription}`
+          },
+          {
+            name: `Text to Anything`,
+            slug: 'text-to-anything',
+            description: 'Text to specific output conversion capabilities',
+            order: 4,
+            promptTemplate: `Create an image demonstrating text-to-${categoryName.toLowerCase()} transformation.
+              Context: ${categoryDescription}`
+          },
+          {
+            name: 'Blogs',
+            slug: 'blogs',
+            description: 'Blog posts and articles section',
+            order: 5,
+            promptTemplate: `Create a blog section image for ${categoryName}.
+              Context: ${categoryDescription}`
+          }
+        ];
+
+        // Process each section
+        const contentDataArray = [];
+        for (let sectionIndex = 0; sectionIndex < sections.length; sectionIndex++) {
+          const section = sections[sectionIndex];
+          try {
+            console.log(`Processing ${section.name}...`);
+            loaderStatus.textContent = `Generating content for ${section.name}...`;
+            updateProgress(sectionIndex);
+
+            if(section.name === 'Images Gallery') {
+              loaderStatus.textContent = `Generating gallery images (this may take a few minutes)...`;
+
+              for(let i = 0; i <= 3; i++) {
+                loaderStatus.textContent = `Generating gallery image ${i + 1} of 4...`;
+                updateProgress(sectionIndex, (i + 1) / 4);
+                const response = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=AIzaSyDYGuO7Q2LSPUIyuKzlQKLMvj_5ltr6hAU', {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json'
+                  },
+                  body: JSON.stringify({
+                    contents: [{
+                      parts: [{
+                        text: `create a unique single prompt of 15-20 words that will generate a beautiful image for ${categoryName}`
+                      }]
+                    }]
+                  })
+                });
+
+                if (!response.ok) {
+                  throw new Error('Gemini API request failed');
+                }
+
+                const data = await response.json();
+                const imageResponse = await fetch('https://api.deepinfra.com/v1/openai/images/generations', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ofZxkV2E7aTDvbirZCB16zJHSbbfOxdN'
+              },
+              body: JSON.stringify({
+                    prompt: data.candidates[0].content.parts[0].text.split('**Prompt:**')[1]?.trim() || data.candidates[0].content.parts[0].text,
+                size: "1024x1024",
+                model: "black-forest-labs/FLUX-1-dev",
+                n: 1,
+                response_format: "b64_json",
+                guidance_scale: 20,
+                num_inference_steps: 50
+              })
+            });
+
+                if (!imageResponse.ok) {
+                  throw new Error('Image generation failed');
+                }
+
+                const imageData = await imageResponse.json();
+                const base64Data = imageData.data[0].b64_json;
+                const byteCharacters = atob(base64Data);
+                const byteArrays = [];
+
+                for (let j = 0; j < byteCharacters.length; j++) {   
+                  byteArrays.push(byteCharacters.charCodeAt(j));
+                }
+
+                const byteArray = new Uint8Array(byteArrays);
+                const blob = new Blob([byteArray], { type: 'image/png' });
+
+                const file = new File([blob], `${section.slug}-${i + 1}.png`, { type: 'image/png' });
+                const imageUrl = await uploadImage(file, token);
+
+                // If first iteration, create the content object
+                if (i === 0) {
+                  contentDataArray.push({
+                    section: 'Images Gallery',
+                    slug: `${section.slug}`,
+                    title: `Image Gallery`,
+                    subtitle: `Beautiful ${categoryName} images`,
+                    images: []
+                  });
+                }
+                
+                // Add the new image to the images array of the last content object
+                contentDataArray[contentDataArray.length - 1].images.push({
+                  url: imageUrl,
+                  title: `${categoryName} ${i + 1}`,
+                  prompt: data.candidates[0].content.parts[0].text.split('**Prompt:**')[1]?.trim() || data.candidates[0].content.parts[0].text,
+                  alt: `${categoryName} ${i + 1}`,
+                  width: 1024,
+                  height: 1024
+                });
+
+                console.log(contentDataArray, 'contentDataArray');
+              }
+            }
+
+            if(section.name === 'Blogs') {
+              loaderStatus.textContent = `Generating blog content (this may take a few minutes)...`;
+
+              for(let i = 0; i <= 3; i++) {
+                loaderStatus.textContent = `Generating blog ${i + 1} of 4...`;
+                updateProgress(sectionIndex, (i + 1) / 4);
+                const promptResponse = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=AIzaSyDYGuO7Q2LSPUIyuKzlQKLMvj_5ltr6hAU', {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json'
+                  },
+                  body: JSON.stringify({
+                    contents: [{
+                      parts: [{
+                        text: `create a unique prompt that will generate a beautiful image for a blog realted to ${categoryName}`
+                      }]
+                    }]
+                  })
+                });
+
+                if (!promptResponse.ok) {
+                  throw new Error('Gemini API request failed');
+                }
+
+                const contentResponse = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=AIzaSyDYGuO7Q2LSPUIyuKzlQKLMvj_5ltr6hAU', {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json'
+                  },
+                  body: JSON.stringify({
+                    contents: [{
+                      parts: [{
+                        text: `create a unique blog content with 150-200 words for the topic related to ${categoryName}`
+                      }]
+                    }]
+                  })
+                });
+
+                if (!contentResponse.ok) {
+                  throw new Error('Gemini API request failed');
+                }
+
+                const promptData = await promptResponse.json();
+                const contentResponseData = await contentResponse.json();
+                const imageResponse = await fetch('https://api.deepinfra.com/v1/openai/images/generations', {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ofZxkV2E7aTDvbirZCB16zJHSbbfOxdN'
+                  },
+                  body: JSON.stringify({
+                    prompt: promptData.candidates[0].content.parts[0].text.split('**Prompt:**')[1]?.trim() || promptData.candidates[0].content.parts[0].text,
+                size: "1024x1024",
+                model: "black-forest-labs/FLUX-1-dev",
+                n: 1,
+                response_format: "b64_json"
+              })
+            });
+
+                if (!imageResponse.ok) {
+                  throw new Error('Image generation failed');
+                }
+
+                const imageData = await imageResponse.json();
+                const base64Data = imageData.data[0].b64_json;
+              const byteCharacters = atob(base64Data);
+              const byteArrays = [];
+              
+                for (let j = 0; j < byteCharacters.length; j++) {   
+                  byteArrays.push(byteCharacters.charCodeAt(j));
+              }
+              
+              const byteArray = new Uint8Array(byteArrays);
+              const blob = new Blob([byteArray], { type: 'image/png' });
+              
+                const file = new File([blob], `${section.slug}-${i + 1}.png`, { type: 'image/png' });
+                const imageUrl = await uploadImage(file, token);
+
+                // If first iteration, create the content object
+                if (i === 0) {
+                  contentDataArray.push({
+                    section: 'Blogs',
+                    slug: `${section.slug}`,
+                    title: `Blog Section`,
+                    subtitle: `Beautiful ${categoryName} blogs`,
+                    images: []
+                  });
+                }
+                
+                // Add the new image to the images array of the last content object
+                contentDataArray[contentDataArray.length - 1].images.push({
+                  url: imageUrl,
+                  title: `Beautiful ${categoryName} image ${i + 1}`,
+                  content: contentResponseData.candidates[0].content.parts[0].text,
+                  alt: `Beautiful ${categoryName} image ${i + 1}`,
+                  width: 1024,
+                  height: 1024
+                });
+
+                console.log(contentDataArray, 'contentDataArray');
+              }
+            }
+
+             const imageResponse = await fetch('https://api.deepinfra.com/v1/openai/images/generations', {
+                 method: 'POST',
+                headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ofZxkV2E7aTDvbirZCB16zJHSbbfOxdN'
+              },
+              body: JSON.stringify({
+                    prompt: section.promptTemplate,
+                size: "1024x1024",
+                model: "black-forest-labs/FLUX-1-dev",
+                n: 1,
+                response_format: "b64_json"
+                })
+              });
+
+              if (!imageResponse.ok) {
+                throw new Error('Image generation failed');
+              }
+
+              const imageData = await imageResponse.json();
+              const base64Data = imageData.data[0].b64_json;
+              const byteCharacters = atob(base64Data);
+              const byteArrays = [];
+              
+              for (let j = 0; j < byteCharacters.length; j++) {   
+                byteArrays.push(byteCharacters.charCodeAt(j));
+              }
+              
+              const byteArray = new Uint8Array(byteArrays);
+              const blob = new Blob([byteArray], { type: 'image/png' });
+              
+              const file = new File([blob], `${section.slug}.png`, { type: 'image/png' });
+              
+              // Upload the generated image
+              const mainImageUrl = await uploadImage(file, token);
+              
+              if (mainImageUrl) {
+                // Create section
+                console.log(`Creating section for ${section.name}...`);
+                const sectionResponse = await fetch('https://airbrush-admin-backend.onrender.com/api/sections', {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                  },
+                  body: JSON.stringify({
+                    name: section.name,
+                    slug: section.slug,
+                    description: section.description,
+                    category: categoryId,
+                    isFolder: false,
+                    order: section.order,
+                    isActive: true
+                  })
+                });
+
+                if (!sectionResponse.ok) {
+                  throw new Error(`Failed to create section for ${section.name}`);
+                }
+
+                const sectionResult = await sectionResponse.json();
+                console.log(`Section created for ${section.name}:`, sectionResult);
+
+                let contentData;
+                if(section.name === 'Images Gallery') {
+                  contentData = {
+                    section: sectionResult._id,
+                    slug: section.slug,
+                    title: section.name,
+                    subtitle: section.description,
+                    images: contentDataArray[contentDataArray.length - 1]?.images,
+                    fields: [],
+                    isActive: true
+                  }
+                } else if(section.name === 'Blogs') {
+                  const blogImages = contentDataArray[contentDataArray.length - 1]?.images || [];
+                  const fields = blogImages.map(image => ({
+                    value: {
+                      url: image.url,
+                      title: image.title,
+                      content: image.content
+                    }
+                  }));
+                  
+                  contentData = {
+                    section: sectionResult._id,
+                    slug: section.slug,
+                    title: section.name,
+                    subtitle: section.description,
+                    images: blogImages,
+                    fields: fields,
+                    isActive: true
+                  }
+                } else {
+                // Create content with the generated image
+                contentData = {
+                  section: sectionResult._id,
+                  slug: section.slug,
+                  title: section.name,
+                  subtitle: section.description,
+                  images: [{
+                    url: mainImageUrl,
+                    alt: section.name,
+                    width: 1024,
+                    height: 1024
+                  }],
+                  fields: [],
+                  isActive: true
+                };
+                }
+
+
+                const contentResponse = await fetch('https://airbrush-admin-backend.onrender.com/api/content', {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                  },
+                  body: JSON.stringify(contentData)
+                });
+
+                if (!contentResponse.ok) {
+                  throw new Error(`Failed to create content for ${section.name}`);
+                }
+
+                const contentResult = await contentResponse.json();
+                console.log(`Content created for ${section.name}:`, contentResult);
+                showAlert(`${section.name} created successfully!`, 'success');
+            }
+          } catch (error) {
+            console.error(`Error processing ${section.name}:`, error);
+            showAlert(`Failed to process ${section.name}. ${error.message}`, 'danger');
+          }
+        }
+      } catch (error) {
+        console.error('Error in generateImageAndContent:', error);
+        showAlert('Failed to generate AI images. Please try again.', 'danger');
+      } finally {
+        // Hide loader
+        loader.classList.add('d-none');
+      }
+    }
+    } 
+  );
+</script>

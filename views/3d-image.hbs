@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" type="image/x-icon"
+        href="https://ai4chat-files.s3.amazonaws.com/images/airbrush/image-1737741097321.jpg">
+    <title>Airbrush - Best AI Art, Image & Stock Photo Generator</title>
+    <meta name="description"
+        content="With Airbrush's AI technology, you can create original stock photos, NFTs, art, and more - in just seconds.">
+    <meta name="robots" content="index, follow">
+
+    <!-- FB meta tags -->
+    <meta property="og:title" content="Airbrush - Best AI Art, Image & Stock Photo Generator">
+    <meta property="og:description"
+        content="With Airbrush's AI technology, you can create original stock photos, NFTs, art, and more - in just seconds.">
+    <meta property="og:image" content="https://i.postimg.cc/x8Hy7mQ9/Screenshot-297.png">
+    <meta property="og:url" content="https://www.airbrush.ai">
+
+    <!-- Twitter meta tags -->
+    <meta name="twitter:title" content="Airbrush - Best AI Art, Image & Stock Photo Generator">
+    <meta name="twitter:description"
+        content="With Airbrush's AI technology, you can create original stock photos, NFTs, art, and more - in just seconds.">
+    <meta name="twitter:image" content="https://i.postimg.cc/x8Hy7mQ9/Screenshot-297.png">
+
+    <!-- Initialize category IDs before any components load -->
+    <script>
+
+        // Flag to track if categories have been initialized
+        window.categoriesInitialized = false;
+        
+        // Function to initialize category IDs
+        function initializeCategoryIds() {
+            return fetch('https://airbrush-admin-backend.onrender.com/api/categories')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`Failed to fetch categories: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(categories => {
+                    console.log('Categories fetched successfully:', categories);
+                    
+                    // Process each category and add to window object
+                    categories.forEach(category => {
+                        if (category.slug && category._id) {
+                            // Convert slug to camelCase for window property name
+                            const camelCaseKey = category.slug.replace(/-./g, match => match[1].toUpperCase());
+                            const propertyName = `airbrush${camelCaseKey}`;
+                            
+                            // Set the property in window object
+                            window[propertyName] = category._id;
+                            console.log(`Set window.${propertyName} = '${category._id}'`);
+                        }
+                    });
+                    
+                    // Set initialization flag
+                    window.categoriesInitialized = true;
+                    
+                    // Create event to notify components that categories are ready
+                    const event = new CustomEvent('categoriesReady');
+                    window.dispatchEvent(event);
+                    
+                    return categories;
+                })
+                .catch(error => {
+                    console.error('Error initializing categories:', error);
+                    // Still mark as initialized even with an error, using fallback values
+                    window.categoriesInitialized = true;
+                    window.dispatchEvent(new CustomEvent('categoriesReady'));
+                });
+        }
+        
+        // Start fetching categories immediately when page begins loading
+        const categoriesPromise = initializeCategoryIds();
+    </script>
+
+    <!-- bootstrap min css -->
+    <link rel="stylesheet preload" href="/css/plugins/fontawesome-6.css" as="style">
+    <link rel="stylesheet preload" href="/css/plugins/unicons.css" as="style">
+    <link rel="stylesheet preload" href="/css/plugins/swiper.min.css" as="style">
+    <link rel="stylesheet preload" href="/css/vendor/metismenu.css" as="style">
+    <link rel="stylesheet preload" href="/css/vendor/bootstrap.min.css" as="style">
+    <!-- custom css style -->
+    <link rel="stylesheet preload" href="/css/style.css" as="style">
+    
+    <!-- Store category ID in window object -->
+    <script>
+        window.airbrushdoctor = '6808ac8b16d125e1c0a40e13';
+        console.log(window, 'window.airbrush3dImage');
+    </script>
+</head>
+
+<body class="dark-version">
+
+    {{> desktop-menu}}
+
+    <!-- rts breadcrumb area start-->
+
+    {{> imagination}}
+
+    {{> character}}
+
+    {{> characters}}
+
+    {{> why-use-airbrush-3d}}
+
+    {{> text-to-3d}}
+
+    {{> gallery}}
+
+    {{> blog-section}}
+
+    {{> footer}}
+
+
+    <div id="anywhere-home" class="">
+    </div>
+
+    {{> mobile-menu}}
+
+
+    <!-- rts backto top start -->
+    <div class="progress-wrap">
+        <svg class="progress-circle svg-content" width="100%" height="100%" viewBox="-1 -1 102 102">
+            <path d="M50,1 a49,49 0 0,1 0,98 a49,49 0 0,1 0,-98"
+                style="transition: stroke-dashoffset 10ms linear 0s; stroke-dasharray: 307.919, 307.919; stroke-dashoffset: 307.919;">
+            </path>
+        </svg>
+    </div>
+    <!-- rts backto top end -->
+
+
+    <script src="/js/vendor/jquery.min.js" defer></script>
+    <script src="/js/vendor/metismenu.js" defer></script>
+    <script src="/js/plugins/bootstrap.min.js" defer></script>
+    <script src="/js/plugins/swiper.js" defer></script>
+    <script src="/js/plugins/contact.form.js" defer></script>
+    <script src="/js/main.js" defer></script>
+
+    <!-- Content Fetch Script -->
+    <script>
+        // Function to fetch content by category ID
+        async function fetchContentByCategory(categoryId) {
+            try {
+                const response = await fetch(`https://airbrush-admin-backend.onrender.com/api/content/category/${categoryId}`);
+                
+                if (!response.ok) {
+                    throw new Error('Failed to fetch content');
+                }
+                
+                const data = await response.json();
+                return data;
+            } catch (error) {
+                console.error('Error fetching content by category:', error);
+                return null;
+            }
+        }
+        
+        // Example usage:
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Replace with your actual category ID
+            const categoryId = '6804931c39cff059c0655fd6'; 
+            
+            // Fetch content for this category
+            const categoryContent = await fetchContentByCategory(categoryId);
+            
+            if (categoryContent) {
+                console.log('Category content loaded:', categoryContent);
+                // You can process and display the content here
+                // For example:
+                // updateUIWithCategoryContent(categoryContent);
+            }
+        });
+        
+        // Example function to update UI with category content
+        function updateUIWithCategoryContent(content) {
+            // This is a placeholder function
+            // Implement based on your specific UI needs and DOM structure
+            
+            if (Array.isArray(content)) {
+                // If the response is an array of content items
+                content.forEach(item => {
+                    // Process each content item
+                    console.log('Content item:', item.title);
+                    
+                    // Add your DOM manipulation code here
+                    // For example:
+                    // createContentCard(item);
+                });
+            } else {
+                // If the response is a single content object
+                console.log('Single content item:', content.title);
+                
+                // Add your DOM manipulation code here
+            }
+        }
+    </script>
+
+</body>
+
+
+
+</html>
