@@ -24,6 +24,57 @@ app.use(
 );
 app.use(cookieParser());
 
+// Cache configuration
+const routeCache = {
+  categories: null,
+  lastFetch: null,
+  isRefreshing: false,
+  cacheTimeout: 5 * 60 * 1000, // 5 minutes
+  minRefreshInterval: 10 * 1000 // 10 seconds minimum between refreshes
+};
+
+// Middleware to refresh dynamic routes with caching and rate limiting
+app.use(async (req, res, next) => {
+  try {
+    const now = Date.now();
+    
+    // Skip refresh if:
+    // 1. Cache is valid (within timeout)
+    // 2. Another refresh is in progress
+    // 3. Last refresh was too recent (rate limiting)
+    if (
+      routeCache.categories && 
+      routeCache.lastFetch && 
+      (now - routeCache.lastFetch < routeCache.cacheTimeout) &&
+      !routeCache.isRefreshing &&
+      (now - routeCache.lastFetch < routeCache.minRefreshInterval)
+    ) {
+      return next();
+    }
+
+    // Prevent concurrent refreshes
+    if (!routeCache.isRefreshing) {
+      routeCache.isRefreshing = true;
+      
+      try {
+        await initializeDynamicRoutes(app);
+        
+        // Update cache
+        routeCache.lastFetch = now;
+        routeCache.categories = await fetchCategories();
+      } finally {
+        routeCache.isRefreshing = false;
+      }
+    }
+    
+    next();
+  } catch (error) {
+    console.error('Error in route refresh middleware:', error);
+    // Continue to next middleware even if refresh fails
+    next();
+  }
+});
+
 const OPENAI_API_KEY = "open_ai_key_here";
 const apiUrl = "https://api.openai.com/v1/chat/completions";
 
@@ -67,8 +118,6 @@ app.engine(
     },
   })
 );
-
-
 
 const sitemapPath = path.join(__dirname, "views", "sitemap.hbs");
 const generatedPagesPath = path.join(__dirname, "views", "generated-pages");
@@ -122,8 +171,6 @@ async function initializeDynamicRoutes(app) {
     console.error('Failed to initialize dynamic routes:', error);
   }
 }
-
-
 
 MongoClient.connect(connectionString, async (err, client) => {
   if (err) return console.error(err);
