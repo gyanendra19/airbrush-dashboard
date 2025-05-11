@@ -16,13 +16,18 @@ const pm2 = require('pm2');
 app.set("view engine", "hbs");
 app.set("views", path.join(__dirname, "views"));
 
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json({ limit: "50mb" }));
-app.use(express.static("public"));
+// Serve static files
+app.use(express.static(path.join(__dirname, "public")));
+app.use("/js", express.static(path.join(__dirname, "public/js")));
+app.use("/css", express.static(path.join(__dirname, "public/css")));
+app.use("/images", express.static(path.join(__dirname, "public/images")));
 app.use(
   "/generated-pages",
   express.static(path.join(__dirname, "generated-pages"))
 );
+
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json({ limit: "50mb" }));
 app.use(cookieParser());
 
 // Cache configuration
