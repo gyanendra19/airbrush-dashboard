@@ -1,3 +1,6 @@
+<script type="module">
+  import { updateRoutes } from '../../../server.js';
+</script>
 <!-- Edit Category Form -->
 <div class="card shadow-sm border-0 mb-4">
   <div class="card-header bg-white py-3">
@@ -45,7 +48,7 @@
       <div style="width: 30%;" class="mb-3">
         <label for="categoryDescription" class="form-label">Description</label>
         <textarea style="width: 100%;" class="form-control" id="categoryDescription" name="categoryDescription" 
-                  rows="3" placeholder="Enter category description" required></textarea>
+                  rows="3" placeholder="Enter category description"></textarea>
         <div class="invalid-feedback">
           Please provide a category description.
         </div>
@@ -335,8 +338,8 @@
           
           try {
             // First try with /id/ path
-            console.log(`Attempting to update with endpoint: https://airbrush-admin-backend.onrender.com/api/categories/id/${categoryId}`);
-            updateResponse = await fetch(`https://airbrush-admin-backend.onrender.com/api/categories/id/${categoryId}`, {
+            console.log(`Attempting to update with endpoint: https://airbrush-admin-backend.onrender.com/api/categories/${categoryId}`);
+            updateResponse = await fetch(`https://airbrush-admin-backend.onrender.com/api/categories/${categoryId}`, {
               method: 'PUT',
               headers: {
                 'Content-Type': 'application/json',
@@ -350,6 +353,17 @@
             
             if (!updateResponse.ok) {
               throw new Error(`Failed with id endpoint: ${responseText}`);
+            }
+
+          try {
+          const result = await updateRoutes();
+          if (result.success) {
+            console.log('Routes updated successfully:', result.message);
+          } else {
+            console.warn('Routes update warning:', result.message);
+          }
+            } catch (error) {
+              console.warn('Routes update warning:', error);
             }
           } catch (idEndpointError) {
             console.warn('First endpoint failed:', idEndpointError.message);

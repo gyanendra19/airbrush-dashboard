@@ -1,3 +1,4 @@
+<script src="https://kit.fontawesome.com/your-kit-code.js" crossorigin="anonymous"></script>
 <!-- Blog Post Template -->
 <div class="blog-container">
   <!-- Hero Section -->
@@ -49,7 +50,7 @@
           <i class="fab fa-twitter"></i>
         </a>
         <a href="https://www.facebook.com/sharer/sharer.php?u={{encodeURIComponent url}}" class="share-button facebook" target="_blank">
-          <i class="fab fa-facebook-f"></i>
+          <i class="fab fa-facebook-f" style="width: 10px"></i>
         </a>
         <a href="https://www.linkedin.com/shareArticle?mini=true&url={{encodeURIComponent url}}&title={{encodeURIComponent blog.title}}" class="share-button linkedin" target="_blank">
           <i class="fab fa-linkedin-in"></i>
@@ -327,16 +328,17 @@ async function fetchAndRenderBlogContent() {
         
         // Find the specific blog post from fields array that matches the title
         const blogPost = content.fields.find(field => {
-            const fieldTitle = field.value.title || '';
-            return fieldTitle.toLowerCase() === title.toLowerCase();
+            const fieldTitle = (field.value.title || '').replace(/-/g, ' ');
+            const searchTitle = title.replace(/-/g, ' ');
+            return fieldTitle.toLowerCase() === searchTitle.toLowerCase();
         });
 
-  
+
         // Update the page content
         document.querySelector('.blog-hero-image').src = blogPost.value.url || '/images/placeholder.png';
         document.querySelector('.blog-hero-image').alt = blogPost.value.title;
-        document.querySelector('.blog-date').textContent = formatDate(blogPost.value.date);
-        document.querySelector('.blog-category').textContent = blogPost.value.category || 'Uncategorized';
+        {{!-- document.querySelector('.blog-date').textContent = formatDate(blogPost.value.date); --}}
+        {{!-- document.querySelector('.blog-category').textContent = blogPost.value.category || 'Uncategorized'; --}}
         document.querySelector('.blog-title').textContent = blogPost.value.title;
         
         // Update author information if available

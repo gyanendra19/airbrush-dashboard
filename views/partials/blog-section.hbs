@@ -309,11 +309,11 @@
                 
                 // If no square brackets were found, default to highlighting "Blog"
                 if (!processedTitle.includes('<span class="blog-text">')) {
-                    processedTitle = processedTitle.replace(/Blog/i, '<span class="blog-text">Blog</span>');
+                    processedTitle = processedTitle.replace(/Blogs/i, '<span class="blog-text">Blogs</span>');
                 }
                 
                 console.log('Updated blog title to:', processedTitle);
-                titleElement.innerHTML = processedTitle;
+                titleElement.innerHTML = `Our ${processedTitle}`;
             }
         }
         

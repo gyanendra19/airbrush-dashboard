@@ -11,6 +11,7 @@ const uuid = require("uuid");
 const cookieParser = require("cookie-parser");
 const { marked } = require("marked");
 const fetch = require("node-fetch");
+const pm2 = require('pm2');
 
 app.set("view engine", "hbs");
 app.set("views", path.join(__dirname, "views"));
@@ -58,6 +59,8 @@ app.use(async (req, res, next) => {
       
       try {
         await initializeDynamicRoutes(app);
+        updateRoutes();
+
         
         // Update cache
         routeCache.lastFetch = now;
@@ -461,6 +464,8 @@ app.get('/hero-section', (req, res) => {
   res.render('adminIndex', {
     layout: 'adminMain',
     partialName: 'hero-section',
+    title: 'Hero Section',
+    activeMenu: 'hero-section',
     section: { title: 'Hero section', description: 'Studio Ghibli is amazing!' }
   });
 });
@@ -469,6 +474,7 @@ app.get('/edit-category', (req, res) => {
   res.render('adminIndex', {
     layout: 'adminMain',
     partialName: 'edit-category',
+    title: 'Edit Category',
     section: { title: 'Edit Category', description: 'Edit Category' }
   });
 });
@@ -477,6 +483,7 @@ app.get('/text-to-anything', (req, res) => {
   res.render('adminIndex', {
     layout: 'adminMain',
     partialName: 'text-to-anything',
+    title: 'Text to Anything',
     section: { title: 'Text to Anything', description: 'Text to Anything' }
   });
 });
@@ -485,6 +492,7 @@ app.get('/blogs', (req, res) => {
   res.render('adminIndex', {
     layout: 'adminMain',
     partialName: 'blogs',
+    title: 'Blogs',
     section: { title: 'Blogs', description: 'Blogs' }
   });
 });
@@ -493,9 +501,7 @@ app.get('/new-category', (req, res) => {
   res.render('adminIndex', {
     layout: 'adminMain',
     partialName: 'new-category',
-    env: {
-      DEEPINFRA_TOKEN: process.env.DEEPINFRA_TOKEN
-    },
+    title: 'New Category',
     section: { title: 'New Category', description: 'New Category' }
   });
 });
@@ -709,10 +715,21 @@ app.get('/images-gallery', (req, res) => {
     return data;
   }
 
-  // app.get("/blog/:url", (req, res) => {
-  //   const newUrl = `/${req.params.url}`;
-  //   res.redirect(301, newUrl);
-  // });
+  app.get("/blog/:url", (req, res) => {
+    const newUrl = `/${req.params.url}`;
+    res.redirect(301, newUrl);
+  });
+
+  // Add route update endpoint
+  app.post("/api/update-routes", async (req, res) => {
+    try {
+      const result = await updateRoutes();
+      res.json(result);
+    } catch (error) {
+      console.error('Error updating routes:', error);
+      res.status(500).json({ success: false, message: error.message });
+    }
+  });
 
   app.all("*", (req, res) => {
     res.redirect("/404");
@@ -771,9 +788,56 @@ app.get("/api/image/generate", async (req, res) => {
   }
 });
 
-const server = app.listen(8000, function () {
-  console.log("listening on 8000...");
-});
+let server;
+
+function startServer() {
+  const PORT = process.env.PORT || 8000;
+  server = app.listen(PORT, function () {
+    console.log(`Server listening on port ${PORT}...`);
+  });
+}
+
+// Function to restart the server using PM2
+async function restartServer() {
+  console.log('Restarting server');
+  return new Promise((resolve, reject) => {
+    pm2.connect((err) => {
+      if (err) {
+        console.error(err);
+        reject(err);
+        return;
+      }
+
+      pm2.restart('server', (err) => {
+        if (err) {
+          console.error(err);
+          reject(err);
+        } else {
+          console.log('Server restarted successfully');
+          resolve();
+        }
+        pm2.disconnect();
+      });
+    });
+  });
+}
+
+// Modify your route update function
+async function updateRoutes() {
+  try {
+    await initializeDynamicRoutes(app);
+    await restartServer();
+    return { success: true, message: 'Routes updated and server restarted' };
+  } catch (error) {
+    console.error('Error updating routes:', error);
+    return { success: false, message: error.message };
+  }
+}
+
+// Export the updateRoutes function
+module.exports = { updateRoutes };
+
+startServer();
 
 // Global Unhandled Rejection Handler
 process.on('unhandledRejection', (reason, promise) => {

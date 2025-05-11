@@ -1,3 +1,8 @@
+<!-- Add this at the top of the file, after the first script tags -->
+<script type="module">
+  import { updateRoutes } from '../../server.js';
+</script>
+
 <!-- New Category Form -->
 <script src="https://unpkg.com/lucide@latest"></script>
 <script>
@@ -29,11 +34,11 @@
       </div>
       <div class="step">
         <div class="step-icon"><i class="fas fa-lightbulb"></i></div>
-        <span>Why use Tool</span>
+        <span>Why use</span>
       </div>
       <div class="step">
         <div class="step-icon"><i class="fas fa-sync"></i></div>
-        <span>Text to Anything</span>
+        <span>Text To</span>
       </div>
       <div class="step">
         <div class="step-icon"><i class="fas fa-blog"></i></div>
@@ -51,7 +56,7 @@
     <form id="newCategoryForm" class="category-needs-validation" novalidate>
       <div class="category-row">
       <div class="mb-3">
-        <label for="categoryName" class="form-label">Category Name</label>
+        <label for="categoryName" class="form-label">Category Name <span class="text-danger">*</span></label>
         <input type="text" class="form-control" id="categoryName" name="categoryName" 
                  placeholder="Enter category name" required>
           <div class="invalid-feedback">
@@ -60,7 +65,7 @@
         </div>
 
       <div class="mb-3">
-        <label for="categorySlug" class="form-label">Category Slug</label>
+        <label for="categorySlug" class="form-label">Category Slug <span class="text-danger">*</span></label>
         <input type="text" class="form-control" id="categorySlug" name="categorySlug" 
                  placeholder="Enter category slug (e.g., my-category)" required>
         <div class="form-text">
@@ -71,17 +76,16 @@
         </div>
       </div>
 
-
       <div class="mb-3">
         <label for="categoryDescription" class="form-label">Description</label>
         <textarea class="form-control" id="categoryDescription" name="categoryDescription" 
-                  rows="3" placeholder="Enter category description" required></textarea>
+                  rows="3" placeholder="Enter category description"></textarea>
         </div>
       </div>
 
         <div style="display: flex; gap: 20px; margin-top: 20px;" class="mb-3">
           <div>
-        <label for="categoryImage" class="form-label">Category Image</label>
+        <label for="categoryImage" class="form-label">Category Image <span class="text-danger">*</span></label>
         <input type="file" class="form-control" id="categoryImage" name="categoryImage" 
         accept="image/*" required />
             <div class="invalid-feedback">
@@ -540,6 +544,18 @@
         if (!result._id) {
           throw new Error('Category created but no ID returned');
         }
+
+        // Update routes after category creation
+        try {
+          const result = await updateRoutes();
+          if (result.success) {
+            console.log('Routes updated successfully:', result.message);
+          } else {
+            console.warn('Routes update warning:', result.message);
+          }
+        } catch (error) {
+          console.warn('Routes update warning:', error);
+        }
             
         // Show initial success message
         showAlert('Category created successfully! Starting AI image generation...', 'success');
@@ -788,8 +804,8 @@
         return;
       }
 
-      if (!categoryName || !categoryDescription) {
-        showAlert('Category details are missing', 'warning');
+      if (!categoryName) {
+        showAlert('Category name is missing', 'warning');
         return;
       }
 
@@ -877,202 +893,223 @@
             if(section.name === 'Images Gallery') {
               loaderStatus.textContent = `Generating gallery images (this may take a few minutes)...`;
 
-              for(let i = 0; i <= 3; i++) {
-                loaderStatus.textContent = `Generating gallery image ${i + 1} of 4...`;
-                updateProgress(sectionIndex, (i + 1) / 4);
-                const response = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=AIzaSyDYGuO7Q2LSPUIyuKzlQKLMvj_5ltr6hAU', {
+              // Generate all prompts in parallel
+              const promptPromises = Array(15).fill().map(() => 
+                fetch('https://airbrush-admin-backend.onrender.com/api/images/generate-prompt', {
                   method: 'POST',
                   headers: {
                     'Content-Type': 'application/json'
                   },
                   body: JSON.stringify({
-                    contents: [{
-                      parts: [{
-                        text: `create a unique single prompt of 15-20 words that will generate a beautiful image for ${categoryName}`
-                      }]
-                    }]
+                    categoryName: categoryName,
+                    type: 'prompt'
                   })
+                }).then(res => {
+                  if (!res.ok) throw new Error('Prompt generation failed');
+                  return res.json();
+                })
+              );
+
+              const promptResults = await Promise.all(promptPromises);
+              loaderStatus.textContent = 'Generating images...';
+              updateProgress(sectionIndex, 0.4);
+
+              // Extract all prompts
+              const prompts = promptResults.map(data => {
+                let promptText = data.prompt.candidates[0].content.parts[0].text;
+                // Remove asterisks from the prompt
+                promptText = promptText.replace(/\*/g, '');
+                return promptText.trim();
+              });
+
+              // Generate all images in parallel
+              const imagePromises = prompts.map(promptText =>
+                fetch('https://airbrush-admin-backend.onrender.com/api/images/generate-image', {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json'
+                  },
+                  body: JSON.stringify({
+                    prompt: promptText
+                  })
+                }).then(res => {
+                  if (!res.ok) throw new Error('Image generation failed');
+                  return res.json();
+                })
+              );
+
+              const imageResults = await Promise.all(imagePromises);
+              loaderStatus.textContent = 'Processing generated images...';
+              updateProgress(sectionIndex, 0.8);
+
+              // Process all images
+              const processedImages = await Promise.all(imageResults.map(async (data, index) => {
+                const base64Data = data.imageData;
+                const byteCharacters = atob(base64Data);
+                const byteArrays = [];
+                
+                for (let i = 0; i < byteCharacters.length; i++) {
+                  byteArrays.push(byteCharacters.charCodeAt(i));
+                }
+                
+                const byteArray = new Uint8Array(byteArrays);
+                const blob = new Blob([byteArray], { type: 'image/png' });
+                const file = new File([blob], `ai-generated-image-${index + 1}.png`, { type: 'image/png' });
+                
+                const formData = new FormData();
+                formData.append('images', file);
+                
+                const uploadResponse = await fetch('https://airbrush-admin-backend.onrender.com/api/images', {
+                  method: 'POST',
+                  body: formData
                 });
 
-                if (!response.ok) {
-                  throw new Error('Gemini API request failed');
+                if (!uploadResponse.ok) throw new Error('Upload failed');
+                return uploadResponse.json();
+              }));
+
+              loaderStatus.textContent = 'Finalizing...';
+              updateProgress(sectionIndex, 1);
+
+              // Add all processed images to the gallery with their prompts
+              const galleryImages = [];
+              processedImages.forEach((uploadData, index) => {
+                if (uploadData.files && uploadData.files.length > 0) {
+                  galleryImages.push({
+                    url: uploadData.files[0].url,
+                    alt: "Gallery image",
+                    prompt: prompts[index],
+                    width: 1200,
+                    height: 800,
+                    order: index + 1
+                  });
                 }
+              });
 
-                const data = await response.json();
-                const imageResponse = await fetch('https://api.deepinfra.com/v1/openai/images/generations', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer ofZxkV2E7aTDvbirZCB16zJHSbbfOxdN'
-              },
-              body: JSON.stringify({
-                    prompt: data.candidates[0].content.parts[0].text.split('**Prompt:**')[1]?.trim() || data.candidates[0].content.parts[0].text,
-                size: "1024x1024",
-                model: "black-forest-labs/FLUX-1-dev",
-                n: 1,
-                response_format: "b64_json"
-              })
-            });
+              contentDataArray.push({
+                section: 'Images Gallery',
+                slug: `${section.slug}`,
+                title: `Image Gallery`,
+                subtitle: `Beautiful ${categoryName} images`,
+                images: galleryImages
+              });
+            }
 
-                if (!imageResponse.ok) {
-                  throw new Error('Image generation failed');
-                }
+            if(section.name === 'Blogs') {
+              loaderStatus.textContent = `Generating blog content (this may take a few minutes)...`;
+              updateProgress(sectionIndex, 0.2);
 
-                const imageData = await imageResponse.json();
-                const base64Data = imageData.data[0].b64_json;
+              // Generate all prompts and content in parallel
+              const blogPromises = Array(4).fill().map(() => 
+                Promise.all([
+                  // Generate image prompt
+                  fetch('https://airbrush-admin-backend.onrender.com/api/images/generate-prompt', {
+                    method: 'POST',
+                    headers: {
+                      'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                      categoryName: categoryName,
+                      type: 'prompt'
+                    })
+                  }).then(res => {
+                    if (!res.ok) throw new Error('Prompt generation failed');
+                    return res.json();
+                  }),
+                  // Generate blog content
+                  fetch('https://airbrush-admin-backend.onrender.com/api/images/generate-prompt', {
+                    method: 'POST',
+                    headers: {
+                      'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                      categoryName: categoryName,
+                      type: 'content'
+                    })
+                  }).then(res => {
+                    if (!res.ok) throw new Error('Content generation failed');
+                    return res.json();
+                  })
+                ])  
+              );
+
+              const blogResults = await Promise.all(blogPromises);
+              loaderStatus.textContent = 'Generating blog images...';
+              updateProgress(sectionIndex, 0.4);
+
+              // Extract prompts and content
+              const promptsAndContent = blogResults.map(([promptData, contentData]) => ({
+                prompt: promptData.prompt.candidates[0].content.parts[0].text,
+                content: contentData.prompt.candidates[0].content.parts[0].text
+              }));
+
+              // Generate all images in parallel
+              const imagePromises = promptsAndContent.map(({ prompt }) =>
+                fetch('https://airbrush-admin-backend.onrender.com/api/images/generate-image', {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json'
+                  },
+                  body: JSON.stringify({
+                    prompt: prompt
+                  })
+                }).then(res => {
+                  if (!res.ok) throw new Error('Image generation failed');
+                  return res.json();
+                })
+              );
+
+              const imageResults = await Promise.all(imagePromises);
+              loaderStatus.textContent = 'Processing blog images...';
+              updateProgress(sectionIndex, 0.6);
+
+              // Process all images in parallel
+              const processedImages = await Promise.all(imageResults.map(async (imageData, index) => {
+                const base64Data = imageData.imageData;
                 const byteCharacters = atob(base64Data);
                 const byteArrays = [];
 
-                for (let j = 0; j < byteCharacters.length; j++) {   
+                for (let j = 0; j < byteCharacters.length; j++) {
                   byteArrays.push(byteCharacters.charCodeAt(j));
                 }
 
                 const byteArray = new Uint8Array(byteArrays);
                 const blob = new Blob([byteArray], { type: 'image/png' });
-
-                const file = new File([blob], `${section.slug}-${i + 1}.png`, { type: 'image/png' });
-                const imageUrl = await uploadImage(file, token);
-
-                // If first iteration, create the content object
-                if (i === 0) {
-                  contentDataArray.push({
-                    section: 'Images Gallery',
-                    slug: `${section.slug}`,
-                    title: `Image Gallery`,
-                    subtitle: `Beautiful ${categoryName} images`,
-                    images: []
-                  });
-                }
+                const file = new File([blob], `${section.slug}-${index + 1}.png`, { type: 'image/png' });
                 
-                // Add the new image to the images array of the last content object
-                contentDataArray[contentDataArray.length - 1].images.push({
+                return uploadImage(file, token);
+              }));
+
+              loaderStatus.textContent = 'Finalizing blog content...';
+              updateProgress(sectionIndex, 0.8);
+
+              // Create the content object with all blog posts
+              contentDataArray.push({
+                section: 'Blogs',
+                slug: `${section.slug}`,
+                title: `Blog Section`,
+                subtitle: `Beautiful ${categoryName} blogs`,
+                images: processedImages.map((imageUrl, index) => ({
                   url: imageUrl,
-                  title: `${categoryName} ${i + 1}`,
-                  prompt: data.candidates[0].content.parts[0].text.split('**Prompt:**')[1]?.trim() || data.candidates[0].content.parts[0].text,
-                  alt: `${categoryName} ${i + 1}`,
+                  title: `Beautiful ${categoryName} image ${index + 1}`,
+                  content: promptsAndContent[index].content,
+                  prompt: promptsAndContent[index].prompt,
+                  alt: `Beautiful ${categoryName} image ${index + 1}`,
                   width: 1024,
                   height: 1024
-                });
+                }))
+              });
 
-                console.log(contentDataArray, 'contentDataArray');
-              }
+              updateProgress(sectionIndex, 1);
             }
 
-            if(section.name === 'Blogs') {
-              loaderStatus.textContent = `Generating blog content (this may take a few minutes)...`;
-
-              for(let i = 0; i <= 3; i++) {
-                loaderStatus.textContent = `Generating blog ${i + 1} of 4...`;
-                updateProgress(sectionIndex, (i + 1) / 4);
-                const promptResponse = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=AIzaSyDYGuO7Q2LSPUIyuKzlQKLMvj_5ltr6hAU', {
-                  method: 'POST',
-                  headers: {
-                    'Content-Type': 'application/json'
-                  },
-                  body: JSON.stringify({
-                    contents: [{
-                      parts: [{
-                        text: `create a unique prompt that will generate a beautiful image for a blog realted to ${categoryName}`
-                      }]
-                    }]
-                  })
-                });
-
-                if (!promptResponse.ok) {
-                  throw new Error('Gemini API request failed');
-                }
-
-                const contentResponse = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=AIzaSyDYGuO7Q2LSPUIyuKzlQKLMvj_5ltr6hAU', {
-                  method: 'POST',
-                  headers: {
-                    'Content-Type': 'application/json'
-                  },
-                  body: JSON.stringify({
-                    contents: [{
-                      parts: [{
-                        text: `create a unique blog content with 150-200 words for the topic related to ${categoryName}`
-                      }]
-                    }]
-                  })
-                });
-
-                if (!contentResponse.ok) {
-                  throw new Error('Gemini API request failed');
-                }
-
-                const promptData = await promptResponse.json();
-                const contentResponseData = await contentResponse.json();
-                const imageResponse = await fetch('https://api.deepinfra.com/v1/openai/images/generations', {
-                  method: 'POST',
-                  headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': 'Bearer ofZxkV2E7aTDvbirZCB16zJHSbbfOxdN'
-                  },
-                  body: JSON.stringify({
-                    prompt: promptData.candidates[0].content.parts[0].text.split('**Prompt:**')[1]?.trim() || promptData.candidates[0].content.parts[0].text,
-                    size: "1024x1024",
-                    model: "black-forest-labs/FLUX-1-dev",
-                    n: 1,
-                    response_format: "b64_json"
-                  })
-                });
-
-                if (!imageResponse.ok) {
-                  throw new Error('Image generation failed');
-                }
-
-                const imageData = await imageResponse.json();
-                const base64Data = imageData.data[0].b64_json;
-              const byteCharacters = atob(base64Data);
-              const byteArrays = [];
-              
-                for (let j = 0; j < byteCharacters.length; j++) {   
-                  byteArrays.push(byteCharacters.charCodeAt(j));
-              }
-              
-              const byteArray = new Uint8Array(byteArrays);
-              const blob = new Blob([byteArray], { type: 'image/png' });
-              
-                const file = new File([blob], `${section.slug}-${i + 1}.png`, { type: 'image/png' });
-                const imageUrl = await uploadImage(file, token);
-
-                // If first iteration, create the content object
-                if (i === 0) {
-                  contentDataArray.push({
-                    section: 'Blogs',
-                    slug: `${section.slug}`,
-                    title: `Blog Section`,
-                    subtitle: `Beautiful ${categoryName} blogs`,
-                    images: []
-                  });
-                }
-                
-                // Add the new image to the images array of the last content object
-                contentDataArray[contentDataArray.length - 1].images.push({
-                  url: imageUrl,
-                  title: `Beautiful ${categoryName} image ${i + 1}`,
-                  content: contentResponseData.candidates[0].content.parts[0].text,
-                  alt: `Beautiful ${categoryName} image ${i + 1}`,
-                  width: 1024,
-                  height: 1024
-                });
-
-                console.log(contentDataArray, 'contentDataArray');
-              }
-            }
-
-             const imageResponse = await fetch('https://api.deepinfra.com/v1/openai/images/generations', {
+             const imageResponse = await fetch('https://airbrush-admin-backend.onrender.com/api/images/generate-image', {
                  method: 'POST',
                 headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer ofZxkV2E7aTDvbirZCB16zJHSbbfOxdN'
-              },
-              body: JSON.stringify({
-                    prompt: section.promptTemplate,
-                size: "1024x1024",
-                model: "black-forest-labs/FLUX-1-dev",
-                n: 1,
-                response_format: "b64_json"
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                  prompt: section.promptTemplate
                 })
               });
 
@@ -1081,7 +1118,7 @@
               }
 
               const imageData = await imageResponse.json();
-              const base64Data = imageData.data[0].b64_json;
+              const base64Data = imageData.imageData;
               const byteCharacters = atob(base64Data);
               const byteArrays = [];
 
