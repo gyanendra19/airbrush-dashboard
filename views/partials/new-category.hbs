@@ -896,11 +896,11 @@
               // Generate all prompts in parallel
               const promptPromises = Array(15).fill().map(() => 
                 fetch('https://airbrush-admin-backend.onrender.com/api/images/generate-prompt', {
-                  method: 'POST',
-                  headers: {
+              method: 'POST',
+              headers: {
                     'Content-Type': 'application/json'
-                  },
-                  body: JSON.stringify({
+              },
+              body: JSON.stringify({
                     categoryName: categoryName,
                     type: 'prompt'
                   })
@@ -945,15 +945,15 @@
               // Process all images
               const processedImages = await Promise.all(imageResults.map(async (data, index) => {
                 const base64Data = data.imageData;
-                const byteCharacters = atob(base64Data);
-                const byteArrays = [];
-                
-                for (let i = 0; i < byteCharacters.length; i++) {
-                  byteArrays.push(byteCharacters.charCodeAt(i));
-                }
-                
-                const byteArray = new Uint8Array(byteArrays);
-                const blob = new Blob([byteArray], { type: 'image/png' });
+              const byteCharacters = atob(base64Data);
+              const byteArrays = [];
+              
+              for (let i = 0; i < byteCharacters.length; i++) {
+                byteArrays.push(byteCharacters.charCodeAt(i));
+              }
+              
+              const byteArray = new Uint8Array(byteArrays);
+              const blob = new Blob([byteArray], { type: 'image/png' });
                 const file = new File([blob], `ai-generated-image-${index + 1}.png`, { type: 'image/png' });
                 
                 const formData = new FormData();

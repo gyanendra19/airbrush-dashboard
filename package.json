@@ -5,8 +5,8 @@
   "main": "server.js",
   "scripts": {
     "dev": "nodemon server.js",
-    "start": "pm2-runtime start ecosystem.config.js",
-    "build": "npm install && pm2 install pm2-logrotate",
+    "build": "npm install",
+    "start": "pm2-runtime start server.js --name server",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
