@@ -175,8 +175,15 @@ async function initializeDynamicRoutes(app) {
   }
 }
 
-MongoClient.connect(connectionString, async (err, client) => {
-  if (err) return console.error(err);
+MongoClient.connect(connectionString, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  serverSelectionTimeoutMS: 5000
+}, async (err, client) => {
+  if (err) {
+    console.error("MongoDB Connection Error:", err);
+    process.exit(1);
+  }
   console.log("Connected to Database");
 
   const db = client.db("ai4chat");
@@ -792,8 +799,10 @@ let server;
 
 function startServer() {
   const PORT = process.env.PORT || 8000;
-  server = app.listen(PORT, function () {
+  server = app.listen(PORT, '0.0.0.0', function () {
     console.log(`Server listening on port ${PORT}...`);
+  }).on('error', function(err) {
+    console.error('Server failed to start:', err);
   });
 }
 
@@ -839,20 +848,28 @@ module.exports = { updateRoutes };
 
 startServer();
 
-// Global Unhandled Rejection Handler
-process.on('unhandledRejection', (reason, promise) => {
-  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
-  // Graceful shutdown
-  server.close(() => {
+// Error handling for uncaught exceptions
+process.on('uncaughtException', (error) => {
+  console.error('Uncaught Exception:', error);
+  if (server) {
+    server.close(() => {
+      console.log('Server closed due to uncaught exception');
+      process.exit(1);
+    });
+  } else {
     process.exit(1);
-  });
+  }
 });
 
-// Global Uncaught Exception Handler
-process.on('uncaughtException', (error) => {
-  console.error('Uncaught Exception thrown:', error);
-  // Graceful shutdown
-  server.close(() => {
+// Error handling for unhandled promise rejections
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+  if (server) {
+    server.close(() => {
+      console.log('Server closed due to unhandled rejection');
+      process.exit(1);
+    });
+  } else {
     process.exit(1);
-  });
+  }
 });
