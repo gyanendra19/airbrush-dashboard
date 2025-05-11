@@ -16,15 +16,22 @@ const pm2 = require('pm2');
 app.set("view engine", "hbs");
 app.set("views", path.join(__dirname, "views"));
 
-// Serve static files
+// Serve static files - updated configuration
 app.use(express.static(path.join(__dirname, "public")));
 app.use("/js", express.static(path.join(__dirname, "public/js")));
 app.use("/css", express.static(path.join(__dirname, "public/css")));
 app.use("/images", express.static(path.join(__dirname, "public/images")));
-app.use(
-  "/generated-pages",
-  express.static(path.join(__dirname, "generated-pages"))
-);
+app.use("/fonts", express.static(path.join(__dirname, "public/fonts")));
+app.use("/videos", express.static(path.join(__dirname, "public/videos")));
+app.use("/gallery", express.static(path.join(__dirname, "public/gallery")));
+
+// Set cache headers for static files
+app.use((req, res, next) => {
+  if (req.url.match(/\.(css|js|jpg|jpeg|png|gif|ico)$/)) {
+    res.setHeader('Cache-Control', 'public, max-age=31536000'); // 1 year
+  }
+  next();
+});
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json({ limit: "50mb" }));
