@@ -801,51 +801,51 @@ app.get('/images-gallery', (req, res) => {
   }
 
   // Modify your route update function
-  async function updateRoutes() {
-    try {
-      await initializeDynamicRoutes(app);
-      await restartServer();
-      return { success: true, message: 'Routes updated and server restarted' };
-    } catch (error) {
-      console.error('Error updating routes:', error);
-      return { success: false, message: error.message };
-    }
-  }
+  // async function updateRoutes() {
+  //   try {
+  //     await initializeDynamicRoutes(app);
+  //     await restartServer();
+  //     return { success: true, message: 'Routes updated and server restarted' };
+  //   } catch (error) {
+  //     console.error('Error updating routes:', error);
+  //     return { success: false, message: error.message };
+  //   }
+  // }
 
-  // Function to restart the server using PM2
-  async function restartServer() {
-    console.log('Restarting server');
-    return new Promise((resolve, reject) => {
-      pm2.connect((err) => {
-        if (err) {
-          console.error(err);
-          reject(err);
-          return;
-        }
+  // // Function to restart the server using PM2
+  // async function restartServer() {
+  //   console.log('Restarting server');
+  //   return new Promise((resolve, reject) => {
+  //     pm2.connect((err) => {
+  //       if (err) {
+  //         console.error(err);
+  //         reject(err);
+  //         return;
+  //       }
 
-        pm2.restart('server', (err) => {
-          if (err) {
-            console.error(err);
-            reject(err);
-          } else {
-            console.log('Server restarted successfully');
-            resolve();
-          }
-          pm2.disconnect();
-        });
-      });
-    });
-  }
+  //       pm2.restart('server', (err) => {
+  //         if (err) {
+  //           console.error(err);
+  //           reject(err);
+  //         } else {
+  //           console.log('Server restarted successfully');
+  //           resolve();
+  //         }
+  //         pm2.disconnect();
+  //       });
+  //     });
+  //   });
+  // }
 
-  // Global error handler - should be last
-  app.use((err, req, res, next) => {
-    console.error('Server error:', err);
-    res.status(500).render('error', {
-      layout: "main",
-      title: "Error",
-      error: process.env.NODE_ENV === 'production' ? 'An error occurred' : err.message
-    });
-  });
+  // // Global error handler - should be last
+  // app.use((err, req, res, next) => {
+  //   console.error('Server error:', err);
+  //   res.status(500).render('error', {
+  //     layout: "main",
+  //     title: "Error",
+  //     error: process.env.NODE_ENV === 'production' ? 'An error occurred' : err.message
+  //   });
+  // });
 
   // 404 handler - should be after all routes
   app.use((req, res) => {
