@@ -78,181 +78,45 @@ const staticOptions = {
   }
 };
 
-// Serve static files - try multiple middleware approaches
+// Serve static files before route handlers
 app.use(express.static(publicPath, staticOptions));
 app.use(express.static(path.join(process.cwd(), 'public'), staticOptions));
 
-// Add specific routes for common static file paths
-app.get('*.css', (req, res, next) => {
-  const cssPath = path.join(publicPath, req.path);
-  console.log('CSS file request:', {
-    requestPath: req.path,
-    fullPath: cssPath,
-    exists: fs.existsSync(cssPath)
-  });
-  next();
-});
-
-app.get('*.js', (req, res, next) => {
-  const jsPath = path.join(publicPath, req.path);
-  console.log('JS file request:', {
-    requestPath: req.path,
-    fullPath: jsPath,
-    exists: fs.existsSync(jsPath)
-  });
-  next();
-});
-
-// Error handling specifically for static files
-app.use((err, req, res, next) => {
-  if (err.code === 'ENOENT') {
-    console.error('Static file not found:', {
-      url: req.url,
-      path: req.path,
-      error: err.message
-    });
-    return res.status(404).send('File not found');
-  }
-  
-  if (err.code === 'EACCES') {
-    console.error('Permission denied accessing static file:', {
-      url: req.url,
-      path: req.path,
-      error: err.message
-    });
-    return res.status(403).send('Permission denied');
-  }
-  
-  console.error('Static file error:', {
-    url: req.url,
-    path: req.path,
-    error: err.message
-  });
-  next(err);
-});
-
-// Middleware to log all requests
-app.use((req, res, next) => {
-  console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
-  next();
-});
-
-// Custom static file serving middleware
-const serveStaticCustom = (urlPath, dirPath) => {
-  return (req, res, next) => {
-    const requestedPath = req.path;
-    const filePath = path.join(dirPath, requestedPath);
-    const absoluteFilePath = path.resolve(filePath);
-    
-    console.log('Static file request details:');
-    console.log('- Requested URL path:', requestedPath);
-    console.log('- Directory path:', dirPath);
-    console.log('- Attempted file path:', filePath);
-    console.log('- Absolute file path:', absoluteFilePath);
-    
-    // Check if file exists and is accessible
-    try {
-      const stats = fs.statSync(filePath);
-      if (!stats.isFile()) {
-        console.log('Path exists but is not a file:', filePath);
-        return next();
-      }
-      
-      // Check file permissions
-      fs.access(filePath, fs.constants.R_OK, (err) => {
-        if (err) {
-          console.log('File exists but is not readable:', filePath);
-          return next(err);
-        }
-        
-        // Serve the file with appropriate headers
-        res.sendFile(absoluteFilePath, {
-          headers: {
-            'Content-Type': getMimeType(filePath),
-            'Cache-Control': 'public, max-age=31536000'
-          }
-        }, (err) => {
-          if (err) {
-            console.error('Error serving file:', err);
-            next(err);
-          } else {
-            console.log('Successfully served file:', filePath);
-          }
-        });
-      });
-    } catch (err) {
-      if (err.code === 'ENOENT') {
-        console.log('File not found:', filePath);
-        // Try serving from public directory as fallback
-        const publicFilePath = path.join(publicPath, requestedPath);
-        console.log('Trying public directory fallback:', publicFilePath);
-        if (fs.existsSync(publicFilePath)) {
-          return res.sendFile(publicFilePath);
-        }
-      }
-      next();
-    }
-  };
-};
-
-// Helper function to get MIME type
-function getMimeType(filePath) {
-  const ext = path.extname(filePath).toLowerCase();
-  const mimeTypes = {
-    '.html': 'text/html',
-    '.js': 'application/javascript',
-    '.css': 'text/css',
-    '.json': 'application/json',
-    '.png': 'image/png',
-    '.jpg': 'image/jpeg',
-    '.gif': 'image/gif',
-    '.svg': 'image/svg+xml',
-    '.wav': 'audio/wav',
-    '.mp4': 'video/mp4',
-    '.woff': 'application/font-woff',
-    '.ttf': 'application/font-ttf',
-    '.eot': 'application/vnd.ms-fontobject',
-    '.otf': 'application/font-otf',
-    '.wasm': 'application/wasm'
-  };
-  return mimeTypes[ext] || 'application/octet-stream';
-}
-
-// Serve static files with custom middleware
-app.use(express.static(publicPath, staticOptions));
-app.use('/css', serveStaticCustom('/css', path.join(publicPath, 'css')));
-app.use('/js', serveStaticCustom('/js', path.join(publicPath, 'js')));
-app.use('/images', serveStaticCustom('/images', path.join(publicPath, 'images')));
-app.use('/fonts', serveStaticCustom('/fonts', path.join(publicPath, 'fonts')));
-app.use('/videos', serveStaticCustom('/videos', path.join(publicPath, 'videos')));
-app.use('/gallery', serveStaticCustom('/gallery', path.join(publicPath, 'gallery')));
-
-// Error handling middleware for static files
-app.use((err, req, res, next) => {
-  console.error('Static file error details:');
-  console.error('- URL:', req.url);
-  console.error('- Method:', req.method);
-  console.error('- Path:', req.path);
-  console.error('- Error:', err);
-  
-  if (err.code === 'ENOENT') {
-    console.log('File not found:', req.path);
-    res.status(404).send('File not found');
-  } else {
-    console.error('Server error:', err);
-    res.status(500).send('Error serving static file');
-  }
-});
-
-// Handle 404 errors
-app.use((req, res) => {
-  console.log('404 Not Found:', req.url);
-  res.status(404).send('File not found');
-});
-
+// Parse request bodies
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json({ limit: "50mb" }));
 app.use(cookieParser());
+
+// Root route handler - should be after static middleware but before 404 handler
+app.get("/", (req, res) => {
+  console.log('Handling root route');
+  res.render("index", {
+    layout: "main",
+    title: "Airbrush Dashboard"
+  });
+});
+
+// Other route handlers
+app.get("/pricing", (req, res) => {
+  res.render("pricing", {
+    layout: "main",
+    title: "Pricing - Airbrush Dashboard"
+  });
+});
+
+app.get("/404", (req, res) => {
+  res.render("404", {
+    layout: "main",
+    title: "404 - Page Not Found"
+  });
+});
+
+app.get("/faq", (req, res) => {
+  res.render("faq", {
+    layout: "main",
+    title: "FAQ - Airbrush Dashboard"
+  });
+});
 
 // Cache configuration
 const routeCache = {
@@ -526,51 +390,6 @@ MongoClient.connect(connectionString, {
     }
   }
 
-  app.get("/pricing", (req, res) => {
-    res.render("pricing");
-  });
-
-  app.get("/", (req, res) => {
-    res.render("index");
-  });
-
-  // app.get("/3d-image", (req, res) => {
-  //   // Get the 3D category ID - this would ideally come from your database or API
-  //   // We're hardcoding it here as a fallback
-  //   const categoryId = '6804931c39cff059c0655fd6'; // 3D category ID
-  //   res.render("3d-image", {
-  //     categoryId: categoryId,
-  //     // Add script tag to expose category ID to client-side JavaScript
-  //     categoryScript: `<script>
-  //       window.airbrush3dImage = "${categoryId}";
-  //       console.log("Category ID for 3D:", window.airbrush3dImage);
-  //     </script>`
-  //   });
-  // });
-
-  // app.get("/ghibli-image", (req, res) => {
-  //   // Get the Ghibli category ID - this would ideally come from your database or API
-  //   // We're hardcoding it here as a fallback
-  //   const categoryId = '68054404386a5fc127d44b4a'; // Ghibli category ID
-  //   res.render("ghibli", {
-  //     categoryId: categoryId,
-  //     // Add script tag to expose category ID to client-side JavaScript
-  //     categoryScript: `<script>
-  //       window.airbrushghibli = "${categoryId}";
-  //       console.log("Category ID for Ghibli:", window.airbrushghibli);
-  //     </script>`
-  //   });
-  // });
-
-
-  app.get("/404", (req, res) => {
-    res.render("404");
-  });
-
-  app.get("/faq", (req, res) => {
-    res.render("faq");
-  });
-
   app.get("/free-tool", (req, res) => {
     res.render("free-tool");
   });
@@ -585,10 +404,6 @@ MongoClient.connect(connectionString, {
 
   app.get("/terms-of-service", (req, res) => {
     res.render("terms-of-service");
-  });
-
-  app.get("/lifetime-deal", (req, res) => {
-    res.render("lifetime-deal");
   });
 
   app.get("/blog", async (req, res) => {
