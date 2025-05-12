@@ -931,7 +931,7 @@
                   },
                   body: JSON.stringify({
                     prompt: promptText
-                  })
+              })
                 }).then(res => {
                   if (!res.ok) throw new Error('Image generation failed');
                   return res.json();

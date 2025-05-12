@@ -354,17 +354,6 @@
             if (!updateResponse.ok) {
               throw new Error(`Failed with id endpoint: ${responseText}`);
             }
-
-          try {
-          const result = await updateRoutes();
-          if (result.success) {
-            console.log('Routes updated successfully:', result.message);
-          } else {
-            console.warn('Routes update warning:', result.message);
-          }
-            } catch (error) {
-              console.warn('Routes update warning:', error);
-            }
           } catch (idEndpointError) {
             console.warn('First endpoint failed:', idEndpointError.message);
             

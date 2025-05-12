@@ -16,19 +16,48 @@ const pm2 = require('pm2');
 app.set("view engine", "hbs");
 app.set("views", path.join(__dirname, "views"));
 
-// Serve static files - updated configuration
-app.use(express.static(path.join(__dirname, "public")));
-app.use("/js", express.static(path.join(__dirname, "public/js")));
-app.use("/css", express.static(path.join(__dirname, "public/css")));
-app.use("/images", express.static(path.join(__dirname, "public/images")));
-app.use("/fonts", express.static(path.join(__dirname, "public/fonts")));
-app.use("/videos", express.static(path.join(__dirname, "public/videos")));
-app.use("/gallery", express.static(path.join(__dirname, "public/gallery")));
+// Explicitly set MIME types for common static files
+express.static.mime.define({'text/css': ['css']});
+express.static.mime.define({'application/javascript': ['js']});
+express.static.mime.define({'application/javascript': ['mjs']});  // For ES modules
+express.static.mime.define({'image/jpeg': ['jpg', 'jpeg']});
+express.static.mime.define({'image/png': ['png']});
+express.static.mime.define({'image/gif': ['gif']});
 
-// Set cache headers for static files
-app.use((req, res, next) => {
-  if (req.url.match(/\.(css|js|jpg|jpeg|png|gif|ico)$/)) {
+// Serve static files with proper MIME types
+const staticOptions = {
+  setHeaders: (res, path) => {
+    // Set proper MIME types for different file types
+    if (path.endsWith('.css')) {
+      res.setHeader('Content-Type', 'text/css');
+    }
+    if (path.endsWith('.js')) {
+      // Check if it's a module
+      if (path.includes('.module.js') || path.endsWith('.mjs')) {
+        res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
+      } else {
+        res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
+      }
+    }
+    // Set cache headers
     res.setHeader('Cache-Control', 'public, max-age=31536000'); // 1 year
+  }
+};
+
+// Serve static files - updated configuration
+app.use(express.static(path.join(__dirname, "public"), staticOptions));
+app.use("/js", express.static(path.join(__dirname, "public/js"), staticOptions));
+app.use("/css", express.static(path.join(__dirname, "public/css"), staticOptions));
+app.use("/images", express.static(path.join(__dirname, "public/images"), staticOptions));
+app.use("/fonts", express.static(path.join(__dirname, "public/fonts"), staticOptions));
+app.use("/videos", express.static(path.join(__dirname, "public/videos"), staticOptions));
+app.use("/gallery", express.static(path.join(__dirname, "public/gallery"), staticOptions));
+
+// Error handling middleware for static files
+app.use((err, req, res, next) => {
+  if (err) {
+    console.error('Static file error:', err);
+    res.status(err.status || 500).send('Error serving static file');
   }
   next();
 });
