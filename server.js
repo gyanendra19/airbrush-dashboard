@@ -36,60 +36,23 @@ express.static.mime.define({'image/gif': ['gif']});
 
 // Get absolute path to public directory
 const publicPath = path.resolve(__dirname, "public");
-console.log('Public directory path:', publicPath);
+console.log('Public directory absolute path:', publicPath);
 
-// Ensure public directory and subdirectories exist
-const requiredDirs = ['css', 'js', 'images', 'fonts', 'videos', 'gallery'].map(dir => path.join(publicPath, dir));
-
-// Create directories if they don't exist and check permissions
-requiredDirs.forEach(dir => {
-  try {
-    if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir, { recursive: true });
-      console.log(`Created directory: ${dir}`);
-    }
-    // Check directory permissions
-    const stats = fs.statSync(dir);
-    console.log(`Directory ${dir} permissions:`, {
-      readable: Boolean(stats.mode & fs.constants.R_OK),
-      writable: Boolean(stats.mode & fs.constants.W_OK),
-      executable: Boolean(stats.mode & fs.constants.X_OK)
-    });
-  } catch (error) {
-    console.error(`Error with directory ${dir}:`, error);
-  }
-});
-
-// Verify specific files exist
-const cssFile = path.join(publicPath, 'css', 'dashboard.css');
+// Verify public directory exists and is accessible
 try {
-  const stats = fs.statSync(cssFile);
-  console.log('dashboard.css exists:', stats.isFile());
-  console.log('dashboard.css size:', stats.size);
-  // Read first few bytes to verify file is accessible
-  const fd = fs.openSync(cssFile, 'r');
-  const buffer = Buffer.alloc(64);
-  fs.readSync(fd, buffer, 0, 64, 0);
-  fs.closeSync(fd);
-  console.log('dashboard.css is readable');
+  const publicStats = fs.statSync(publicPath);
+  console.log('Public directory exists:', publicStats.isDirectory());
+  console.log('Public directory permissions:', {
+    readable: Boolean(publicStats.mode & fs.constants.R_OK),
+    writable: Boolean(publicStats.mode & fs.constants.W_OK),
+    executable: Boolean(publicStats.mode & fs.constants.X_OK)
+  });
 } catch (error) {
-  console.error('Error accessing dashboard.css:', error);
+  console.error('Error accessing public directory:', error);
 }
 
-// Serve static files with proper MIME types
+// Configure static file serving options
 const staticOptions = {
-  setHeaders: (res, path) => {
-    console.log('Serving static file:', path);
-    // Set proper MIME types for different file types
-    if (path.endsWith('.css')) {
-      res.setHeader('Content-Type', 'text/css');
-    }
-    if (path.endsWith('.js')) {
-      res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
-    }
-    // Set cache headers
-    res.setHeader('Cache-Control', 'public, max-age=31536000'); // 1 year
-  },
   dotfiles: 'ignore',
   etag: true,
   extensions: false,
@@ -97,9 +60,76 @@ const staticOptions = {
   immutable: true,
   index: false,
   lastModified: true,
-  maxAge: 31536000000, // in milliseconds
-  redirect: true
+  maxAge: '1y',
+  redirect: true,
+  setHeaders: (res, path, stat) => {
+    // Set proper security headers
+    res.set('X-Content-Type-Options', 'nosniff');
+    
+    // Set proper MIME types
+    if (path.endsWith('.css')) {
+      res.set('Content-Type', 'text/css; charset=utf-8');
+    } else if (path.endsWith('.js')) {
+      res.set('Content-Type', 'application/javascript; charset=utf-8');
+    }
+    
+    // Set caching headers
+    res.set('Cache-Control', 'public, max-age=31536000, immutable');
+  }
 };
+
+// Serve static files - try multiple middleware approaches
+app.use(express.static(publicPath, staticOptions));
+app.use(express.static(path.join(process.cwd(), 'public'), staticOptions));
+
+// Add specific routes for common static file paths
+app.get('*.css', (req, res, next) => {
+  const cssPath = path.join(publicPath, req.path);
+  console.log('CSS file request:', {
+    requestPath: req.path,
+    fullPath: cssPath,
+    exists: fs.existsSync(cssPath)
+  });
+  next();
+});
+
+app.get('*.js', (req, res, next) => {
+  const jsPath = path.join(publicPath, req.path);
+  console.log('JS file request:', {
+    requestPath: req.path,
+    fullPath: jsPath,
+    exists: fs.existsSync(jsPath)
+  });
+  next();
+});
+
+// Error handling specifically for static files
+app.use((err, req, res, next) => {
+  if (err.code === 'ENOENT') {
+    console.error('Static file not found:', {
+      url: req.url,
+      path: req.path,
+      error: err.message
+    });
+    return res.status(404).send('File not found');
+  }
+  
+  if (err.code === 'EACCES') {
+    console.error('Permission denied accessing static file:', {
+      url: req.url,
+      path: req.path,
+      error: err.message
+    });
+    return res.status(403).send('Permission denied');
+  }
+  
+  console.error('Static file error:', {
+    url: req.url,
+    path: req.path,
+    error: err.message
+  });
+  next(err);
+});
 
 // Middleware to log all requests
 app.use((req, res, next) => {
