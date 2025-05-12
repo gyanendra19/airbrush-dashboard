@@ -24,6 +24,9 @@ express.static.mime.define({'image/jpeg': ['jpg', 'jpeg']});
 express.static.mime.define({'image/png': ['png']});
 express.static.mime.define({'image/gif': ['gif']});
 
+// Get absolute path to public directory
+const publicPath = path.join(__dirname, "public");
+
 // Serve static files with proper MIME types
 const staticOptions = {
   setHeaders: (res, path) => {
@@ -41,22 +44,33 @@ const staticOptions = {
     }
     // Set cache headers
     res.setHeader('Cache-Control', 'public, max-age=31536000'); // 1 year
-  }
+  },
+  fallthrough: false // Return 404 if file not found
 };
 
-// Serve static files - updated configuration
-app.use(express.static(path.join(__dirname, "public"), staticOptions));
-app.use("/js", express.static(path.join(__dirname, "public/js"), staticOptions));
-app.use("/css", express.static(path.join(__dirname, "public/css"), staticOptions));
-app.use("/images", express.static(path.join(__dirname, "public/images"), staticOptions));
-app.use("/fonts", express.static(path.join(__dirname, "public/fonts"), staticOptions));
-app.use("/videos", express.static(path.join(__dirname, "public/videos"), staticOptions));
-app.use("/gallery", express.static(path.join(__dirname, "public/gallery"), staticOptions));
+// Serve static files - updated configuration with absolute paths
+app.use(express.static(publicPath, staticOptions));
+app.use("/js", express.static(path.join(publicPath, "js"), staticOptions));
+app.use("/css", express.static(path.join(publicPath, "css"), staticOptions));
+app.use("/images", express.static(path.join(publicPath, "images"), staticOptions));
+app.use("/fonts", express.static(path.join(publicPath, "fonts"), staticOptions));
+app.use("/videos", express.static(path.join(publicPath, "videos"), staticOptions));
+app.use("/gallery", express.static(path.join(publicPath, "gallery"), staticOptions));
+
+// Add logging for static file requests in production
+if (process.env.NODE_ENV === 'production') {
+  app.use((req, res, next) => {
+    console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
+    next();
+  });
+}
 
 // Error handling middleware for static files
 app.use((err, req, res, next) => {
   if (err) {
     console.error('Static file error:', err);
+    console.error('Request URL:', req.url);
+    console.error('Request path:', req.path);
     res.status(err.status || 500).send('Error serving static file');
   }
   next();
