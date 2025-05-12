@@ -87,7 +87,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json({ limit: "50mb" }));
 app.use(cookieParser());
 
-// Static routes that don't need database access
+// Root route handler - should be after static middleware but before 404 handler
 app.get("/", (req, res) => {
   console.log('Handling root route');
   res.render("index", {
@@ -96,6 +96,7 @@ app.get("/", (req, res) => {
   });
 });
 
+// Other route handlers
 app.get("/pricing", (req, res) => {
   res.render("pricing", {
     layout: "main",
@@ -114,41 +115,6 @@ app.get("/faq", (req, res) => {
   res.render("faq", {
     layout: "main",
     title: "FAQ - Airbrush Dashboard"
-  });
-});
-
-app.get("/free-tool", (req, res) => {
-  res.render("free-tool", {
-    layout: "main",
-    title: "Free Tool - Airbrush Dashboard"
-  });
-});
-
-app.get("/free-tool-2", (req, res) => {
-  res.render("free-tool-2", {
-    layout: "main",
-    title: "Free Tool 2 - Airbrush Dashboard"
-  });
-});
-
-app.get("/privacy-policy", (req, res) => {
-  res.render("privacy-policy", {
-    layout: "main",
-    title: "Privacy Policy - Airbrush Dashboard"
-  });
-});
-
-app.get("/terms-of-service", (req, res) => {
-  res.render("terms-of-service", {
-    layout: "main",
-    title: "Terms of Service - Airbrush Dashboard"
-  });
-});
-
-app.get("/lifetime-deal", (req, res) => {
-  res.render("lifetime-deal", {
-    layout: "main",
-    title: "Lifetime Deal - Airbrush Dashboard"
   });
 });
 
@@ -302,12 +268,15 @@ async function initializeDynamicRoutes(app) {
   }
 }
 
-// MongoDB connection and database-dependent routes
 MongoClient.connect(connectionString, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
   serverSelectionTimeoutMS: 5000
-}).then(async (client) => {
+}, async (err, client) => {
+  if (err) {
+    console.error("MongoDB Connection Error:", err);
+    process.exit(1);
+  }
   console.log("Connected to Database");
 
   const db = client.db("ai4chat");
@@ -323,81 +292,10 @@ MongoClient.connect(connectionString, {
   // Initialize dynamic routes after database connection
   await initializeDynamicRoutes(app);
 
-  // Database-dependent routes
   app.post("/generate-response", async (req, res) => {
-    try {
     const conversation = req.body.messages;
     const assistantMessage = await aiChat(conversation);
     res.json({ message: marked(assistantMessage) });
-    } catch (error) {
-      console.error('Error generating response:', error);
-      res.status(500).json({ error: 'Failed to generate response' });
-    }
-  });
-
-  app.get("/blog", async (req, res) => {
-    try {
-      const articles = await blogCollection.find({}).toArray();
-      articles.forEach((article) => {
-        article.date = article.date.toISOString().split("T")[0];
-      });
-      res.render("blog", { 
-        layout: "main",
-        title: "Blog - Airbrush Dashboard",
-        articles: [...articles].reverse() 
-      });
-    } catch (error) {
-      console.error("Error fetching blog articles:", error);
-      res.status(500).render("error", {
-        layout: "main",
-        title: "Error",
-        error: "Failed to fetch blog articles"
-      });
-    }
-  });
-
-  app.get("/pages/:url", async (req, res) => {
-    try {
-      const generatorPage = await generatorCollection.findOne({
-        url: req.params.url,
-      });
-      if (!generatorPage) {
-        return res.redirect("/404");
-      }
-      res.render("generator-page", {
-        layout: "main",
-        title: generatorPage.title || "Generator Page",
-        generatorPage: generatorPage,
-      });
-    } catch (error) {
-      console.error("Error fetching generator page:", error);
-      res.status(500).render("error", {
-        layout: "main",
-        title: "Error",
-        error: "Failed to fetch generator page"
-      });
-    }
-  });
-
-  app.get("/sitemap.xml", async (req, res) => {
-    try {
-      const pages = await rootCollection.find({}).toArray();
-      const articles = await blogCollection.find({}).toArray();
-      const gpts = await gptCollection.find({}).toArray();
-      const characters = await characterCollection.find({}).toArray();
-      const generatorPage = await generatorCollection.find({}).toArray();
-      res.type("application/xml");
-      res.render("sitemap", {
-        pages,
-        articles,
-        gpts,
-        characters,
-        generatorPage,
-      });
-    } catch (error) {
-      console.error("Error generating sitemap:", error);
-      res.status(500).send("Error generating sitemap");
-    }
   });
 
   function getTotalWordCount(conversation) {
@@ -492,20 +390,87 @@ MongoClient.connect(connectionString, {
     }
   }
 
-  app.get("/blog/:url", (req, res) => {
-    const newUrl = `/${req.params.url}`;
-    res.redirect(301, newUrl);
+  app.get("/free-tool", (req, res) => {
+    res.render("free-tool");
   });
 
-  // Add route update endpoint
-  app.post("/api/update-routes", async (req, res) => {
+  app.get("/free-tool-2", (req, res) => {
+    res.render("free-tool-2");
+  });
+
+  app.get("/privacy-policy", (req, res) => {
+    res.render("privacy-policy");
+  });
+
+  app.get("/terms-of-service", (req, res) => {
+    res.render("terms-of-service");
+  });
+
+  app.get("/blog", async (req, res) => {
     try {
-      const result = await updateRoutes();
-      res.json(result);
+      const articles = await blogCollection.find({}).toArray();
+      articles.forEach((article) => {
+        article.date = article.date.toISOString().split("T")[0];
+      });
+      res.render("blog", { articles: [...articles].reverse() });
     } catch (error) {
-      console.error('Error updating routes:', error);
-      res.status(500).json({ success: false, message: error.message });
+      console.error("Error fetching blog articles:", error);
+      res.redirect("/error-page");
     }
+  });
+
+  app.get("/pages/:url", async (req, res) => {
+    try {
+      const generatorPage = await generatorCollection.findOne({
+        url: req.params.url,
+      });
+      if (!generatorPage) {
+        return res.redirect("/404");
+      }
+      res.render("generator-page", {
+        generatorPage: generatorPage,
+      });
+    } catch (error) {
+      console.error("Error fetching blog article or related articles:", error);
+      res.redirect("/error-page");
+    }
+  });
+
+  app.get("/blog/:title/:id", async (req, res) => {
+    try {
+      res.render("blog", {
+        layout: "main",
+        section: { title: "Blog", description: "Blog" },
+      });
+    } catch (error) {
+      console.error("Error fetching blog article or related articles:", error);
+      res.redirect("/error-page");
+    }
+  });
+
+  app.get("/sitemap.xml", async (req, res) => {
+    try {
+      const pages = await rootCollection.find({}).toArray();
+      const articles = await blogCollection.find({}).toArray();
+      const gpts = await gptCollection.find({}).toArray();
+      const characters = await characterCollection.find({}).toArray();
+      const generatorPage = await generatorCollection.find({}).toArray();
+      res.type("application/xml");
+      res.render("sitemap", {
+        pages,
+        articles,
+        gpts,
+        characters,
+        generatorPage,
+      });
+    } catch (error) {
+      console.error("Error fetching pages:", error);
+      res.status(500).send("Internal Server Error");
+    }
+  });
+
+  app.get("/bulk-create-image-pages", (req, res) => {
+    res.render("bulk-create-image-pages");
   });
 
   // Authentication middleware
@@ -607,6 +572,7 @@ app.get('/images-gallery', (req, res) => {
     section: { title: 'Image Gallery', description: 'Gallery of images' }
   });
 });
+
 
   function slugify(keyword) {
     return keyword
@@ -800,148 +766,154 @@ app.get('/images-gallery', (req, res) => {
     return data;
   }
 
-  // Modify your route update function
-  // async function updateRoutes() {
-  //   try {
-  //     await initializeDynamicRoutes(app);
-  //     await restartServer();
-  //     return { success: true, message: 'Routes updated and server restarted' };
-  //   } catch (error) {
-  //     console.error('Error updating routes:', error);
-  //     return { success: false, message: error.message };
-  //   }
-  // }
-
-  // // Function to restart the server using PM2
-  // async function restartServer() {
-  //   console.log('Restarting server');
-  //   return new Promise((resolve, reject) => {
-  //     pm2.connect((err) => {
-  //       if (err) {
-  //         console.error(err);
-  //         reject(err);
-  //         return;
-  //       }
-
-  //       pm2.restart('server', (err) => {
-  //         if (err) {
-  //           console.error(err);
-  //           reject(err);
-  //         } else {
-  //           console.log('Server restarted successfully');
-  //           resolve();
-  //         }
-  //         pm2.disconnect();
-  //       });
-  //     });
-  //   });
-  // }
-
-  // // Global error handler - should be last
-  // app.use((err, req, res, next) => {
-  //   console.error('Server error:', err);
-  //   res.status(500).render('error', {
-  //     layout: "main",
-  //     title: "Error",
-  //     error: process.env.NODE_ENV === 'production' ? 'An error occurred' : err.message
-  //   });
-  // });
-
-  // 404 handler - should be after all routes
-  app.use((req, res) => {
-    console.log('404 Not Found:', req.url);
-    res.status(404).render('404', {
-      layout: "main",
-      title: "404 - Page Not Found",
-      url: req.url
-    });
+  app.get("/blog/:url", (req, res) => {
+    const newUrl = `/${req.params.url}`;
+    res.redirect(301, newUrl);
   });
 
-  let server;
-
-  function startServer() {
-    const PORT = process.env.PORT || 8000;
-    server = app.listen(PORT, '0.0.0.0', function () {
-      console.log(`Server listening on port ${PORT}...`);
-    }).on('error', function(err) {
-      console.error('Server failed to start:', err);
-    });
-  }
-
-  startServer();
-
-  // Error handling for uncaught exceptions
-  process.on('uncaughtException', (error) => {
-    console.error('Uncaught Exception:', error);
-    if (server) {
-      server.close(() => {
-        console.log('Server closed due to uncaught exception');
-        process.exit(1);
-      });
-    } else {
-      process.exit(1);
-    }
-});
-
-  // Error handling for unhandled promise rejections
-process.on('unhandledRejection', (reason, promise) => {
-  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
-    if (server) {
-  server.close(() => {
-        console.log('Server closed due to unhandled rejection');
-    process.exit(1);
-  });
-    } else {
-    process.exit(1);
-    }
-  });
-}).catch((err) => {
-  console.error("MongoDB Connection Error:", err);
-});
-
-  // Modify your route update function
-  async function updateRoutes() {
+  // Add route update endpoint
+  app.post("/api/update-routes", async (req, res) => {
     try {
-      await initializeDynamicRoutes(app);
-      await restartServer();
-      return { success: true, message: 'Routes updated and server restarted' };
+      const result = await updateRoutes();
+      res.json(result);
     } catch (error) {
       console.error('Error updating routes:', error);
-      return { success: false, message: error.message };
+      res.status(500).json({ success: false, message: error.message });
     }
+  });
+
+  app.all("*", (req, res) => {
+    res.redirect("/404");
+  });
+
+  function ValidateEmail(email) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    // return emailRegex.test(email);
+  }
+});
+
+app.get("/api/image/generate", async (req, res) => {
+  const { prompt, aspect_ratio: aspectRatio } = req.query;
+
+  if (!prompt || !aspectRatio) {
+    return res
+      .status(400)
+      .json({ error: "Missing prompt or aspect_ratio parameter" });
   }
 
-  // Function to restart the server using PM2
-  async function restartServer() {
-    console.log('Restarting server');
-    return new Promise((resolve, reject) => {
-      pm2.connect((err) => {
+  try {
+    const apiUrl = `https://1yjs1yldj7.execute-api.us-east-1.amazonaws.com/default/ai_image?prompt=${encodeURIComponent(
+      prompt
+    )}&aspect_ratio=${aspectRatio}&link=${encodeURIComponent(
+      "writecream.com"
+    )}`;
+    console.log("Requesting:", apiUrl); // Debugging URL
+
+    const response = await fetch(apiUrl);
+
+    if (!response.ok) {
+      // Handle non-200 responses
+      const errorText = await response.text();
+      console.error("API Error:", errorText);
+      return res
+        .status(response.status)
+        .json({ error: "Error from AI image API", details: errorText });
+    }
+
+    const imageDetails = await response.json();
+    console.log("Response from API:", imageDetails);
+
+    if (!imageDetails.image_link) {
+      // Validate the presence of the image link
+      return res
+        .status(500)
+        .json({ error: "No image_link in response", details: imageDetails });
+    }
+
+    res.json(imageDetails);
+  } catch (error) {
+    console.error("Error generating image:", error.message);
+    res
+      .status(500)
+      .json({ error: "Internal Server Error", details: error.message });
+  }
+});
+
+let server;
+
+function startServer() {
+  const PORT = process.env.PORT || 8000;
+  server = app.listen(PORT, '0.0.0.0', function () {
+    console.log(`Server listening on port ${PORT}...`);
+  }).on('error', function(err) {
+    console.error('Server failed to start:', err);
+  });
+}
+
+// Function to restart the server using PM2
+async function restartServer() {
+  console.log('Restarting server');
+  return new Promise((resolve, reject) => {
+    pm2.connect((err) => {
+      if (err) {
+        console.error(err);
+        reject(err);
+        return;
+      }
+
+      pm2.restart('server', (err) => {
         if (err) {
           console.error(err);
           reject(err);
-          return;
+        } else {
+          console.log('Server restarted successfully');
+          resolve();
         }
-
-        pm2.restart('server', (err) => {
-          if (err) {
-            console.error(err);
-            reject(err);
-          } else {
-            console.log('Server restarted successfully');
-            resolve();
-          }
-          pm2.disconnect();
-        });
+        pm2.disconnect();
       });
     });
-  }
-
-  // Global error handler - should be last
-  app.use((err, req, res, next) => {
-    console.error('Server error:', err);
-    res.status(500).render('error', {
-      layout: "main",
-      title: "Error",
-      error: process.env.NODE_ENV === 'production' ? 'An error occurred' : err.message
-    });
   });
+}
+
+// Modify your route update function
+async function updateRoutes() {
+  try {
+    await initializeDynamicRoutes(app);
+    await restartServer();
+    return { success: true, message: 'Routes updated and server restarted' };
+  } catch (error) {
+    console.error('Error updating routes:', error);
+    return { success: false, message: error.message };
+  }
+}
+
+// Export the updateRoutes function
+module.exports = { updateRoutes };
+
+startServer();
+
+// Error handling for uncaught exceptions
+process.on('uncaughtException', (error) => {
+  console.error('Uncaught Exception:', error);
+  if (server) {
+    server.close(() => {
+      console.log('Server closed due to uncaught exception');
+      process.exit(1);
+    });
+  } else {
+    process.exit(1);
+  }
+});
+
+// Error handling for unhandled promise rejections
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+  if (server) {
+    server.close(() => {
+      console.log('Server closed due to unhandled rejection');
+      process.exit(1);
+    });
+  } else {
+    process.exit(1);
+  }
+});
