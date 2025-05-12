@@ -152,86 +152,6 @@ app.get("/lifetime-deal", (req, res) => {
   });
 });
 
-// Function definitions - move these before they are used
-async function updateRoutes() {
-  try {
-    await initializeDynamicRoutes(app);
-    await restartServer();
-    return { success: true, message: 'Routes updated and server restarted' };
-  } catch (error) {
-    console.error('Error updating routes:', error);
-    return { success: false, message: error.message };
-  }
-}
-
-// Function to restart the server using PM2
-async function restartServer() {
-  console.log('Restarting server');
-  return new Promise((resolve, reject) => {
-    pm2.connect((err) => {
-      if (err) {
-        console.error(err);
-        reject(err);
-        return;
-      }
-
-      pm2.restart('server', (err) => {
-        if (err) {
-          console.error(err);
-          reject(err);
-        } else {
-          console.log('Server restarted successfully');
-          resolve();
-        }
-        pm2.disconnect();
-      });
-    });
-  });
-}
-
-// Initialize dynamic routes based on categories
-async function initializeDynamicRoutes(app) {
-  try {
-    const categories = await fetchCategories();
-    
-    // Create a route for each category using its slug
-    categories.forEach(category => {
-      if (category.slug && category.isActive) {
-        console.log(`Creating route for category: /${category.slug}`);
-        app.get(`/${category.slug}`, (req, res) => {
-          res.render('3d-image', { 
-            category: category,
-            categoryId: category._id,
-            layout: 'main',
-            title: `${category.name} - Airbrush Dashboard`
-          });
-        });
-      }
-    });
-    
-    console.log('Dynamic routes initialized successfully');
-  } catch (error) {
-    console.error('Failed to initialize dynamic routes:', error);
-    throw error; // Propagate error up
-  }
-}
-
-// Function to fetch categories from API
-async function fetchCategories() {
-  try {
-    const response = await fetch('https://airbrush-admin-backend.onrender.com/api/categories');
-    if (!response.ok) {
-      throw new Error(`Failed to fetch categories: ${response.status} ${response.statusText}`);
-    }
-    const categories = await response.json();
-    console.log('Fetched categories successfully');
-    return categories;
-  } catch (error) {
-    console.error('Error fetching categories:', error);
-    return [];
-  }
-}
-
 // Cache configuration
 const routeCache = {
   categories: null,
@@ -265,8 +185,9 @@ app.use(async (req, res, next) => {
       routeCache.isRefreshing = true;
       
       try {
-        const result = await updateRoutes();
-        console.log('Routes update result:', result);
+        await initializeDynamicRoutes(app);
+        updateRoutes();
+
         
         // Update cache
         routeCache.lastFetch = now;
@@ -333,6 +254,54 @@ const generatedPagesPath = path.join(__dirname, "views", "generated-pages");
 let sitemapContent = fs.readFileSync(sitemapPath, "utf-8");
 const generatedFiles = fs.readdirSync(generatedPagesPath);
 
+// Function to fetch categories from API
+async function fetchCategories() {
+  try {
+    const response = await fetch('https://airbrush-admin-backend.onrender.com/api/categories');
+    if (!response.ok) {
+      throw new Error(`Failed to fetch categories: ${response.status} ${response.statusText}`);
+    }
+    const categories = await response.json();
+    console.log('Fetched categories');
+    return categories;
+  } catch (error) {
+    console.error('Error fetching categories:', error);
+    return [];
+  }
+}
+
+// Initialize dynamic routes based on categories
+async function initializeDynamicRoutes(app) {
+  try {
+    const categories = await fetchCategories();
+    
+    // Create a route for each category using its slug
+    categories.forEach(category => {
+      if (category.slug && category.isActive) {
+        console.log(`Creating route for category: /${category.slug}`);
+        
+        // Convert slug to camelCase for the window object key
+        // Example: "3d-image" -> "3dImage", "ghibli-style" -> "ghibliStyle"
+        const camelCaseKey = category.slug.replace(/-([a-z])/g, (match, letter) => {
+          return letter.toUpperCase();
+        });
+        
+        app.get(`/${category.slug}`, (req, res) => {
+          // Pass the category data to the template
+          res.render('3d-image', { 
+            category: category,
+            categoryId: category._id,
+          });
+        });
+      }
+    });
+    
+    console.log('Dynamic routes initialized successfully');
+  } catch (error) {
+    console.error('Failed to initialize dynamic routes:', error);
+  }
+}
+
 // MongoDB connection and database-dependent routes
 MongoClient.connect(connectionString, {
   useNewUrlParser: true,
@@ -357,9 +326,9 @@ MongoClient.connect(connectionString, {
   // Database-dependent routes
   app.post("/generate-response", async (req, res) => {
     try {
-      const conversation = req.body.messages;
-      const assistantMessage = await aiChat(conversation);
-      res.json({ message: marked(assistantMessage) });
+    const conversation = req.body.messages;
+    const assistantMessage = await aiChat(conversation);
+    res.json({ message: marked(assistantMessage) });
     } catch (error) {
       console.error('Error generating response:', error);
       res.status(500).json({ error: 'Failed to generate response' });
@@ -831,6 +800,43 @@ app.get('/images-gallery', (req, res) => {
     return data;
   }
 
+  // Modify your route update function
+  async function updateRoutes() {
+    try {
+      await initializeDynamicRoutes(app);
+      await restartServer();
+      return { success: true, message: 'Routes updated and server restarted' };
+    } catch (error) {
+      console.error('Error updating routes:', error);
+      return { success: false, message: error.message };
+    }
+  }
+
+  // Function to restart the server using PM2
+  async function restartServer() {
+    console.log('Restarting server');
+    return new Promise((resolve, reject) => {
+      pm2.connect((err) => {
+        if (err) {
+          console.error(err);
+          reject(err);
+          return;
+        }
+
+        pm2.restart('server', (err) => {
+          if (err) {
+            console.error(err);
+            reject(err);
+          } else {
+            console.log('Server restarted successfully');
+            resolve();
+          }
+          pm2.disconnect();
+        });
+      });
+    });
+  }
+
   // Global error handler - should be last
   app.use((err, req, res, next) => {
     console.error('Server error:', err);
@@ -878,15 +884,15 @@ app.get('/images-gallery', (req, res) => {
   });
 
   // Error handling for unhandled promise rejections
-  process.on('unhandledRejection', (reason, promise) => {
-    console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
     if (server) {
-      server.close(() => {
+  server.close(() => {
         console.log('Server closed due to unhandled rejection');
-        process.exit(1);
-      });
+    process.exit(1);
+  });
     } else {
-      process.exit(1);
+    process.exit(1);
     }
   });
 }).catch((err) => {
