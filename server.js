@@ -25,55 +25,113 @@ express.static.mime.define({'image/png': ['png']});
 express.static.mime.define({'image/gif': ['gif']});
 
 // Get absolute path to public directory
-const publicPath = path.join(__dirname, "public");
+const publicPath = path.resolve(__dirname, "public");
+console.log('Public directory path:', publicPath);
+
+// Ensure public directory and subdirectories exist
+const requiredDirs = ['css', 'js', 'images', 'fonts', 'videos', 'gallery'].map(dir => path.join(publicPath, dir));
+
+// Create directories if they don't exist and check permissions
+requiredDirs.forEach(dir => {
+  try {
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+      console.log(`Created directory: ${dir}`);
+    }
+    // Check directory permissions
+    const stats = fs.statSync(dir);
+    console.log(`Directory ${dir} permissions:`, {
+      readable: Boolean(stats.mode & fs.constants.R_OK),
+      writable: Boolean(stats.mode & fs.constants.W_OK),
+      executable: Boolean(stats.mode & fs.constants.X_OK)
+    });
+  } catch (error) {
+    console.error(`Error with directory ${dir}:`, error);
+  }
+});
+
+// Verify specific files exist
+const cssFile = path.join(publicPath, 'css', 'dashboard.css');
+try {
+  const stats = fs.statSync(cssFile);
+  console.log('dashboard.css exists:', stats.isFile());
+  console.log('dashboard.css size:', stats.size);
+} catch (error) {
+  console.error('Error accessing dashboard.css:', error);
+}
 
 // Serve static files with proper MIME types
 const staticOptions = {
   setHeaders: (res, path) => {
+    console.log('Serving static file:', path);
     // Set proper MIME types for different file types
     if (path.endsWith('.css')) {
       res.setHeader('Content-Type', 'text/css');
     }
     if (path.endsWith('.js')) {
-      // Check if it's a module
-      if (path.includes('.module.js') || path.endsWith('.mjs')) {
-        res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
-      } else {
-        res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
-      }
+      res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
     }
     // Set cache headers
     res.setHeader('Cache-Control', 'public, max-age=31536000'); // 1 year
   },
-  fallthrough: false // Return 404 if file not found
+  fallthrough: false, // Return 404 if file not found
+  index: false // Disable directory indexing
 };
 
-// Serve static files - updated configuration with absolute paths
-app.use(express.static(publicPath, staticOptions));
-app.use("/js", express.static(path.join(publicPath, "js"), staticOptions));
-app.use("/css", express.static(path.join(publicPath, "css"), staticOptions));
-app.use("/images", express.static(path.join(publicPath, "images"), staticOptions));
-app.use("/fonts", express.static(path.join(publicPath, "fonts"), staticOptions));
-app.use("/videos", express.static(path.join(publicPath, "videos"), staticOptions));
-app.use("/gallery", express.static(path.join(publicPath, "gallery"), staticOptions));
+// Middleware to log all requests
+app.use((req, res, next) => {
+  console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
+  next();
+});
 
-// Add logging for static file requests in production
-if (process.env.NODE_ENV === 'production') {
-  app.use((req, res, next) => {
-    console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
-    next();
+// Serve static files - updated configuration with absolute paths and error handling
+app.use(express.static(publicPath, staticOptions));
+
+// Serve specific directories with detailed error handling
+const serveStaticWithLogging = (urlPath, dirPath) => {
+  app.use(urlPath, (req, res, next) => {
+    console.log(`Attempting to serve ${urlPath} file:`, req.url);
+    console.log('Full path:', path.join(dirPath, req.url));
+    
+    // Check if file exists
+    const fullPath = path.join(dirPath, req.url);
+    if (fs.existsSync(fullPath)) {
+      console.log('File exists:', fullPath);
+    } else {
+      console.log('File not found:', fullPath);
+    }
+    
+    express.static(dirPath, staticOptions)(req, res, next);
   });
-}
+};
+
+// Set up static serving for each directory
+serveStaticWithLogging("/js", path.join(publicPath, "js"));
+serveStaticWithLogging("/css", path.join(publicPath, "css"));
+serveStaticWithLogging("/images", path.join(publicPath, "images"));
+serveStaticWithLogging("/fonts", path.join(publicPath, "fonts"));
+serveStaticWithLogging("/videos", path.join(publicPath, "videos"));
+serveStaticWithLogging("/gallery", path.join(publicPath, "gallery"));
 
 // Error handling middleware for static files
 app.use((err, req, res, next) => {
-  if (err) {
-    console.error('Static file error:', err);
-    console.error('Request URL:', req.url);
-    console.error('Request path:', req.path);
-    res.status(err.status || 500).send('Error serving static file');
+  console.error('Static file error details:');
+  console.error('- URL:', req.url);
+  console.error('- Method:', req.method);
+  console.error('- Path:', req.path);
+  console.error('- Error:', err);
+  
+  if (err.code === 'ENOENT') {
+    res.status(404).send('File not found');
+  } else {
+    res.status(500).send('Error serving static file');
   }
-  next();
+});
+
+// Handle 404 errors
+app.use((req, res, next) => {
+  console.log('404 Not Found:', req.url);
+  res.status(404).send('File not found');
 });
 
 app.use(bodyParser.urlencoded({ extended: true }));

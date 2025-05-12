@@ -20,7 +20,11 @@ module.exports = {
       log_date_format: 'YYYY-MM-DD HH:mm:ss',
       combine_logs: true,
       merge_logs: true,
-      force: true // Force the app to be started
+      force: true, // Force the app to be started
+      node_args: ['--no-warnings'], // Suppress Node.js warnings
+      env_production: {
+        NODE_ENV: 'production'
+      }
     }]
   };
   
