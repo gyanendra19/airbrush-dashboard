@@ -96,7 +96,119 @@ app.get("/", (req, res) => {
   });
 });
 
-// Other route handlers
+// Admin routes
+app.get('/admin/login/secret', (req, res) => {
+  res.render('auth', { 
+    layout: false,
+    title: 'Admin Login'
+  });
+});
+
+app.get('/dashboard', checkAuth, (req, res) => {
+  res.render('adminIndex', { 
+    layout: 'adminMain',
+    partialName: 'placeholder',
+    title: 'Admin Dashboard',
+    activeMenu: 'dashboard',
+    section: { 
+      title: 'Dashboard', 
+      description: 'Welcome to your admin dashboard' 
+    }
+  });
+});
+
+app.get('/hero-section', checkAuth, (req, res) => {
+  res.render('adminIndex', {
+    layout: 'adminMain',
+    partialName: 'hero-section',
+    title: 'Hero Section',
+    activeMenu: 'hero-section',
+    section: { 
+      title: 'Hero section', 
+      description: 'Studio Ghibli is amazing!' 
+    }
+  });
+});
+
+app.get('/edit-category', checkAuth, (req, res) => {
+  res.render('adminIndex', {
+    layout: 'adminMain',
+    partialName: 'edit-category',
+    title: 'Edit Category',
+    activeMenu: 'edit-category',
+    section: { 
+      title: 'Edit Category', 
+      description: 'Edit Category' 
+    }
+  });
+});
+
+app.get('/text-to-anything', checkAuth, (req, res) => {
+  res.render('adminIndex', {
+    layout: 'adminMain',
+    partialName: 'text-to-anything',
+    title: 'Text to Anything',
+    activeMenu: 'text-to-anything',
+    section: { 
+      title: 'Text to Anything', 
+      description: 'Text to Anything' 
+    }
+  });
+});
+
+app.get('/blogs', checkAuth, (req, res) => {
+  res.render('adminIndex', {
+    layout: 'adminMain',
+    partialName: 'blogs',
+    title: 'Blogs',
+    activeMenu: 'blogs',
+    section: { 
+      title: 'Blogs', 
+      description: 'Blogs' 
+    }
+  });
+});
+
+app.get('/new-category', checkAuth, (req, res) => {
+  res.render('adminIndex', {
+    layout: 'adminMain',
+    partialName: 'new-category',
+    title: 'New Category',
+    activeMenu: 'new-category',
+    section: { 
+      title: 'New Category', 
+      description: 'New Category' 
+    }
+  });
+});
+
+app.get('/why-use-tool', checkAuth, (req, res) => {
+  res.render('adminIndex', {
+    layout: 'adminMain',
+    partialName: 'why-use-tool',
+    title: 'Why Use Tool',
+    activeMenu: 'why-use-tool',
+    section: { 
+      title: 'Why use the tool', 
+      description: 'Why use the tool section' 
+    }
+  });
+});
+
+app.get('/images-gallery', checkAuth, (req, res) => {
+  res.render('adminIndex', {
+    layout: 'adminMain',
+    partialName: 'image-gallery',
+    title: 'Image Gallery',
+    activeMenu: 'images-gallery',
+    section: { 
+      title: 'Image Gallery', 
+      description: 'Gallery of images' 
+    }
+  });
+});
+
+// Public routes
 app.get("/pricing", (req, res) => {
   res.render("pricing", {
     layout: "main",
@@ -115,6 +227,80 @@ app.get("/faq", (req, res) => {
   res.render("faq", {
     layout: "main",
     title: "FAQ - Airbrush Dashboard"
+  });
+});
+
+app.get("/free-tool", (req, res) => {
+  res.render("free-tool", {
+    layout: "main",
+    title: "Free Tool - Airbrush Dashboard"
+  });
+});
+
+app.get("/free-tool-2", (req, res) => {
+  res.render("free-tool-2", {
+    layout: "main",
+    title: "Free Tool 2 - Airbrush Dashboard"
+  });
+});
+
+app.get("/privacy-policy", (req, res) => {
+  res.render("privacy-policy", {
+    layout: "main",
+    title: "Privacy Policy - Airbrush Dashboard"
+  });
+});
+
+app.get("/terms-of-service", (req, res) => {
+  res.render("terms-of-service", {
+    layout: "main",
+    title: "Terms of Service - Airbrush Dashboard"
+  });
+});
+
+app.get("/lifetime-deal", (req, res) => {
+  res.render("lifetime-deal", {
+    layout: "main",
+    title: "Lifetime Deal - Airbrush Dashboard"
+  });
+});
+
+// Authentication middleware
+const checkAuth = (req, res, next) => {
+  // Skip auth check for login route
+  if (req.path === '/admin/login/secret') {
+    return next();
+  }
+  
+  // Check for token in cookies
+  const token = req.cookies.authToken;
+  if (!token) {
+    console.log('No auth token found, redirecting to login');
+    return res.redirect('/admin/login/secret');
+  }
+  
+  // Here you would typically verify the token
+  // For now, we'll just check if it exists
+  next();
+};
+
+// 404 handler - should be last
+app.use((req, res) => {
+  console.log('404 Not Found:', req.url);
+  res.status(404).render('404', {
+    layout: "main",
+    title: "404 - Page Not Found",
+    url: req.url
+  });
+});
+
+// Error handler - should be very last
+app.use((err, req, res, next) => {
+  console.error('Server error:', err);
+  res.status(500).render('error', {
+    layout: "main",
+    title: "Error",
+    error: process.env.NODE_ENV === 'production' ? 'An error occurred' : err.message
   });
 });
 
@@ -390,22 +576,6 @@ MongoClient.connect(connectionString, {
     }
   }
 
-  app.get("/free-tool", (req, res) => {
-    res.render("free-tool");
-  });
-
-  app.get("/free-tool-2", (req, res) => {
-    res.render("free-tool-2");
-  });
-
-  app.get("/privacy-policy", (req, res) => {
-    res.render("privacy-policy");
-  });
-
-  app.get("/terms-of-service", (req, res) => {
-    res.render("terms-of-service");
-  });
-
   app.get("/blog", async (req, res) => {
     try {
       const articles = await blogCollection.find({}).toArray();
@@ -472,107 +642,6 @@ MongoClient.connect(connectionString, {
   app.get("/bulk-create-image-pages", (req, res) => {
     res.render("bulk-create-image-pages");
   });
-
-  // Authentication middleware
-const checkAuth = (req, res, next) => {
-  // Skip auth check for login/signup routes
-  if (req.path === '/admin/login/secret' || req.path === '/auth') {
-    return next();
-  }
-  
-  // Check for token in cookies
-  const token = req.cookies.authToken;
-  if (!token) {
-    return res.redirect('/');
-  }
-  
-  next();
-};
-
-// Apply auth middleware to all routes except auth routes
-app.use(checkAuth);
-
-// View routes
-app.get('/admin/login/secret', (req, res) => {
-  res.render('auth', { layout: false });
-});
-
-// Dashboard route
-app.get('/dashboard', (req, res) => {
-  res.render('adminIndex', { 
-    layout: 'adminMain',
-    partialName: 'placeholder',
-    title: 'Admin Dashboard',
-    activeMenu: 'dashboard',
-    section: { 
-      title: 'Dashboard', 
-      description: 'Welcome to your admin dashboard' 
-    }
-  });
-});
-
-app.get('/hero-section', (req, res) => {
-  res.render('adminIndex', {
-    layout: 'adminMain',
-    partialName: 'hero-section',
-    title: 'Hero Section',
-    activeMenu: 'hero-section',
-    section: { title: 'Hero section', description: 'Studio Ghibli is amazing!' }
-  });
-});
-
-app.get('/edit-category', (req, res) => {
-  res.render('adminIndex', {
-    layout: 'adminMain',
-    partialName: 'edit-category',
-    title: 'Edit Category',
-    section: { title: 'Edit Category', description: 'Edit Category' }
-  });
-});
-
-app.get('/text-to-anything', (req, res) => {
-  res.render('adminIndex', {
-    layout: 'adminMain',
-    partialName: 'text-to-anything',
-    title: 'Text to Anything',
-    section: { title: 'Text to Anything', description: 'Text to Anything' }
-  });
-});
-
-app.get('/blogs', (req, res) => {
-  res.render('adminIndex', {
-    layout: 'adminMain',
-    partialName: 'blogs',
-    title: 'Blogs',
-    section: { title: 'Blogs', description: 'Blogs' }
-  });
-});
-
-app.get('/new-category', (req, res) => {
-  res.render('adminIndex', {
-    layout: 'adminMain',
-    partialName: 'new-category',
-    title: 'New Category',
-    section: { title: 'New Category', description: 'New Category' }
-  });
-});
-
-app.get('/why-use-tool', (req, res) => {
-  res.render('adminIndex', {
-    layout: 'adminMain',
-    partialName: 'why-use-tool',
-    section: { title: 'Why use the tool', description: 'Why use the tool section' }
-  });
-});
-
-app.get('/images-gallery', (req, res) => {
-  res.render('adminIndex', {
-    layout: 'adminMain',
-    partialName: 'image-gallery',
-    section: { title: 'Image Gallery', description: 'Gallery of images' }
-  });
-});
-
 
   function slugify(keyword) {
     return keyword
