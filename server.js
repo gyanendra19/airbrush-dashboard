@@ -16,6 +16,16 @@ const pm2 = require('pm2');
 app.set("view engine", "hbs");
 app.set("views", path.join(__dirname, "views"));
 
+// Add request logging middleware before static file handling
+app.use((req, res, next) => {
+  console.log('\nIncoming request:');
+  console.log('URL:', req.url);
+  console.log('Path:', req.path);
+  console.log('Method:', req.method);
+  console.log('Headers:', req.headers);
+  next();
+});
+
 // Explicitly set MIME types for common static files
 express.static.mime.define({'text/css': ['css']});
 express.static.mime.define({'application/javascript': ['js']});
@@ -100,28 +110,83 @@ app.use((req, res, next) => {
 // Custom static file serving middleware
 const serveStaticCustom = (urlPath, dirPath) => {
   return (req, res, next) => {
-    const filePath = path.join(dirPath, req.path);
-    console.log(`Attempting to serve file: ${filePath}`);
+    const requestedPath = req.path;
+    const filePath = path.join(dirPath, requestedPath);
+    const absoluteFilePath = path.resolve(filePath);
     
-    // Check if file exists
-    if (!fs.existsSync(filePath)) {
-      console.log(`File not found: ${filePath}`);
-      return next();
-    }
-
-    // Serve the file
-    res.sendFile(filePath, staticOptions, (err) => {
-      if (err) {
-        console.error(`Error serving ${filePath}:`, err);
-        if (err.code === 'ENOENT') {
-          return next();
-        }
-        return next(err);
+    console.log('Static file request details:');
+    console.log('- Requested URL path:', requestedPath);
+    console.log('- Directory path:', dirPath);
+    console.log('- Attempted file path:', filePath);
+    console.log('- Absolute file path:', absoluteFilePath);
+    
+    // Check if file exists and is accessible
+    try {
+      const stats = fs.statSync(filePath);
+      if (!stats.isFile()) {
+        console.log('Path exists but is not a file:', filePath);
+        return next();
       }
-      console.log(`Successfully served: ${filePath}`);
-    });
+      
+      // Check file permissions
+      fs.access(filePath, fs.constants.R_OK, (err) => {
+        if (err) {
+          console.log('File exists but is not readable:', filePath);
+          return next(err);
+        }
+        
+        // Serve the file with appropriate headers
+        res.sendFile(absoluteFilePath, {
+          headers: {
+            'Content-Type': getMimeType(filePath),
+            'Cache-Control': 'public, max-age=31536000'
+          }
+        }, (err) => {
+          if (err) {
+            console.error('Error serving file:', err);
+            next(err);
+          } else {
+            console.log('Successfully served file:', filePath);
+          }
+        });
+      });
+    } catch (err) {
+      if (err.code === 'ENOENT') {
+        console.log('File not found:', filePath);
+        // Try serving from public directory as fallback
+        const publicFilePath = path.join(publicPath, requestedPath);
+        console.log('Trying public directory fallback:', publicFilePath);
+        if (fs.existsSync(publicFilePath)) {
+          return res.sendFile(publicFilePath);
+        }
+      }
+      next();
+    }
   };
 };
+
+// Helper function to get MIME type
+function getMimeType(filePath) {
+  const ext = path.extname(filePath).toLowerCase();
+  const mimeTypes = {
+    '.html': 'text/html',
+    '.js': 'application/javascript',
+    '.css': 'text/css',
+    '.json': 'application/json',
+    '.png': 'image/png',
+    '.jpg': 'image/jpeg',
+    '.gif': 'image/gif',
+    '.svg': 'image/svg+xml',
+    '.wav': 'audio/wav',
+    '.mp4': 'video/mp4',
+    '.woff': 'application/font-woff',
+    '.ttf': 'application/font-ttf',
+    '.eot': 'application/vnd.ms-fontobject',
+    '.otf': 'application/font-otf',
+    '.wasm': 'application/wasm'
+  };
+  return mimeTypes[ext] || 'application/octet-stream';
+}
 
 // Serve static files with custom middleware
 app.use(express.static(publicPath, staticOptions));
