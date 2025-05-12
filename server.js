@@ -302,46 +302,6 @@ async function initializeDynamicRoutes(app) {
   }
 }
 
-// Function to restart the server using PM2
-async function restartServer() {
-  console.log('Restarting server');
-  return new Promise((resolve, reject) => {
-    pm2.connect((err) => {
-      if (err) {
-        console.error(err);
-        reject(err);
-        return;
-      }
-
-      pm2.restart('server', (err) => {
-        if (err) {
-          console.error(err);
-          reject(err);
-        } else {
-          console.log('Server restarted successfully');
-          resolve();
-        }
-        pm2.disconnect();
-      });
-    });
-  });
-}
-
-// Route update function
-async function updateRoutes() {
-  try {
-    await initializeDynamicRoutes(app);
-    await restartServer();
-    return { success: true, message: 'Routes updated and server restarted' };
-  } catch (error) {
-    console.error('Error updating routes:', error);
-    return { success: false, message: error.message };
-  }
-}
-
-// Export the updateRoutes function
-module.exports = { updateRoutes };
-
 // MongoDB connection and database-dependent routes
 MongoClient.connect(connectionString, {
   useNewUrlParser: true,
@@ -840,6 +800,43 @@ app.get('/images-gallery', (req, res) => {
     return data;
   }
 
+  // Modify your route update function
+  async function updateRoutes() {
+    try {
+      await initializeDynamicRoutes(app);
+      await restartServer();
+      return { success: true, message: 'Routes updated and server restarted' };
+    } catch (error) {
+      console.error('Error updating routes:', error);
+      return { success: false, message: error.message };
+    }
+  }
+
+  // Function to restart the server using PM2
+  async function restartServer() {
+    console.log('Restarting server');
+    return new Promise((resolve, reject) => {
+      pm2.connect((err) => {
+        if (err) {
+          console.error(err);
+          reject(err);
+          return;
+        }
+
+        pm2.restart('server', (err) => {
+          if (err) {
+            console.error(err);
+            reject(err);
+          } else {
+            console.log('Server restarted successfully');
+            resolve();
+          }
+          pm2.disconnect();
+        });
+      });
+    });
+  }
+
   // Global error handler - should be last
   app.use((err, req, res, next) => {
     console.error('Server error:', err);
@@ -884,7 +881,7 @@ app.get('/images-gallery', (req, res) => {
     } else {
       process.exit(1);
     }
-  });
+});
 
   // Error handling for unhandled promise rejections
 process.on('unhandledRejection', (reason, promise) => {
@@ -901,3 +898,50 @@ process.on('unhandledRejection', (reason, promise) => {
 }).catch((err) => {
   console.error("MongoDB Connection Error:", err);
 });
+
+  // Modify your route update function
+  async function updateRoutes() {
+    try {
+      await initializeDynamicRoutes(app);
+      await restartServer();
+      return { success: true, message: 'Routes updated and server restarted' };
+    } catch (error) {
+      console.error('Error updating routes:', error);
+      return { success: false, message: error.message };
+    }
+  }
+
+  // Function to restart the server using PM2
+  async function restartServer() {
+    console.log('Restarting server');
+    return new Promise((resolve, reject) => {
+      pm2.connect((err) => {
+        if (err) {
+          console.error(err);
+          reject(err);
+          return;
+        }
+
+        pm2.restart('server', (err) => {
+          if (err) {
+            console.error(err);
+            reject(err);
+          } else {
+            console.log('Server restarted successfully');
+            resolve();
+          }
+          pm2.disconnect();
+        });
+      });
+    });
+  }
+
+  // Global error handler - should be last
+  app.use((err, req, res, next) => {
+    console.error('Server error:', err);
+    res.status(500).render('error', {
+      layout: "main",
+      title: "Error",
+      error: process.env.NODE_ENV === 'production' ? 'An error occurred' : err.message
+    });
+  });
