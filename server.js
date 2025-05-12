@@ -151,7 +151,7 @@ app.use(async (req, res, next) => {
       routeCache.isRefreshing = true;
       
       try {
-        await initializeDynamicRoutes(app);
+        // await initializeDynamicRoutes(app);
         updateRoutes();
 
         
