@@ -56,6 +56,12 @@ try {
   const stats = fs.statSync(cssFile);
   console.log('dashboard.css exists:', stats.isFile());
   console.log('dashboard.css size:', stats.size);
+  // Read first few bytes to verify file is accessible
+  const fd = fs.openSync(cssFile, 'r');
+  const buffer = Buffer.alloc(64);
+  fs.readSync(fd, buffer, 0, 64, 0);
+  fs.closeSync(fd);
+  console.log('dashboard.css is readable');
 } catch (error) {
   console.error('Error accessing dashboard.css:', error);
 }
@@ -74,8 +80,15 @@ const staticOptions = {
     // Set cache headers
     res.setHeader('Cache-Control', 'public, max-age=31536000'); // 1 year
   },
-  fallthrough: false, // Return 404 if file not found
-  index: false // Disable directory indexing
+  dotfiles: 'ignore',
+  etag: true,
+  extensions: false,
+  fallthrough: true,
+  immutable: true,
+  index: false,
+  lastModified: true,
+  maxAge: 31536000000, // in milliseconds
+  redirect: true
 };
 
 // Middleware to log all requests
@@ -84,34 +97,40 @@ app.use((req, res, next) => {
   next();
 });
 
-// Serve static files - updated configuration with absolute paths and error handling
-app.use(express.static(publicPath, staticOptions));
-
-// Serve specific directories with detailed error handling
-const serveStaticWithLogging = (urlPath, dirPath) => {
-  app.use(urlPath, (req, res, next) => {
-    console.log(`Attempting to serve ${urlPath} file:`, req.url);
-    console.log('Full path:', path.join(dirPath, req.url));
+// Custom static file serving middleware
+const serveStaticCustom = (urlPath, dirPath) => {
+  return (req, res, next) => {
+    const filePath = path.join(dirPath, req.path);
+    console.log(`Attempting to serve file: ${filePath}`);
     
     // Check if file exists
-    const fullPath = path.join(dirPath, req.url);
-    if (fs.existsSync(fullPath)) {
-      console.log('File exists:', fullPath);
-    } else {
-      console.log('File not found:', fullPath);
+    if (!fs.existsSync(filePath)) {
+      console.log(`File not found: ${filePath}`);
+      return next();
     }
-    
-    express.static(dirPath, staticOptions)(req, res, next);
-  });
+
+    // Serve the file
+    res.sendFile(filePath, staticOptions, (err) => {
+      if (err) {
+        console.error(`Error serving ${filePath}:`, err);
+        if (err.code === 'ENOENT') {
+          return next();
+        }
+        return next(err);
+      }
+      console.log(`Successfully served: ${filePath}`);
+    });
+  };
 };
 
-// Set up static serving for each directory
-serveStaticWithLogging("/js", path.join(publicPath, "js"));
-serveStaticWithLogging("/css", path.join(publicPath, "css"));
-serveStaticWithLogging("/images", path.join(publicPath, "images"));
-serveStaticWithLogging("/fonts", path.join(publicPath, "fonts"));
-serveStaticWithLogging("/videos", path.join(publicPath, "videos"));
-serveStaticWithLogging("/gallery", path.join(publicPath, "gallery"));
+// Serve static files with custom middleware
+app.use(express.static(publicPath, staticOptions));
+app.use('/css', serveStaticCustom('/css', path.join(publicPath, 'css')));
+app.use('/js', serveStaticCustom('/js', path.join(publicPath, 'js')));
+app.use('/images', serveStaticCustom('/images', path.join(publicPath, 'images')));
+app.use('/fonts', serveStaticCustom('/fonts', path.join(publicPath, 'fonts')));
+app.use('/videos', serveStaticCustom('/videos', path.join(publicPath, 'videos')));
+app.use('/gallery', serveStaticCustom('/gallery', path.join(publicPath, 'gallery')));
 
 // Error handling middleware for static files
 app.use((err, req, res, next) => {
@@ -122,14 +141,16 @@ app.use((err, req, res, next) => {
   console.error('- Error:', err);
   
   if (err.code === 'ENOENT') {
+    console.log('File not found:', req.path);
     res.status(404).send('File not found');
   } else {
+    console.error('Server error:', err);
     res.status(500).send('Error serving static file');
   }
 });
 
 // Handle 404 errors
-app.use((req, res, next) => {
+app.use((req, res) => {
   console.log('404 Not Found:', req.url);
   res.status(404).send('File not found');
 });
