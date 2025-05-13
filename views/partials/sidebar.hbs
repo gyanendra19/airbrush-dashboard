@@ -295,7 +295,100 @@
     };
     
     // Initialize the sidebar
-    renderCategories();
+    renderCategories().then(() => {
+      // Get the active category from localStorage
+      const activeCategory = localStorage.getItem('activeCategory');
+      
+      // If there's an active category, expand it
+      if (activeCategory) {
+        const categoryElement = document.getElementById(activeCategory);
+        if (categoryElement) {
+          // Open the parent Categories accordion section first
+          const categoriesCollapse = document.getElementById('categoriesCollapse');
+          if (categoriesCollapse) {
+            categoriesCollapse.classList.add('show');
+            
+            // Update the parent accordion button
+            const categoriesButton = document.querySelector('[data-bs-target="#categoriesCollapse"]');
+            if (categoriesButton) {
+              categoriesButton.classList.remove('collapsed');
+              categoriesButton.setAttribute('aria-expanded', 'true');
+              
+              const chevronIcon = categoriesButton.querySelector('.bi-chevron-down');
+              if (chevronIcon) {
+                chevronIcon.style.transform = 'rotate(180deg)';
+              }
+            }
+          }
+          
+          // Add show class to expand the specific category
+          categoryElement.classList.add('show');
+          
+          // Update chevron
+          const toggle = document.querySelector(`[href="#${activeCategory}"]`);
+          if (toggle) {
+            const chevron = toggle.querySelector('.bi-chevron-down');
+            if (chevron) {
+              chevron.style.transform = 'rotate(180deg)';
+            }
+            
+            // Scroll to the active category after a short delay to ensure DOM is ready
+            setTimeout(() => {
+              toggle.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 100);
+          }
+        }
+      }
+      
+      // Attach event listeners to the toggles
+      document.querySelectorAll('.submenu-toggle').forEach(toggle => {
+        toggle.addEventListener('click', function() {
+          const targetId = this.getAttribute('href').substring(1);
+          
+          // Store or remove from localStorage based on the current state
+          setTimeout(() => {
+            const isExpanded = document.getElementById(targetId).classList.contains('show');
+            if (isExpanded) {
+              localStorage.setItem('activeCategory', targetId);
+            } else {
+              localStorage.removeItem('activeCategory');
+            }
+          }, 50);
+        });
+      });
+      
+      // Handle link clicks to prevent collapse
+      document.querySelectorAll('.submenu-item ul a').forEach(link => {
+        link.addEventListener('click', function(e) {
+          // Save the parent category ID before navigation
+          const parentCollapse = this.closest('.collapse');
+          if (parentCollapse) {
+            localStorage.setItem('activeCategory', parentCollapse.id);
+          }
+        });
+      });
+      
+      // Special handling for New Category link - don't save/restore state
+      const newCategoryLink = document.querySelector('a[href="/new-category"]');
+      if (newCategoryLink) {
+        newCategoryLink.addEventListener('click', function(e) {
+          // Clear the active category when clicking on New Category
+          localStorage.removeItem('activeCategory');
+        });
+      }
+    });
+
+    // Add style to prevent the transition animation
+    const style = document.createElement('style');
+    style.textContent = `
+      .collapse {
+        transition: none !important;
+      }
+      .collapsing {
+        transition: none !important;
+      }
+    `;
+    document.head.appendChild(style);
   });
 
   document.getElementById('logoutBtn').addEventListener('click', function(e) {
