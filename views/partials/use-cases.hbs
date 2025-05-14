@@ -1,0 +1,371 @@
+{{!-- <div class="rts-bread-crumb-area bg_image">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="breadcrumb-inne">
+                    <div class="title-area">
+                        <h1 class="bread-title">Use Cases</h1>
+                        <div class="inner-wrapper">
+                            <a href="/">Home</a>/
+                            <a href="#" class="active">Use Cases</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div> --}}
+
+<style>
+    .flex-app {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: 20px;
+        margin-bottom: 20px;
+    }
+
+    .app-btn {
+        width: 45%;
+        max-width: 220px;
+        color: #fff;
+        margin: 20px 10px;
+        text-align: left;
+        border-radius: 5px;
+        text-decoration: none;
+        font-family: "Lucida Grande", sans-serif;
+        font-size: 15px;
+        text-transform: uppercase;
+        border: 1px #3996fb solid;
+        padding: 10px 10px;
+    }
+
+    .app-btn.blu {
+        background-color: #101010;
+        transition: background-color 0.25s linear;
+    }
+
+    .app-btn.blu:hover {
+        background-color: #454545;
+    }
+
+    .app-btn i {
+        width: 20%;
+        text-align: center;
+        font-size: 36px;
+        margin-right: 7px;
+    }
+
+    .app-btn .big-txt {
+        font-size: 25px;
+        text-transform: capitalize;
+    }
+
+    @media screen and (max-width: 768px) {
+        .flex-app {
+            flex-direction: column;
+        }
+
+        .app-btn {
+            width: 90%;
+            margin: 7px auto;
+        }
+
+        .app-btn i {
+            margin-bottom: 7px;
+        }
+
+        .app-btn span {
+            margin-top: 7px;
+        }
+    }
+
+    .img-grid-container {
+        width: 100%;
+        max-width: 1300px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    .img-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 25px;
+        margin-bottom: 25px;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .img-container {
+        aspect-ratio: 9/10;
+        overflow: hidden;
+        border-radius: 15px;
+        width: 100%;
+        height: 100%;
+        position: relative;
+    }
+
+    .img-container img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+        position: absolute;
+        top: 0;
+        left: 0;
+        margin: 0;
+        padding: 0;
+        transition: transform 0.3s ease;
+    }
+
+    .img-container img:hover {
+        transform: scale(1.05);
+    }
+
+    @media (max-width: 768px) {
+        .img-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    @media (max-width: 480px) {
+        .img-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="rts-case-area bg-smooth-2">
+    <div class="container" style="margin-top: 50px;">
+        <div class="row justify-content-center">
+            <div class="col-lg-12 text-center mb-4" style="background: transparent;">
+                <div style="
+    width: 190px; 
+                     height: 56px; 
+    border-radius: 28px; 
+    border: 1px solid #FFFFFF;
+    padding: 8px 18px 8px 6px;
+    margin: 0 auto 11px auto;
+    background-color: white;
+    display: flex;
+    align-items: center;
+    gap: 11px;
+">
+                    <div style="
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #4526B1 0%, #F86635 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    ">
+                        <img src="/images/inspirations/star.png" alt="star" style="width: 24px; height: 24px;" />
+                    </div>
+                    <span style="
+        color: #000000; 
+        font-family: 'Poppins', sans-serif; 
+        font-size: 20px;
+        font-weight: 500;
+        line-height: 22px;
+        letter-spacing: 0;
+        display: flex;
+        align-items: center;
+    ">Inspirations</span>
+                </div>
+
+                <h2 class="" style="font-size: 2.5rem; font-weight: 600; color: white;">
+                    Find your inspiration in a sea of creativity
+                </h2>
+            </div>
+            <div class="col-12">
+                <div class="img-grid-container">
+                    <div class="img-grid">
+                        <div
+                            style="height: 810px; width: 357px; display: flex; margin-left: 70px; flex-direction: column; justify-content: flex-end; gap: 10px;">
+                            <div class="img-container" style="background-color: #4c22e1; height: 410px; width: 357px;">
+                                <img src="/images/inspirations/robots.png" />
+                            </div>
+                            <div class="img-container" style="background-color: #4c22e1; height: 290px; width: 357px;">
+                                <img src="/images/inspirations/butterfly.png" />
+                            </div>
+                        </div>
+                        <div
+                            style="height: 810px; width: 357px; display: flex; flex-direction: column; margin-left: 20px; justify-content: flex-end; gap: 10px;">
+                            <div class="img-container" style="background-color: #4526b1; height: 404px; width: 357px;">
+                                <img src="/images/inspirations/alien.png" alt="Use Case Image" />
+                            </div>
+                            <div class="img-container" style="background-color: #4526b1; height: 382px; width: 357px;">
+                                <img src="/images/inspirations/family.png" />
+                            </div>
+                        </div>
+                        <div
+                            style="height: 810px; width: 357px; display: flex; flex-direction: column; gap: 10px; justify-content: flex-end;">
+                            <div class="img-container" style="background-color: #7153d9; height: 395px; width: 357px;">
+                                <img src="/images/inspirations/alien2.png" />
+                            </div>
+                            <div class="img-container" style="background-color: #7153d9; height: 370px; width: 357px;">
+                                <img src="/images/inspirations/man.png" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="text-center" style="margin-top: 3rem; background: transparent;">
+                    <a target="_blank" href="https://app.airbrush.ai/signup"
+                        class="mt-10 pl--30 pr--30 py-4 rounded-pill custom-btn"
+                        style="background-color: #4526B1; width: 1196px; height: 67px; display: inline-flex; align-items: center; justify-content: center; text-decoration: none; color: white;">
+                        Load More Generation
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{!-- <div class="usecase-container">
+        <div class="col-lg-6" style="margin-top: 15%;">
+            <h2 class="">
+                Diving Deep
+            </h2>
+            <p class="mt--20" style="font-size: 2.5rem; font-weight: 600; margin-top: 2rem; ">
+                Four problems. One solution.
+            </p>
+            <div class="mt--40 pr--20">
+                Airbrush is here to help you effectively tackle and overcome the four main challenges you face. It
+                provides solutions and support to make each of these problems more manageable.
+            </div>
+        </div>
+        {{!-- <div class="use-case-parallax"></div> --}}
+        <div class="row g-5 mt--75 mb--10 card-section">
+            <div class="col-lg-6 col-md-6 col-sm-12 col-12">
+                <!-- single use case -->
+                <div class="flip-card">
+                    <div class="flip-card-front">
+                        <div class="icon">
+                            <svg width="50" height="50" viewBox="0 0 50 50" fill="none"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <rect width="50" height="50" rx="4" fill="#3996fb" fill-opacity="0.1" />
+                                <path
+                                    d="M23.1719 17.5469C28 17.8281 32.1719 22 32.4531 26.7812C32.5 27.3906 32.0312 27.9531 31.4219 28C31.375 28 31.375 28 31.3281 28C30.7656 28 30.25 27.5312 30.25 26.9219C29.9688 23.2188 26.7344 19.9844 23.0312 19.75C22.4219 19.75 21.9531 19.1875 22 18.5781C22 17.9688 22.5625 17.5 23.1719 17.5469ZM23.5 13C30.9062 13 37 19.0938 37 26.5C37 27.3438 36.2969 28 35.5 28C34.6562 28 34 27.3438 34 26.5C34 20.7344 29.2656 16 23.5 16C22.6562 16 22 15.3438 22 14.5C22 13.7031 22.6562 13 23.5 13ZM21.0625 23.6406C24.5781 24.3438 27.1562 27.8594 26.3125 31.7031C25.7969 34.2344 23.7344 36.2969 21.2031 36.8125C16.8438 37.75 13 34.4219 13 30.25V18.625C13 18.0156 13.4688 17.5469 14.0781 17.5469H16.3281C16.9844 17.5469 17.4531 18.0156 17.4531 18.625V30.2031C17.4531 31.375 18.4844 32.4062 19.75 32.4062C20.9688 32.4062 22 31.4219 22 30.2031C22 29.2656 21.3438 28.4219 20.5 28.1406C20.0781 28 19.75 27.625 19.75 27.1094V24.7656C19.75 24.0625 20.3594 23.5 21.0625 23.6406Z"
+                                    fill="#3996fb" />
+                            </svg>
+                        </div>
+                        <h5 class="title" style="margin-top: 20px">Save money</h5>
+                    </div>
+                    <div class="flip-card-back">
+                        <div>
+                            <p class="disc">
+                                Save time and money from creating your own stock images.
+                            </p>
+                            <a href="https://app.airbrush.ai/signup" class="more-case-btn">Get Started For Free<i
+                                    class="fa-regular fa-arrow-right"></i></a>
+                        </div>
+                    </div>
+                </div>
+                <!-- single use case end -->
+            </div>
+            <div class="col-lg-6 col-md-6 col-sm-12 col-12">
+                <!-- single use case -->
+                <div class="flip-card">
+                    <div class="flip-card-front">
+                        <div class="icon">
+                            <svg width="50" height="50" viewBox="0 0 50 50" fill="none"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <rect width="50" height="50" rx="4" fill="#3996fb" fill-opacity="0.1" />
+                                <path
+                                    d="M23.1719 17.5469C28 17.8281 32.1719 22 32.4531 26.7812C32.5 27.3906 32.0312 27.9531 31.4219 28C31.375 28 31.375 28 31.3281 28C30.7656 28 30.25 27.5312 30.25 26.9219C29.9688 23.2188 26.7344 19.9844 23.0312 19.75C22.4219 19.75 21.9531 19.1875 22 18.5781C22 17.9688 22.5625 17.5 23.1719 17.5469ZM23.5 13C30.9062 13 37 19.0938 37 26.5C37 27.3438 36.2969 28 35.5 28C34.6562 28 34 27.3438 34 26.5C34 20.7344 29.2656 16 23.5 16C22.6562 16 22 15.3438 22 14.5C22 13.7031 22.6562 13 23.5 13ZM21.0625 23.6406C24.5781 24.3438 27.1562 27.8594 26.3125 31.7031C25.7969 34.2344 23.7344 36.2969 21.2031 36.8125C16.8438 37.75 13 34.4219 13 30.25V18.625C13 18.0156 13.4688 17.5469 14.0781 17.5469H16.3281C16.9844 17.5469 17.4531 18.0156 17.4531 18.625V30.2031C17.4531 31.375 18.4844 32.4062 19.75 32.4062C20.9688 32.4062 22 31.4219 22 30.2031C22 29.2656 21.3438 28.4219 20.5 28.1406C20.0781 28 19.75 27.625 19.75 27.1094V24.7656C19.75 24.0625 20.3594 23.5 21.0625 23.6406Z"
+                                    fill="#3996fb" />
+                            </svg>
+                        </div>
+                        <h5 class="title" style="margin-top: 20px">Use anywhere</h5>
+                    </div>
+                    <div class="flip-card-back">
+                        <div>
+                            <p class="disc">
+                                Get professional-looking results from your home or office computer.
+                            </p>
+                            <a href="https://app.airbrush.ai/signup" class="more-case-btn">Get Started For Free<i
+                                    class="fa-regular fa-arrow-right"></i></a>
+                        </div>
+                    </div>
+                </div>
+                <!-- single use case end -->
+            </div>
+            <div class="col-lg-6 col-md-6 col-sm-12 col-12">
+                <!-- single use case -->
+                <div class="flip-card">
+                    <div class="flip-card-front">
+                        <div class="icon">
+                            <svg width="50" height="50" viewBox="0 0 50 50" fill="none"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <rect width="50" height="50" rx="4" fill="#3996fb" fill-opacity="0.1" />
+                                <path
+                                    d="M23.1719 17.5469C28 17.8281 32.1719 22 32.4531 26.7812C32.5 27.3906 32.0312 27.9531 31.4219 28C31.375 28 31.375 28 31.3281 28C30.7656 28 30.25 27.5312 30.25 26.9219C29.9688 23.2188 26.7344 19.9844 23.0312 19.75C22.4219 19.75 21.9531 19.1875 22 18.5781C22 17.9688 22.5625 17.5 23.1719 17.5469ZM23.5 13C30.9062 13 37 19.0938 37 26.5C37 27.3438 36.2969 28 35.5 28C34.6562 28 34 27.3438 34 26.5C34 20.7344 29.2656 16 23.5 16C22.6562 16 22 15.3438 22 14.5C22 13.7031 22.6562 13 23.5 13ZM21.0625 23.6406C24.5781 24.3438 27.1562 27.8594 26.3125 31.7031C25.7969 34.2344 23.7344 36.2969 21.2031 36.8125C16.8438 37.75 13 34.4219 13 30.25V18.625C13 18.0156 13.4688 17.5469 14.0781 17.5469H16.3281C16.9844 17.5469 17.4531 18.0156 17.4531 18.625V30.2031C17.4531 31.375 18.4844 32.4062 19.75 32.4062C20.9688 32.4062 22 31.4219 22 30.2031C22 29.2656 21.3438 28.4219 20.5 28.1406C20.0781 28 19.75 27.625 19.75 27.1094V24.7656C19.75 24.0625 20.3594 23.5 21.0625 23.6406Z"
+                                    fill="#3996fb" />
+                            </svg>
+                        </div>
+                        <h5 class="title" style="margin-top: 20px">Professional</h5>
+                    </div>
+                    <div class="flip-card-back">
+                        <div>
+                            <p class="disc">
+                                Get the professional-quality images you need without the need for a photoshoot.
+                            </p>
+                            <a href="https://app.airbrush.ai/signup" class="more-case-btn">Get Started For Free<i
+                                    class="fa-regular fa-arrow-right"></i></a>
+                        </div>
+                    </div>
+                </div>
+                <!-- single use case end -->
+            </div>
+            <div class="col-lg-6 col-md-6 col-sm-12 col-12">
+                <!-- single use case -->
+                <div class="flip-card">
+                    <div class="flip-card-front">
+                        <div class="icon">
+                            <svg width="50" height="50" viewBox="0 0 50 50" fill="none"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <rect width="50" height="50" rx="4" fill="#3996fb" fill-opacity="0.1" />
+                                <path
+                                    d="M23.1719 17.5469C28 17.8281 32.1719 22 32.4531 26.7812C32.5 27.3906 32.0312 27.9531 31.4219 28C31.375 28 31.375 28 31.3281 28C30.7656 28 30.25 27.5312 30.25 26.9219C29.9688 23.2188 26.7344 19.9844 23.0312 19.75C22.4219 19.75 21.9531 19.1875 22 18.5781C22 17.9688 22.5625 17.5 23.1719 17.5469ZM23.5 13C30.9062 13 37 19.0938 37 26.5C37 27.3438 36.2969 28 35.5 28C34.6562 28 34 27.3438 34 26.5C34 20.7344 29.2656 16 23.5 16C22.6562 16 22 15.3438 22 14.5C22 13.7031 22.6562 13 23.5 13ZM21.0625 23.6406C24.5781 24.3438 27.1562 27.8594 26.3125 31.7031C25.7969 34.2344 23.7344 36.2969 21.2031 36.8125C16.8438 37.75 13 34.4219 13 30.25V18.625C13 18.0156 13.4688 17.5469 14.0781 17.5469H16.3281C16.9844 17.5469 17.4531 18.0156 17.4531 18.625V30.2031C17.4531 31.375 18.4844 32.4062 19.75 32.4062C20.9688 32.4062 22 31.4219 22 30.2031C22 29.2656 21.3438 28.4219 20.5 28.1406C20.0781 28 19.75 27.625 19.75 27.1094V24.7656C19.75 24.0625 20.3594 23.5 21.0625 23.6406Z"
+                                    fill="#3996fb" />
+                            </svg>
+                        </div>
+                        <h5 class="title" style="margin-top: 20px">Easy to use</h5>
+                    </div>
+                    <div class="flip-card-back">
+                        <div>
+                            <p class="disc">
+                                Create photos, illustrations, and art with Airbrush's easy-to-use interface.
+                            </p>
+                            <a href="https://app.airbrush.ai/signup" class="more-case-btn">Get Started For Free<i
+                                    class="fa-regular fa-arrow-right"></i></a>
+                        </div>
+                    </div>
+                </div>
+                <!-- single use case end -->
+            </div>
+        </div>
+    </div>
+</div>
+<!-- rts case area end -->
+{{!--
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const cards = document.querySelectorAll(".flip-card");
+
+        const observer = new IntersectionObserver(
+            (entries) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add("in-view");
+                    } else {
+                        entry.target.classList.remove("in-view");
+                    }
+                });
+            },
+            { threshold: 0.1 }
+        );
+
+        cards.forEach((card) => observer.observe(card));
+    });
+</script> --}}
