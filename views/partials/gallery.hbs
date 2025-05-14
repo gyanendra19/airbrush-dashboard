@@ -14,8 +14,8 @@
     }
 
     .hero-container {
-        max-width: 1500px;
-        margin: 0 auto;
+        max-width: 100%;
+        margin: 0;
         padding: 2rem;
         background: #000000;
     }
@@ -46,7 +46,7 @@
         animation: fadeInUp 1s ease;
     }
 
-    .text-slide{
+    .text-slide {
         transform: translateX(100px);
         transition: all;
     }
@@ -90,8 +90,9 @@
     }
 
     .features {
-        padding: 6rem 2rem;
+        padding: 6rem 0;
         text-align: center;
+        width: 100%;
     }
 
     .features-title {
@@ -113,25 +114,27 @@
     .features-description {
         font-size: 2.5rem;
         color: rgba(255, 255, 255, 0.9);
-        max-width: 1000px;
+        max-width: 1200px;
         margin: 0 auto 5rem;
         line-height: 1.6;
         animation: fadeInUp 1s ease;
         text-align: center;
         font-weight: 400;
+        padding: 0 2rem;
     }
 
     .features-grid {
         display: inline-grid;
         grid-template-columns: repeat(4, 1fr);
-        gap: 9px;
+        grid-auto-rows: min-content;
+        gap: 15px;
         animation: fadeInUp 1.2s ease;
         border: 1px dashed gray;
-        padding: 18px;
+        padding: 15px;
         border-radius: 20px;
-        max-height: 920px;
+        max-height: calc(2 * 300px + 15px);  /* Height for 2 rows + gap */
         overflow-y: auto;
-        scrollbar-width: none;
+        scrollbar-width: thin;
         scrollbar-color: #555 #222;
     }
 
@@ -155,7 +158,7 @@
 
     .feature-card {
         position: relative;
-        width: 280px;
+        width: 270px;
         padding: 0px;
         border-radius: 16px;
         overflow: hidden;
@@ -170,11 +173,11 @@
     }
 
     .feature-card .image-container {
-        height: 210px;
         width: 93%;
+        aspect-ratio: 1/1;
         margin: auto;
         margin-bottom: 0;
-        margin-top: 10px;
+        margin-top: 8px;
         overflow: hidden;
         border-radius: 9px;
         position: relative;
@@ -285,7 +288,7 @@
     }
 
     .feature-card .card-content {
-        padding: 9px;
+        padding: 7px;
     }
 
     @keyframes fadeInUp {
@@ -302,15 +305,9 @@
 
     @media (max-width: 1240px) {
         .features-grid {
-            grid-template-columns: repeat(3, 1fr);
-            max-height: 700px;
-        }
-    }
-
-    @media (max-width: 1024px) {
-        .features-grid {
             grid-template-columns: repeat(2, 1fr);
-            max-height: 560px;
+            grid-template-rows: repeat(4, 1fr);
+            max-height: 900px;
         }
     }
 
@@ -335,6 +332,8 @@
 
         .features-grid {
             grid-template-columns: 1fr;
+            grid-template-rows: repeat(8, 1fr);
+            max-height: 1800px;
         }
 
         .features-description {
@@ -397,17 +396,20 @@
     }
 
     .slide {
-        width: 300px;
+        min-width: 300px;
         height: 100%;
         position: relative;
         overflow: hidden;
         flex-shrink: 0;
+        display: flex;
+  align-items: center;
     }
 
     .slide img {
-        width: 100%;
         height: 100%;
-        object-fit: fill;
+  width: auto;
+  object-fit: cover;
+  border-radius: 10px;
     }
 
     @keyframes slide {
@@ -416,9 +418,13 @@
         }
 
         100% {
-            transform: translateX(calc(-300px * 5));
+            transform: translateX(-50%);
         }
     }
+
+    .slider-container:hover .slider {
+  animation-play-state: paused;
+}
 
     /* Responsive Slider */
     @media (max-width: 1024px) {
@@ -578,32 +584,6 @@
         .feature-tabs {
             gap: 0.7rem;
         }
-    }
-
-    .loading-spinner {
-        text-align: center;
-        padding: 2rem;
-        font-size: 1.2rem;
-        color: #666;
-        grid-column: 1 / -1;
-    }
-
-    .error-message {
-        text-align: center;
-        padding: 2rem;
-        font-size: 1.2rem;
-        color: #e74c3c;
-        grid-column: 1 / -1;
-    }
-
-    .feature-card {
-        cursor: pointer;
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
-
-    .feature-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
     }
 </style>
 
@@ -851,11 +831,11 @@
                     imgElement.alt = imageData.alt || `Gallery Image ${index + 1}`;
                     
                     // Add onload handler to debug image loading
-                    imgElement.onload = function() {
+                    imgElement.onload = function () {
                         console.log(`Image for card ${index} loaded successfully:`, imageData.url);
                     };
                     
-                    imgElement.onerror = function() {
+                    imgElement.onerror = function () {
                         console.error(`Failed to load image for card ${index}:`, imageData.url);
                     };
                 } else {
