@@ -1,18 +1,26 @@
-<script src="https://unpkg.com/lucide@latest"></script>
-<script src="https://kit.fontawesome.com/your-kit-code.js" crossorigin="anonymous"></script>
-
 <!-- Light Modern Admin Sidebar (No Underlines) -->
 <div class="sidebar bg-white shadow-sm">
   <!-- Sidebar Header -->
   <div class="sidebar-header d-flex justify-content-between align-items-center p-4 border-bottom">
     <h3 class="mb-0 fs-5 fw-semibold text-dark">
-      <img src="https://ai4chat-files.s3.amazonaws.com/images/airbrush/image-1737741097321.jpg" alt="">
-      Admin Panel
+      <i class="bi bi-speedometer2 me-2 text-primary"></i>Admin Panel
     </h3>
     <button class="sidebar-toggle btn btn-sm btn-outline-secondary d-lg-none">
       <i class="bi bi-x-lg"></i>
-      <i class="fas fa-times"></i>
     </button>
+  </div>
+
+  <!-- User Profile -->
+  <div class="sidebar-user p-4 text-center border-bottom">
+    <div class="user-avatar mx-auto mb-3">
+      <img src="/img/avatar.jpg" 
+           class="rounded-circle object-fit-contain" 
+           alt="Admin Avatar">
+    </div>
+    <div class="user-info">
+      <h5 class="mb-1 fw-semibold">Admin User</h5>
+      <span class="badge bg-primary bg-opacity-10 text-primary rounded-pill">Administrator</span>
+    </div>
   </div>
 
   <!-- Navigation Menu -->
@@ -21,8 +29,8 @@
     <li class="nav-item mb-2">
       <a href="/" class="nav-link px-3 py-2 rounded-3 d-flex align-items-center active text-decoration-none">
         <i class="bi bi-house-door me-3 text-primary"></i>
-        <i class="fas fa-home me-3 text-primary"></i>
         <span>Dashboard</span>
+        <span class="ms-auto badge bg-primary text-white">5</span>
       </a>
     </li>
 
@@ -59,6 +67,22 @@
         <span>New Category</span>
       </a>
     </li>
+
+    <!-- Users -->
+    <li class="nav-item mb-2">
+      <a href="/users" class="nav-link px-2 py-2 rounded-3 d-flex text-decoration-none">
+        {{!-- <i class="bi bi-people me-3 text-primary"></i> --}}
+        <span>User Management</span>
+      </a>
+    </li>
+
+    <!-- Settings -->
+    <li class="nav-item mb-2">
+      <a href="/settings" class="nav-link px-2 py-2 rounded-3 d-flex text-decoration-none">
+        {{!-- <i class="bi bi-gear me-3 text-primary"></i> --}}
+        <span>System Settings</span>
+      </a>
+    </li>
   </ul>
 
   <!-- Sidebar Footer -->
@@ -74,6 +98,12 @@
   .sidebar a,
   .sidebar button {
     text-decoration: none !important;
+  }
+  
+  .sidebar {
+    width: 260px;
+    height: 100vh;
+    position: fixed;
   }
   
   .nav-link:hover {
@@ -99,19 +129,10 @@
   .submenu-item a:not(.submenu-toggle):hover {
     background: rgba(13, 110, 253, 0.05);
   }
-
-  /* Font Awesome icon styles */
-  .fas {
-    font-size: 1em;
-    vertical-align: -0.125em;
-  }
 </style>
 
 <script>
   document.addEventListener('DOMContentLoaded', function() {
-    // Initialize Lucide icons
-    lucide.createIcons();
-    
     // Fetch categories and their sections from the backend
     const fetchCategories = async () => {
       try {
@@ -151,7 +172,6 @@
           if (!categories[categoryName]) {
             categories[categoryName] = {
               id: categoryId, // Add prefix to make it a valid CSS selector
-              slug: categorySlug,
               name: categoryName,
               sections: []
             };
@@ -226,12 +246,8 @@
             <a class="d-flex align-items-center px-3 py-1 text-dark rounded-3 submenu-toggle text-decoration-none" 
                data-bs-toggle="collapse"
                href="#${category.id}">
-              <div class="d-flex justify-content-between align-items-center w-100">
-                <span>${category.name}</span>
-                <a href="/${category.slug}" class="text-dark">
-                  <i class="fas fa-external-link-alt me-2" style="width: 10px"></i>
-                </a>
-              </div>
+              <span>${category.name}</span>
+              <i class="bi bi-chevron-down ms-auto transition-all"></i>
             </a>
             <div class="collapse ps-4" id="${category.id}">
               <ul class="list-unstyled mt-2">
@@ -295,100 +311,7 @@
     };
     
     // Initialize the sidebar
-    renderCategories().then(() => {
-      // Get the active category from localStorage
-      const activeCategory = localStorage.getItem('activeCategory');
-      
-      // If there's an active category, expand it
-      if (activeCategory) {
-        const categoryElement = document.getElementById(activeCategory);
-        if (categoryElement) {
-          // Open the parent Categories accordion section first
-          const categoriesCollapse = document.getElementById('categoriesCollapse');
-          if (categoriesCollapse) {
-            categoriesCollapse.classList.add('show');
-            
-            // Update the parent accordion button
-            const categoriesButton = document.querySelector('[data-bs-target="#categoriesCollapse"]');
-            if (categoriesButton) {
-              categoriesButton.classList.remove('collapsed');
-              categoriesButton.setAttribute('aria-expanded', 'true');
-              
-              const chevronIcon = categoriesButton.querySelector('.bi-chevron-down');
-              if (chevronIcon) {
-                chevronIcon.style.transform = 'rotate(180deg)';
-              }
-            }
-          }
-          
-          // Add show class to expand the specific category
-          categoryElement.classList.add('show');
-          
-          // Update chevron
-          const toggle = document.querySelector(`[href="#${activeCategory}"]`);
-          if (toggle) {
-            const chevron = toggle.querySelector('.bi-chevron-down');
-            if (chevron) {
-              chevron.style.transform = 'rotate(180deg)';
-            }
-            
-            // Scroll to the active category after a short delay to ensure DOM is ready
-            setTimeout(() => {
-              toggle.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }, 100);
-          }
-        }
-      }
-      
-      // Attach event listeners to the toggles
-      document.querySelectorAll('.submenu-toggle').forEach(toggle => {
-        toggle.addEventListener('click', function() {
-          const targetId = this.getAttribute('href').substring(1);
-          
-          // Store or remove from localStorage based on the current state
-          setTimeout(() => {
-            const isExpanded = document.getElementById(targetId).classList.contains('show');
-            if (isExpanded) {
-              localStorage.setItem('activeCategory', targetId);
-            } else {
-              localStorage.removeItem('activeCategory');
-            }
-          }, 50);
-        });
-      });
-      
-      // Handle link clicks to prevent collapse
-      document.querySelectorAll('.submenu-item ul a').forEach(link => {
-        link.addEventListener('click', function(e) {
-          // Save the parent category ID before navigation
-          const parentCollapse = this.closest('.collapse');
-          if (parentCollapse) {
-            localStorage.setItem('activeCategory', parentCollapse.id);
-          }
-        });
-      });
-      
-      // Special handling for New Category link - don't save/restore state
-      const newCategoryLink = document.querySelector('a[href="/new-category"]');
-      if (newCategoryLink) {
-        newCategoryLink.addEventListener('click', function(e) {
-          // Clear the active category when clicking on New Category
-          localStorage.removeItem('activeCategory');
-        });
-      }
-    });
-
-    // Add style to prevent the transition animation
-    const style = document.createElement('style');
-    style.textContent = `
-      .collapse {
-        transition: none !important;
-      }
-      .collapsing {
-        transition: none !important;
-      }
-    `;
-    document.head.appendChild(style);
+    renderCategories();
   });
 
   document.getElementById('logoutBtn').addEventListener('click', function(e) {

@@ -135,12 +135,11 @@
         background-color: white;
         overflow: hidden;
         cursor: pointer;
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        transition: transform 0.3s ease;
     }
 
     .blog-post:hover {
         transform: translateY(-5px);
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
     }
 
     .blog-post img {
@@ -205,19 +204,44 @@
         <h2 class="blog-title">Our <span class="blog-text">Blog</span></h2>
 
         <!-- Featured Blog Post -->
-        <div class="featured-blog" onclick="navigateToBlog(this.dataset.contentId, this.dataset.title)" style="cursor: pointer;">
-            <div class="lead-blog-overlay"></div>
-            <img src="/images/flower.png" alt="Featured Blog Post">
+        <div class="featured-blog">
+        <div class="lead-blog-overlay"></div>
+            <img src="/images/flower.png" alt="10 Prompt Hacks to Instantly Improve Your 3D Renders">
             <div class="featured-blog-content">
                 <span class="blog-date">10 Feb 2023</span>
-                <h3 class="blog-post-title">Loading...</h3>
-                <button class="read-more lead">Read more &rarr;</button>
+                <h3 class="blog-post-title">10 Prompt Hacks to Instantly Improve Your 3D Renders</h3>
+                <button href="#" class="read-more lead">Read more &rarr;</button>
             </div>
         </div>
 
         <!-- Blog Posts Grid -->
         <div class="blog-posts-grid">
-            <!-- Blog posts will be dynamically populated -->
+            <!-- Blog Post 1 -->
+            <div class="blog-post">
+                <img src="/images/thumbsup.png" alt="Low-Poly vs High-Poly">
+                <div class="blog-post-content">
+                    <h3 class="blog-post-title">Low-Poly vs High-Poly: What Works Best for Your Project?</h3>
+                    <a href="#" class="read-more">Read more &rarr;</a>
+                </div>
+            </div>
+
+            <!-- Blog Post 2 -->
+            <div class="blog-post">
+                <img src="/images/tree.png" alt="How We Built Airbrush">
+                <div class="blog-post-content">
+                    <h3 class="blog-post-title">How We Built Airbrush: Behind the Scenes of AI-Powered 3D</h3>
+                    <a href="#" class="read-more">Read more &rarr;</a>
+                </div>
+            </div>
+
+            <!-- Blog Post 3 -->
+            <div class="blog-post">
+                <img src="/images/white.png" alt="Top 5 3D Prompts">
+                <div class="blog-post-content">
+                    <h3 class="blog-post-title">Top 5 3D Prompts Trending Right Now</h3>
+                    <a href="#" class="read-more">Read more &rarr;</a>
+                </div>
+            </div>
         </div>
     </div>
 </section>
@@ -309,11 +333,11 @@
                 
                 // If no square brackets were found, default to highlighting "Blog"
                 if (!processedTitle.includes('<span class="blog-text">')) {
-                    processedTitle = processedTitle.replace(/Blogs/i, '<span class="blog-text">Blogs</span>');
+                    processedTitle = processedTitle.replace(/Blog/i, '<span class="blog-text">Blog</span>');
                 }
                 
                 console.log('Updated blog title to:', processedTitle);
-                titleElement.innerHTML = `Our ${processedTitle}`;
+                titleElement.innerHTML = processedTitle;
             }
         }
         
@@ -328,7 +352,6 @@
             content.fields.forEach(field => {
                 if (field.value && typeof field.value === 'object') {
                     blogPosts.push({
-                        id: content._id,
                         title: field.value.title,
                         url: field.value.url,
                         date: field.value.date || '', // Use date if available
@@ -371,25 +394,6 @@
         }, 100);
     }
     
-    function slugify(text) {
-        return text
-            .toString()
-            .toLowerCase()
-            .trim()
-            .replace(/\s+/g, '-')        // Replace spaces with -
-            .replace(/[^\w\-]+/g, '')    // Remove all non-word chars
-            .replace(/\-\-+/g, '-')      // Replace multiple - with single -
-            .replace(/^-+/, '')          // Trim - from start of text
-            .replace(/-+$/, '');         // Trim - from end of text
-    }
-
-    function navigateToBlog(contentId, title) {
-        if (contentId && title) {
-            const slug = slugify(title);
-            window.location.href = `/blog/${slug}/${contentId}`;
-        }
-    }
-
     // Function to update the featured blog
     function updateFeaturedBlog(featuredBlog) {
         const featuredElement = document.querySelector('.featured-blog');
@@ -398,34 +402,67 @@
             return;
         }
         
-        // Set content ID and title for navigation
-        featuredElement.dataset.contentId = featuredBlog._id || featuredBlog.id;
-        featuredElement.dataset.title = featuredBlog.title;
-        
         // Update featured blog image
         const featuredImage = featuredElement.querySelector('img');
         if (featuredImage && featuredBlog.url) {
             console.log('Updating featured blog image to:', featuredBlog.url);
             featuredImage.src = featuredBlog.url;
             featuredImage.alt = featuredBlog.title || 'Featured Blog';
+            
+            // Add onload handler to debug image loading
+            featuredImage.onload = function() {
+                console.log('Featured blog image loaded successfully');
+            };
+            
+            featuredImage.onerror = function() {
+                console.error('Failed to load featured blog image:', featuredBlog.url);
+            };
         }
         
         // Update featured blog title
         const featuredTitle = featuredElement.querySelector('.blog-post-title');
         if (featuredTitle && featuredBlog.title) {
             console.log('Updating featured blog title to:', featuredBlog.title);
+            
+            // Truncate title if it's too long for the featured blog
+            const maxLength = 60;
             let displayTitle = featuredBlog.title;
-            if (displayTitle.length > 60) {
-                displayTitle = displayTitle.substring(0, 60) + '...';
+            if (displayTitle.length > maxLength) {
+                displayTitle = displayTitle.substring(0, maxLength) + '...';
             }
+            
             featuredTitle.textContent = displayTitle;
         }
         
         // Update featured blog date
         const featuredDate = featuredElement.querySelector('.blog-date');
         if (featuredDate) {
+            // If we have a date, use it; otherwise use current date
             let dateToShow = featuredBlog.date || new Date().toISOString().split('T')[0];
-            let formattedDate = formatDate(dateToShow);
+            
+            // Format the date if it's in ISO format
+            let formattedDate = dateToShow;
+            try {
+                if (dateToShow.includes('-')) {
+                    const date = new Date(dateToShow);
+                    formattedDate = date.toLocaleDateString('en-US', { 
+                        day: 'numeric', 
+                        month: 'short', 
+                        year: 'numeric' 
+                    });
+                }
+            } catch (e) {
+                console.warn('Error formatting date:', e);
+                // Use current date as fallback
+                const today = new Date();
+                formattedDate = today.toLocaleDateString('en-US', {
+                    day: 'numeric',
+                    month: 'short',
+                    year: 'numeric'
+                });
+            }
+            
+            console.log('Updating featured blog date to:', formattedDate);
             featuredDate.textContent = formattedDate;
         }
     }
@@ -437,54 +474,59 @@
             console.warn('Blog grid not found');
             return;
         }
-
-        // Clear existing blog posts
-        blogGrid.innerHTML = '';
         
-        // Create new blog posts
-        blogs.forEach((blog, index) => {
-            const blogPost = document.createElement('div');
-            blogPost.className = 'blog-post';
-            blogPost.dataset.contentId = blog._id || blog.id;
-            blogPost.dataset.title = blog.title;
-            blogPost.onclick = () => navigateToBlog(blog._id || blog.id, blog.title);
-            
-            let displayTitle = blog.title;
-            if (displayTitle.length > 40) {
-                displayTitle = displayTitle.substring(0, 40) + '...';
+        // Get all blog post elements
+        const blogPosts = blogGrid.querySelectorAll('.blog-post');
+        console.log(`Found ${blogPosts.length} blog post elements to update with ${blogs.length} blogs`);
+        
+        // Update each blog post with data from the blogs array
+        blogPosts.forEach((post, index) => {
+            if (index < blogs.length) {
+                const blogData = blogs[index];
+                console.log(`Updating blog post ${index} with:`, blogData);
+                
+                // Update blog image
+                const blogImage = post.querySelector('img');
+                if (blogImage && blogData.url) {
+                    console.log(`Setting blog post ${index} image to:`, blogData.url);
+                    blogImage.src = blogData.url;
+                    blogImage.alt = blogData.title || `Blog post ${index + 1}`;
+                    
+                    // Add onload handler to debug image loading
+                    blogImage.onload = function() {
+                        console.log(`Blog post ${index} image loaded successfully`);
+                    };
+                    
+                    blogImage.onerror = function() {
+                        console.error(`Failed to load blog post ${index} image:`, blogData.url);
+                    };
+                }
+                
+                // Update blog title
+                const blogTitle = post.querySelector('.blog-post-title');
+                if (blogTitle && blogData.title) {
+                    console.log(`Setting blog post ${index} title to:`, blogData.title);
+                    
+                    // Truncate title if it's too long
+                    const maxLength = 40;
+                    let displayTitle = blogData.title;
+                    if (displayTitle.length > maxLength) {
+                        displayTitle = displayTitle.substring(0, maxLength) + '...';
+                    }
+                    
+                    blogTitle.textContent = displayTitle;
+                }
+                
+                // Show the blog post
+                post.style.display = 'block';
+            } else {
+                // Hide any extra blog post elements if we don't have enough data
+                post.style.display = 'none';
+                console.log(`No data available for blog post ${index}, hiding it`);
             }
-
-            blogPost.innerHTML = `
-                <img src="${blog.url || '/images/placeholder.png'}" alt="${blog.title}">
-                <div class="blog-post-content">
-                    <h3 class="blog-post-title">${displayTitle}</h3>
-                    <a class="read-more">Read more &rarr;</a>
-                </div>
-            `;
-            
-            blogGrid.appendChild(blogPost);
         });
     }
-
-    // Helper function to format dates
-    function formatDate(dateString) {
-        try {
-            const date = new Date(dateString);
-            return date.toLocaleDateString('en-US', {
-                day: 'numeric',
-                month: 'short',
-                year: 'numeric'
-            });
-        } catch (e) {
-            console.warn('Error formatting date:', e);
-            return new Date().toLocaleDateString('en-US', {
-                day: 'numeric',
-                month: 'short',
-                year: 'numeric'
-            });
-        }
-    }
-
+    
     // Call the function when the page loads
     document.addEventListener('DOMContentLoaded', fetchBlogContent);
 </script>

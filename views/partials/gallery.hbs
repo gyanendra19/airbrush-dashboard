@@ -14,8 +14,8 @@
     }
 
     .hero-container {
-        max-width: 1500px;
-        margin: 0 auto;
+        max-width: 100%;
+        margin: 0;
         padding: 2rem;
         background: #000000;
     }
@@ -46,7 +46,7 @@
         animation: fadeInUp 1s ease;
     }
 
-    .text-slide{
+    .text-slide {
         transform: translateX(100px);
         transition: all;
     }
@@ -90,8 +90,9 @@
     }
 
     .features {
-        padding: 6rem 2rem;
+        padding: 6rem 0;
         text-align: center;
+        width: 100%;
     }
 
     .features-title {
@@ -113,25 +114,27 @@
     .features-description {
         font-size: 2.5rem;
         color: rgba(255, 255, 255, 0.9);
-        max-width: 1000px;
+        max-width: 1200px;
         margin: 0 auto 5rem;
         line-height: 1.6;
         animation: fadeInUp 1s ease;
         text-align: center;
         font-weight: 400;
+        padding: 0 2rem;
     }
 
     .features-grid {
         display: inline-grid;
         grid-template-columns: repeat(4, 1fr);
-        gap: 9px;
+        grid-auto-rows: min-content;
+        gap: 15px;
         animation: fadeInUp 1.2s ease;
         border: 1px dashed gray;
-        padding: 18px;
+        padding: 15px;
         border-radius: 20px;
-        max-height: 920px;
+        max-height: calc(2 * 300px + 15px);  /* Height for 2 rows + gap */
         overflow-y: auto;
-        scrollbar-width: none;
+        scrollbar-width: thin;
         scrollbar-color: #555 #222;
     }
 
@@ -155,7 +158,7 @@
 
     .feature-card {
         position: relative;
-        width: 280px;
+        width: 270px;
         padding: 0px;
         border-radius: 16px;
         overflow: hidden;
@@ -170,11 +173,11 @@
     }
 
     .feature-card .image-container {
-        height: 210px;
         width: 93%;
+        aspect-ratio: 1/1;
         margin: auto;
         margin-bottom: 0;
-        margin-top: 10px;
+        margin-top: 8px;
         overflow: hidden;
         border-radius: 9px;
         position: relative;
@@ -285,7 +288,7 @@
     }
 
     .feature-card .card-content {
-        padding: 9px;
+        padding: 7px;
     }
 
     @keyframes fadeInUp {
@@ -302,15 +305,9 @@
 
     @media (max-width: 1240px) {
         .features-grid {
-            grid-template-columns: repeat(3, 1fr);
-            max-height: 700px;
-        }
-    }
-
-    @media (max-width: 1024px) {
-        .features-grid {
             grid-template-columns: repeat(2, 1fr);
-            max-height: 560px;
+            grid-template-rows: repeat(4, 1fr);
+            max-height: 900px;
         }
     }
 
@@ -335,6 +332,8 @@
 
         .features-grid {
             grid-template-columns: 1fr;
+            grid-template-rows: repeat(8, 1fr);
+            max-height: 1800px;
         }
 
         .features-description {
@@ -397,17 +396,20 @@
     }
 
     .slide {
-        width: 300px;
+        min-width: 300px;
         height: 100%;
         position: relative;
         overflow: hidden;
         flex-shrink: 0;
+        display: flex;
+  align-items: center;
     }
 
     .slide img {
-        width: 100%;
         height: 100%;
-        object-fit: fill;
+  width: auto;
+  object-fit: cover;
+  border-radius: 10px;
     }
 
     @keyframes slide {
@@ -416,9 +418,13 @@
         }
 
         100% {
-            transform: translateX(calc(-300px * 5));
+            transform: translateX(-50%);
         }
     }
+
+    .slider-container:hover .slider {
+  animation-play-state: paused;
+}
 
     /* Responsive Slider */
     @media (max-width: 1024px) {
@@ -579,32 +585,6 @@
             gap: 0.7rem;
         }
     }
-
-    .loading-spinner {
-        text-align: center;
-        padding: 2rem;
-        font-size: 1.2rem;
-        color: #666;
-        grid-column: 1 / -1;
-    }
-
-    .error-message {
-        text-align: center;
-        padding: 2rem;
-        font-size: 1.2rem;
-        color: #e74c3c;
-        grid-column: 1 / -1;
-    }
-
-    .feature-card {
-        cursor: pointer;
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
-
-    .feature-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-    }
 </style>
 
 <div class="hero-container">
@@ -660,9 +640,199 @@
             Create Consistent assets for you and your team. Airbush makes it easier than ever to create, edit, and
             share Image, art, and Illustration.
         </p>
-        <div class="features-grid" id="dynamic-categories-grid">
-            <!-- Dynamic categories will be rendered here -->
-            <div class="loading-spinner">Loading categories...</div>
+        <div class="features-grid">
+            <!-- 3D Image Generation -->
+            <div class="feature-card">
+                <div class="image-container">
+                    <img src="/images/image 1036.png" alt="3D Image Generation">
+                    <div class="arrow-btn">
+                    </div>
+                </div>
+                <div class="tag trending">Trending</div>
+                <div class="card-content">
+                    <h3 class="feature-title">3D Image Generation</h3>
+                    <p class="feature-description">Create stunning 3D visuals with AI-powered generation</p>
+                </div>
+            </div>
+
+            <!-- AI Scene Builder -->
+            <div class="feature-card">
+                <div class="image-container">
+                    <img src="/images/image (1).png" alt="AI Scene Builder">
+                    <div class="arrow-btn"></div>
+                </div>
+                <div class="tag most-used">Most Used</div>
+                <div class="card-content">
+                    <h3 class="feature-title">AI Scene Builder</h3>
+                    <p class="feature-description">Build complex scenes with intelligent AI assistance</p>
+                </div>
+            </div>
+
+            <!-- Realistic Human Generation -->
+            <div class="feature-card">
+                <div class="image-container">
+                    <img src="/images/image 1038.png" alt="Realistic Human Generation">
+                    <div class="arrow-btn"></div>
+                </div>
+                <div class="tag latest">Latest</div>
+                <div class="card-content">
+                    <h3 class="feature-title">Realistic Human Generation</h3>
+                    <p class="feature-description">Generate photorealistic human characters instantly</p>
+                </div>
+            </div>
+
+            <!-- Animated Image Generation -->
+            <div class="feature-card">
+                <div class="image-container">
+                    <img src="/images/image 1037.png" alt="Animated Image Generation">
+                    <div class="arrow-btn"></div>
+                </div>
+                <div class="tag recent">Recent</div>
+                <div class="card-content">
+                    <h3 class="feature-title">Animated Image Generation</h3>
+                    <p class="feature-description">Create engaging animated visuals with AI</p>
+                </div>
+            </div>
+
+            <!-- Multi-Image Composition -->
+            <div class="feature-card">
+                <div class="image-container">
+                    <img src="/images/image 1039.png" alt="Multi-Image Composition">
+                    <div class="arrow-btn"></div>
+                </div>
+                <div class="card-content">
+                    <h3 class="feature-title">Multi-Image Composition</h3>
+                    <p class="feature-description">Combine multiple images into stunning compositions</p>
+                </div>
+            </div>
+
+            <!-- AI Sketch to Image -->
+            <div class="feature-card">
+                <div class="image-container">
+                    <img src="/images/image 1041.png" alt="AI Sketch to Image">
+                    <div class="arrow-btn"></div>
+                </div>
+                <div class="card-content">
+                    <h3 class="feature-title">AI Sketch to Image</h3>
+                    <p class="feature-description">Transform simple sketches into detailed artwork</p>
+                </div>
+            </div>
+
+            <!-- Face Swapping -->
+            <div class="feature-card">
+                <div class="image-container">
+                    <img src="/images/image 1042.png" alt="Face Swapping">
+                    <div class="arrow-btn"></div>
+                </div>
+                <div class="card-content">
+                    <h3 class="feature-title">Face Swapping</h3>
+                    <p class="feature-description">Seamlessly swap faces with advanced AI technology</p>
+                </div>
+            </div>
+
+            <!-- Multi-Prompt Image Gen -->
+            <div class="feature-card">
+                <div class="image-container">
+                    <img src="/images/image (2).png" alt="Multi-Prompt Image Gen">
+                    <div class="arrow-btn"></div>
+                </div>
+                <div class="card-content">
+                    <h3 class="feature-title">Multi-Prompt Image Gen</h3>
+                    <p class="feature-description">Generate complex images using multiple prompts</p>
+                </div>
+            </div>
+            <!-- Style Transfer -->
+
+            <div class="feature-card">
+                <div class="image-container">
+                    <img src="/images/c81d74082b84a19d4fc6a555a34a1214.png" alt="Style Transfer">
+                    <div class="arrow-btn"></div>
+                </div>
+                <div class="card-content">
+                    <h3 class="feature-title">AI Narrative Art Generator</h3>
+                    <p class="feature-description">Apply artistic styles to your images with one click</p>
+                </div>
+            </div>
+
+            <!-- Background Removal -->
+            <div class="feature-card">
+                <div class="image-container">
+                    <img src="/images/d8c85e576c6f84d96baad7e39ea66e5f.png" alt="Background Removal">
+                    <div class="arrow-btn"></div>
+                </div>
+                <div class="card-content">
+                    <h3 class="feature-title">In Painting/ Out Painting</h3>
+                    <p class="feature-description">Automatically remove and replace image backgrounds</p>
+                </div>
+            </div>
+
+            <!-- Image Upscaling -->
+            <div class="feature-card">
+                <div class="image-container">
+                    <img src="/images/cdc952909cd891a5de0afd1c4dc39e12.png" alt="Image Upscaling">
+                    <div class="arrow-btn"></div>
+                </div>
+                <div class="card-content">
+                    <h3 class="feature-title">Region Promoting</h3>
+                    <p class="feature-description">Enhance resolution without losing quality</p>
+                </div>
+            </div>
+
+            <!-- Text to Image -->
+            <div class="feature-card">
+                <div class="image-container">
+                    <img src="/images/22bf27d31639be20879c77641500620b.png" alt="Text to Image">
+                    <div class="arrow-btn"></div>
+                </div>  
+                <div class="card-content">
+                    <h3 class="feature-title">Pixel Art Generator</h3>
+                    <p class="feature-description">Generate images from textual descriptions</p>
+                </div>
+            </div>
+
+            <div class="feature-card">
+                <div class="image-container">
+                    <img src="/images/image 1041.png" alt="Text to Image">
+                    <div class="arrow-btn"></div>
+                </div>  
+                <div class="card-content">
+                    <h3 class="feature-title">AI sketch to image</h3>
+                    <p class="feature-description">Generate images from textual descriptions</p>
+                </div>
+            </div>
+
+            <div class="feature-card">
+                <div class="image-container">
+                    <img src="/images/image 1042.png" alt="Text to Image">
+                    <div class="arrow-btn"></div>
+                </div>  
+                <div class="card-content">
+                    <h3 class="feature-title">Face swapping</h3>
+                    <p class="feature-description">Generate images from textual descriptions</p>
+                </div>
+            </div>
+
+            <div class="feature-card">
+                <div class="image-container">
+                    <img src="/images/image 1039.png" alt="Text to Image">
+                    <div class="arrow-btn"></div>
+                </div>  
+                <div class="card-content">
+                    <h3 class="feature-title">Pixel Art Generator</h3>
+                    <p class="feature-description">Generate images from textual descriptions</p>
+                </div>
+            </div>
+
+            <div class="feature-card">
+                <div class="image-container">
+                    <img src="/images/image (1).png" alt="Text to Image">
+                    <div class="arrow-btn"></div>
+                </div>  
+                <div class="card-content">
+                    <h3 class="feature-title">AI Image Generator</h3>
+                    <p class="feature-description">Generate images from textual descriptions</p>
+                </div>
+            </div>  
         </div>
     </section>
 </div>
@@ -851,11 +1021,11 @@
                     imgElement.alt = imageData.alt || `Gallery Image ${index + 1}`;
                     
                     // Add onload handler to debug image loading
-                    imgElement.onload = function() {
+                    imgElement.onload = function () {
                         console.log(`Image for card ${index} loaded successfully:`, imageData.url);
                     };
                     
-                    imgElement.onerror = function() {
+                    imgElement.onerror = function () {
                         console.error(`Failed to load image for card ${index}:`, imageData.url);
                     };
                 } else {
@@ -882,114 +1052,5 @@
                 }, 50);
             }
         }, 100);
-    }
-
-    document.addEventListener('DOMContentLoaded', async function() {
-        try {
-            // Fetch categories from API
-            const response = await fetch('https://airbrush-admin-backend.onrender.com/api/categories');
-            if (!response.ok) {
-                throw new Error('Failed to fetch categories');
-            }
-            
-            const categories = await response.json();
-            renderCategories(categories);
-        } catch (error) {
-            console.error('Error fetching categories:', error);
-            document.getElementById('dynamic-categories-grid').innerHTML = 
-                `<div class="error-message">Error loading categories. Please try again later.</div>`;
-        }
-    });
-
-    function renderCategories(categories) {
-        // Filter only active categories
-        const activeCategories = categories.filter(category => category.isActive);
-        
-        // Get the container
-        const container = document.getElementById('dynamic-categories-grid');
-        
-        // Clear loading message
-        container.innerHTML = '';
-        
-        // Sort categories - prioritize categories with tags first, then by name
-        const sortedCategories = [...activeCategories].sort((a, b) => {
-            // Check if either category has any tag
-            const aHasTag = a.trending || a.mostUsed || a.latest || a.recent;
-            const bHasTag = b.trending || b.mostUsed || b.latest || b.recent;
-            
-            // If one has a tag and the other doesn't, prioritize the one with tag
-            if (aHasTag && !bHasTag) return -1;
-            if (!aHasTag && bHasTag) return 1;
-            
-            // If both have tags or both don't have tags, sort by specific tag priority
-            if (aHasTag && bHasTag) {
-                // Define tag priority (trending > mostUsed > latest > recent)
-                if (a.trending && !b.trending) return -1;
-                if (!a.trending && b.trending) return 1;
-                
-                if (a.mostUsed && !b.mostUsed) return -1;
-                if (!a.mostUsed && b.mostUsed) return 1;
-                
-                if (a.latest && !b.latest) return -1;
-                if (!a.latest && b.latest) return 1;
-                
-                if (a.recent && !b.recent) return -1;
-                if (!a.recent && b.recent) return 1;
-            }
-            
-            // If we get here, sort alphabetically by name
-            return a.name.localeCompare(b.name);
-        });
-        
-        // Define tags based on properties
-        const tags = {
-            featured: 'trending',
-            popular: 'most-used',
-            new: 'latest',
-            recent: 'recent'
-        };
-        
-        // Create HTML for each category
-        sortedCategories.forEach(category => {
-            // Determine which tag to use (if any)
-            let tagHTML = '';
-            if (category.trending) {
-                tagHTML = `<div class="tag trending">Trending</div>`;
-            } else if (category.mostUsed) {
-                tagHTML = `<div class="tag most-used">Most Used</div>`;
-            } else if (category.latest) {
-                tagHTML = `<div class="tag latest">Latest</div>`;
-            } else if (category.recent) {
-                tagHTML = `<div class="tag recent">Recent</div>`;
-            }
-            
-            // Create card HTML
-            const categoryCard = `
-                <div class="feature-card">
-                    <div class="image-container">
-                        <img src="${category.image || '/images/default-category.png'}" alt="${category.name}">
-                        <a href="/${category.slug}" class="arrow-btn"></a>
-                    </div>
-                    ${tagHTML}
-                    <div class="card-content">
-                        <h3 class="feature-title">${category.name}</h3>
-                        <p class="feature-description">${category.description || 'Create amazing images with AI'}</p>
-                    </div>
-                </div>
-            `;
-            
-            // Add to container
-            container.innerHTML += categoryCard;
-        });
-        
-        // Event listeners for new cards
-        document.querySelectorAll('.feature-card').forEach((card, index) => {
-            card.addEventListener('click', () => {
-                const category = sortedCategories[index];
-                if (category && category.slug) {
-                    window.location.href = `/${category.slug}`;
-                }
-            });
-        });
     }
 </script>

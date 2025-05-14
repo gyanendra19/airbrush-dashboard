@@ -1,6 +1,3 @@
-<script type="module">
-  import { updateRoutes } from '../../../server.js';
-</script>
 <!-- Edit Category Form -->
 <div class="card shadow-sm border-0 mb-4">
   <div class="card-header bg-white py-3">
@@ -8,7 +5,7 @@
   </div>
   
   <!-- Filter Toggles (UI only - no functionality) -->
-  <div class="p-3">
+  <div class="p-3 border-bottom">
     <div class="btn-group" role="group" aria-label="Content filters">
       <input type="radio" class="btn-check" name="filter-options" id="most-used">
       <label class="btn btn-outline-primary btn-sm" for="most-used">Most Used</label>
@@ -24,31 +21,30 @@
     </div>
   </div>
   
-  <div class="edit-category-card-body">
+  <div class="card-body">
     <form id="editCategoryForm" class="needs-validation" novalidate>
-      <div class="edit-row">
-      <div style="width: 30%;" class="mb-3">
+      <div class="mb-3">
         <label for="categoryName" class="form-label">Category Name</label>
-        <input style="width: 100%;" type="text" class="form-control" id="categoryName" name="categoryName" 
+        <input type="text" class="form-control" id="categoryName" name="categoryName" 
                placeholder="Enter category name" required>
         <div class="invalid-feedback">
           Please provide a category name.
         </div>
       </div>
       
-      <div style="width: 30%;" class="mb-3">
+      <div class="mb-3">
         <label for="categorySlug" class="form-label">Category Slug</label>
-        <input style="width: 100%;" type="text" class="form-control" id="categorySlug" name="categorySlug" 
+        <input type="text" class="form-control" id="categorySlug" name="categorySlug" 
                placeholder="Enter category slug" required>
         <div class="invalid-feedback">
           Please provide a category slug.
         </div>
       </div>
       
-      <div style="width: 30%;" class="mb-3">
+      <div class="mb-3">
         <label for="categoryDescription" class="form-label">Description</label>
-        <textarea style="width: 100%;" class="form-control" id="categoryDescription" name="categoryDescription" 
-                  rows="3" placeholder="Enter category description"></textarea>
+        <textarea class="form-control" id="categoryDescription" name="categoryDescription" 
+                  rows="3" placeholder="Enter category description" required></textarea>
         <div class="invalid-feedback">
           Please provide a category description.
         </div>
@@ -76,7 +72,6 @@
             </button>
           </div>
         </div>
-      </div>
       </div>
       
       <div class="d-grid gap-2">
@@ -338,8 +333,8 @@
           
           try {
             // First try with /id/ path
-            console.log(`Attempting to update with endpoint: https://airbrush-admin-backend.onrender.com/api/categories/${categoryId}`);
-            updateResponse = await fetch(`https://airbrush-admin-backend.onrender.com/api/categories/${categoryId}`, {
+            console.log(`Attempting to update with endpoint: https://airbrush-admin-backend.onrender.com/api/categories/id/${categoryId}`);
+            updateResponse = await fetch(`https://airbrush-admin-backend.onrender.com/api/categories/id/${categoryId}`, {
               method: 'PUT',
               headers: {
                 'Content-Type': 'application/json',

@@ -51,19 +51,6 @@
         z-index: 10;
     }
 
-    .model-image-container{
-        position: absolute;
-        top: 10%;
-        left: 25%;
-        height: 400px;
-        width: 400px;
-        z-index: 10;
-    }
-
-    .model-image-container img{
-        border-radius: 10px;
-    }
-
     .model-image {
         max-height: 100%;
         max-width: 100%;
@@ -226,9 +213,6 @@
                     <source src="/videos/tiger.mp4" type="video/mp4">
                     Your browser does not support the video tag.
                 </video>
-                <div class="model-image-container">
-                    <img src="/images/tiger.png" alt="3D Model" class="model-image">
-                </div>
                 <!-- Image element will be added dynamically if needed -->
             </div>
 
@@ -342,9 +326,8 @@
         
         // Update media (video or image) if available in the response
         if (content.images && content.images.length > 0) {
-            const imageContainer = document.querySelector('.model-image-container');
             const mediaContainer = document.querySelector('.model-media-container');
-            if (imageContainer) {
+            if (mediaContainer) {
                 console.log('Updating media with:', content.images[0]);
                 
                 // Check if there's a video element
@@ -364,7 +347,7 @@
                             videoElement.style.display = 'block';
                             
                             // Hide any existing image element
-                            const imgElement = imageContainer.querySelector('img.model-image');
+                            const imgElement = mediaContainer.querySelector('img.model-image');
                             if (imgElement) {
                                 imgElement.style.display = 'none';
                             }

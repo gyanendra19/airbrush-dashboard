@@ -36,6 +36,19 @@
     <link rel="stylesheet preload" href="/css/vendor/bootstrap.min.css" as="style">
     <!-- custom css style -->
     <link rel="stylesheet preload" href="/css/style.css" as="style">
+    <style>
+        .custom-btn:hover {
+            background-color: #FF5E14 !important;
+            color: white !important;
+            transform: none !important;
+            box-shadow: none !important;
+        }
+
+        .form-control::placeholder {
+            color: #999999 !important;
+            opacity: 0.6 !important;
+        }
+    </style>
 </head>
 
 <body class="dark-version">
@@ -48,23 +61,183 @@
             <div class="row">
                 <div class="col-lg-12">
                     <div class="content-section">
-                        <div class="hero-section">
-                            <h1 class="lh-1">
-                                Generate AI-powered images - in 1 click.
-                            </h1>
-                            <p class="mt--40">
-                                With Airbrush's AI technology, you can create original stock
-                                photos, NFTs, art, and more - in just seconds.
-                            </p>
-                            <div style="margin-top: 50px;">
-                                <a target="_blank" href="https://app.airbrush.ai/signup"
-                                    class="mt-50 pl--30 pr--30 py-4 rounded-pill custom-btn">
-                                    Get Started
-                                </a>
+                        <div class="row">
+                            <div class="col-xl-5 col-md-5 col-12">
+                                <h6 class="sub-title mb-6 aos-init aos-animate fusion-responsive-typography-calculated"
+                                    data-aos="fade-up" data-fontsize="18" data-lineheight="57.6px"
+                                    style="--fontSize: 18; line-height: 3.2; --minFontSize: 18; margin-top: -32px;">
+                                    Revolutionary Technology
+                                </h6>
+                                <h2 class="title mb-15 aos-init aos-animate fusion-responsive-typography-calculated"
+                                    data-aos="fade-up" data-fontsize="32" data-lineheight="40px"
+                                    style="--fontSize: 32; line-height: 1.2; position: relative; width: 800px; max-width: 1400px;">
+                                    <span
+                                        style="position: absolute; content: ''; top: -10px; left: 0; height: 5px; width: 36px; background-color: #fd562a;"></span>
+                                    Airbrush AI – Free Instant Image Generator (One-Click Creation!)
+                                </h2>
+                                <p class="desc mb-20 aos-init aos-animate" data-aos="fade-up" 
+                                   style="font-size: 20px; line-height: 1.4; width: 800px; max-width: 1300px;  word-spacing: -1px;">
+                                    Generate AI art, photorealistic images, anime, 3D renders, game assets, logos, social media graphics, and more in seconds—no design skills needed! Try the best free AI image generator for Stable Diffusion, DALL-E style art, fantasy landscapes, cyberpunk characters, and product mockups. Unlimited creativity, zero cost!
+                                </p>
                             </div>
-                        </div>
-                        <div class="content-section-2">
-                            {{> parallax}}
+                            <div class="col-xl-7 col-md-7 col-12" style="display: flex; justify-content: flex-end; align-items: flex-start; padding-right: 0; margin-top: -20px;">
+                                <style>
+                                    .image-grid {
+                                        display: grid;
+                                        grid-template-columns: repeat(2, 1fr);
+                                        gap: 10px;
+                                        padding: 10px;
+                                        width: 400px;
+                                        margin-left: auto;
+                                        margin-right: -80px;
+                                        margin-top: -10px;
+                                    }
+
+                                    .image-box {
+                                        aspect-ratio: 1;
+                                        overflow: hidden;
+                                        border-radius: 8px;
+                                        background: rgba(255, 255, 255, 0.05);
+                                        backdrop-filter: blur(5px);
+                                        border: 1px solid rgba(255, 255, 255, 0.1);
+                                        position: relative;
+                                        min-height: 150px;
+                                    }
+
+                                    .image-box img {
+                                        width: 100%;
+                                        height: 100%;
+                                        object-fit: cover;
+                                        position: absolute;
+                                        opacity: 0;
+                                        transition: opacity 0.5s ease;
+                                        top: 0;
+                                        left: 0;
+                                    }
+
+                                    .image-box img.active {
+                                        opacity: 1;
+                                    }
+                                </style>
+                                <div class="image-grid">
+                                    <div class="image-box" id="box1">
+                                        <img src="/images/hero-images/13469dcdc1d8fa3693a82321ffd354eb86313346.png"
+                                            alt="hero image" class="active">
+                                        <img src="/images/hero-images/45394d5a4efc9391566ffc9e8b1254aeaa122dd1.png"
+                                            alt="hero image">
+                                        <img src="/images/hero-images/e4a42ec2626dd05db536e276ae79f119b91c219c.png"
+                                            alt="hero image">
+                                        <img src="/images/hero-images/0832d929a1727b5afa6f158e637880a145f34348.png"
+                                            alt="hero image">
+                                        <img src="/images/hero-images/f0913e291abc5b86e9396816e636c232f3526d5a.png"
+                                            alt="hero image">
+                                        <img src="/images/hero-images/68b284667a02052385899176db49a0ebc5f117a1.png"
+                                            alt="hero image">
+                                        <img src="/images/hero-images/068cfe2d5de722a8c36806e2bd50979579435597.png"
+                                            alt="hero image">
+                                        <img src="/images/hero-images/c36e7f6b73fff0435733c7aa7bbf0c2ddd3297bf.png"
+                                            alt="hero image">
+                                        <img src="/images/hero-images/6ab0f4014d792870f7e56de69b2ca63f4a24197f.png"
+                                            alt="hero image">
+                                    </div>
+                                    <div class="image-box" id="box2">
+                                        <img src="/images/hero-images/45394d5a4efc9391566ffc9e8b1254aeaa122dd1.png"
+                                            alt="hero image" class="active">
+                                        <img src="/images/hero-images/e4a42ec2626dd05db536e276ae79f119b91c219c.png"
+                                            alt="hero image">
+                                        <img src="/images/hero-images/0832d929a1727b5afa6f158e637880a145f34348.png"
+                                            alt="hero image">
+                                        <img src="/images/hero-images/f0913e291abc5b86e9396816e636c232f3526d5a.png"
+                                            alt="hero image">
+                                        <img src="/images/hero-images/68b284667a02052385899176db49a0ebc5f117a1.png"
+                                            alt="hero image">
+                                        <img src="/images/hero-images/068cfe2d5de722a8c36806e2bd50979579435597.png"
+                                            alt="hero image">
+                                        <img src="/images/hero-images/c36e7f6b73fff0435733c7aa7bbf0c2ddd3297bf.png"
+                                            alt="hero image">
+                                        <img src="/images/hero-images/6ab0f4014d792870f7e56de69b2ca63f4a24197f.png"
+                                            alt="hero image">
+                                        <img src="/images/hero-images/13469dcdc1d8fa3693a82321ffd354eb86313346.png"
+                                            alt="hero image">
+                                    </div>
+                                    <div class="image-box" id="box3">
+                                        <img src="/images/hero-images/e4a42ec2626dd05db536e276ae79f119b91c219c.png"
+                                            alt="hero image" class="active">
+                                        <img src="/images/hero-images/0832d929a1727b5afa6f158e637880a145f34348.png"
+                                            alt="hero image">
+                                        <img src="/images/hero-images/f0913e291abc5b86e9396816e636c232f3526d5a.png"
+                                            alt="hero image">
+                                        <img src="/images/hero-images/68b284667a02052385899176db49a0ebc5f117a1.png"
+                                            alt="hero image">
+                                        <img src="/images/hero-images/068cfe2d5de722a8c36806e2bd50979579435597.png"
+                                            alt="hero image">
+                                        <img src="/images/hero-images/c36e7f6b73fff0435733c7aa7bbf0c2ddd3297bf.png"
+                                            alt="hero image">
+                                        <img src="/images/hero-images/6ab0f4014d792870f7e56de69b2ca63f4a24197f.png"
+                                            alt="hero image">
+                                        <img src="/images/hero-images/13469dcdc1d8fa3693a82321ffd354eb86313346.png"
+                                            alt="hero image">
+                                        <img src="/images/hero-images/45394d5a4efc9391566ffc9e8b1254aeaa122dd1.png"
+                                            alt="hero image">
+                                    </div>
+                                    <div class="image-box" id="box4">
+                                        <img src="/images/hero-images/0832d929a1727b5afa6f158e637880a145f34348.png"
+                                            alt="hero image" class="active">
+                                        <img src="/images/hero-images/f0913e291abc5b86e9396816e636c232f3526d5a.png"
+                                            alt="hero image">
+                                        <img src="/images/hero-images/68b284667a02052385899176db49a0ebc5f117a1.png"
+                                            alt="hero image">
+                                        <img src="/images/hero-images/068cfe2d5de722a8c36806e2bd50979579435597.png"
+                                            alt="hero image">
+                                        <img src="/images/hero-images/c36e7f6b73fff0435733c7aa7bbf0c2ddd3297bf.png"
+                                            alt="hero image">
+                                        <img src="/images/hero-images/6ab0f4014d792870f7e56de69b2ca63f4a24197f.png"
+                                            alt="hero image">
+                                        <img src="/images/hero-images/13469dcdc1d8fa3693a82321ffd354eb86313346.png"
+                                            alt="hero image">
+                                        <img src="/images/hero-images/45394d5a4efc9391566ffc9e8b1254aeaa122dd1.png"
+                                            alt="hero image">
+                                        <img src="/images/hero-images/e4a42ec2626dd05db536e276ae79f119b91c219c.png"
+                                            alt="hero image">
+                                    </div>
+                                </div>
+                                <script>
+                                    function rotateImages(boxId) {
+                                        const box = document.getElementById(boxId);
+                                        const images = box.getElementsByTagName('img');
+                                        let currentIndex = 0;
+
+                                        // Find current active image
+                                        for (let i = 0; i < images.length; i++) {
+                                            if (images[i].classList.contains('active')) {
+                                                currentIndex = i;
+                                                break;
+                                            }
+                                        }
+
+                                        // Remove active class from current image
+                                        images[currentIndex].classList.remove('active');
+
+                                        // Calculate next index
+                                        const nextIndex = (currentIndex + 1) % images.length;
+
+                                        // Add active class to next image
+                                        images[nextIndex].classList.add('active');
+                                    }
+
+                                    // Start the rotation for each box with different delays
+                                    setInterval(() => rotateImages('box1'), 1000);
+                                    setTimeout(() => {
+                                        setInterval(() => rotateImages('box2'), 1000);
+                                    }, 250);
+                                    setTimeout(() => {
+                                        setInterval(() => rotateImages('box3'), 1000);
+                                    }, 500);
+                                    setTimeout(() => {
+                                        setInterval(() => rotateImages('box4'), 1000);
+                                    }, 750);
+                                </script>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -72,10 +245,28 @@
         </div>
     </div>
 
+    <!-- New centered text container -->
+    <div class="container">
+    <div class="row justify-content-center">
+        <div class="col-12">
+            <h2 class="mb-2 aos-init aos-animate" data-aos="fade-up" style="color: #ffffff; font-size: 32px; text-align: center; margin-top: -64px;">
+                Unleash Your Imagination
+            </h2>
+            <p class="aos-init aos-animate" data-aos="fade-up" style="color: #999999; font-size: 20px; margin-top: 0; text-align: center;">
+                Describe It. Watch it come to life
+            </p>
+        </div>
+    </div>
+</div>
+
 
     {{> text-to-image}}
 
     {{> gallery}}
+
+    {{> steps}}
+
+    {{> get-started}}
 
     {{> frog}}
 
@@ -109,12 +300,12 @@
     <!-- rts backto top end -->
 
 
-    <script type="module" src="/js/vendor/jquery.min.js" defer></script>
-    <script type="module" src="/js/vendor/metismenu.js" defer></script>
-    <script type="module" src="/js/plugins/bootstrap.min.js" defer></script>
-    <script type="module" src="/js/plugins/swiper.js" defer></script>
-    <script type="module" src="/js/plugins/contact.form.js" defer></script>
-    <script type="module" src="/js/main.js" defer></script>
+    <script src="/js/vendor/jquery.min.js" defer></script>
+    <script src="/js/vendor/metismenu.js" defer></script>
+    <script src="/js/plugins/bootstrap.min.js" defer></script>
+    <script src="/js/plugins/swiper.js" defer></script>
+    <script src="/js/plugins/contact.form.js" defer></script>
+    <script src="/js/main.js" defer></script>
 
 </body>
 

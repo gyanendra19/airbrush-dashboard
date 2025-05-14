@@ -11,165 +11,20 @@ const uuid = require("uuid");
 const cookieParser = require("cookie-parser");
 const { marked } = require("marked");
 const fetch = require("node-fetch");
-const pm2 = require('pm2');
+
+const port = process.env.PORT || 8000;
 
 app.set("view engine", "hbs");
 app.set("views", path.join(__dirname, "views"));
 
-// Add request logging middleware before static file handling
-app.use((req, res, next) => {
-  console.log('\nIncoming request:');
-  console.log('URL:', req.url);
-  console.log('Path:', req.path);
-  console.log('Method:', req.method);
-  console.log('Headers:', req.headers);
-  next();
-});
-
-// Explicitly set MIME types for common static files
-express.static.mime.define({'text/css': ['css']});
-express.static.mime.define({'application/javascript': ['js']});
-express.static.mime.define({'application/javascript': ['mjs']});  // For ES modules
-express.static.mime.define({'image/jpeg': ['jpg', 'jpeg']});
-express.static.mime.define({'image/png': ['png']});
-express.static.mime.define({'image/gif': ['gif']});
-
-// Get absolute path to public directory
-const publicPath = path.resolve(__dirname, "public");
-console.log('Public directory absolute path:', publicPath);
-
-// Verify public directory exists and is accessible
-try {
-  const publicStats = fs.statSync(publicPath);
-  console.log('Public directory exists:', publicStats.isDirectory());
-  console.log('Public directory permissions:', {
-    readable: Boolean(publicStats.mode & fs.constants.R_OK),
-    writable: Boolean(publicStats.mode & fs.constants.W_OK),
-    executable: Boolean(publicStats.mode & fs.constants.X_OK)
-  });
-} catch (error) {
-  console.error('Error accessing public directory:', error);
-}
-
-// Configure static file serving options
-const staticOptions = {
-  dotfiles: 'ignore',
-  etag: true,
-  extensions: false,
-  fallthrough: true,
-  immutable: true,
-  index: false,
-  lastModified: true,
-  maxAge: '1y',
-  redirect: true,
-  setHeaders: (res, path, stat) => {
-    // Set proper security headers
-    res.set('X-Content-Type-Options', 'nosniff');
-    
-    // Set proper MIME types
-    if (path.endsWith('.css')) {
-      res.set('Content-Type', 'text/css; charset=utf-8');
-    } else if (path.endsWith('.js')) {
-      res.set('Content-Type', 'application/javascript; charset=utf-8');
-    }
-    
-    // Set caching headers
-    res.set('Cache-Control', 'public, max-age=31536000, immutable');
-  }
-};
-
-// Serve static files before route handlers
-app.use(express.static(publicPath, staticOptions));
-app.use(express.static(path.join(process.cwd(), 'public'), staticOptions));
-
-// Parse request bodies
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json({ limit: "50mb" }));
+app.use(express.static("public"));
+app.use(
+  "/generated-pages",
+  express.static(path.join(__dirname, "generated-pages"))
+);
 app.use(cookieParser());
-
-// Root route handler - should be after static middleware but before 404 handler
-app.get("/", (req, res) => {
-  console.log('Handling root route');
-  res.render("index", {
-    layout: "main",
-    title: "Airbrush Dashboard"
-  });
-});
-
-// Other route handlers
-app.get("/pricing", (req, res) => {
-  res.render("pricing", {
-    layout: "main",
-    title: "Pricing - Airbrush Dashboard"
-  });
-});
-
-app.get("/404", (req, res) => {
-  res.render("404", {
-    layout: "main",
-    title: "404 - Page Not Found"
-  });
-});
-
-app.get("/faq", (req, res) => {
-  res.render("faq", {
-    layout: "main",
-    title: "FAQ - Airbrush Dashboard"
-  });
-});
-
-// Cache configuration
-const routeCache = {
-  categories: null,
-  lastFetch: null,
-  isRefreshing: false,
-  cacheTimeout: 5 * 60 * 1000, // 5 minutes
-  minRefreshInterval: 10 * 1000 // 10 seconds minimum between refreshes
-};
-
-// Middleware to refresh dynamic routes with caching and rate limiting
-app.use(async (req, res, next) => {
-  try {
-    const now = Date.now();
-    
-    // Skip refresh if:
-    // 1. Cache is valid (within timeout)
-    // 2. Another refresh is in progress
-    // 3. Last refresh was too recent (rate limiting)
-    if (
-      routeCache.categories && 
-      routeCache.lastFetch && 
-      (now - routeCache.lastFetch < routeCache.cacheTimeout) &&
-      !routeCache.isRefreshing &&
-      (now - routeCache.lastFetch < routeCache.minRefreshInterval)
-    ) {
-      return next();
-    }
-
-    // Prevent concurrent refreshes
-    if (!routeCache.isRefreshing) {
-      routeCache.isRefreshing = true;
-      
-      try {
-        await initializeDynamicRoutes(app);
-        updateRoutes();
-
-        
-        // Update cache
-        routeCache.lastFetch = now;
-        routeCache.categories = await fetchCategories();
-      } finally {
-        routeCache.isRefreshing = false;
-      }
-    }
-    
-    next();
-  } catch (error) {
-    console.error('Error in route refresh middleware:', error);
-    // Continue to next middleware even if refresh fails
-    next();
-  }
-});
 
 const OPENAI_API_KEY = "open_ai_key_here";
 const apiUrl = "https://api.openai.com/v1/chat/completions";
@@ -208,12 +63,11 @@ app.engine(
             return options.inverse(this);
         }
       },
-      encodeURIComponent: function(str) {
-        return encodeURIComponent(str);
-      }
     },
   })
 );
+
+
 
 const sitemapPath = path.join(__dirname, "views", "sitemap.hbs");
 const generatedPagesPath = path.join(__dirname, "views", "generated-pages");
@@ -268,15 +122,10 @@ async function initializeDynamicRoutes(app) {
   }
 }
 
-MongoClient.connect(connectionString, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-  serverSelectionTimeoutMS: 5000
-}, async (err, client) => {
-  if (err) {
-    console.error("MongoDB Connection Error:", err);
-    process.exit(1);
-  }
+
+
+MongoClient.connect(connectionString, async (err, client) => {
+  if (err) return console.error(err);
   console.log("Connected to Database");
 
   const db = client.db("ai4chat");
@@ -390,6 +239,55 @@ MongoClient.connect(connectionString, {
     }
   }
 
+  app.get("/pricing", (req, res) => {
+    res.render("pricing");
+  });
+
+  app.get("/", (req, res) => {
+    res.render("index");
+  });
+
+  app.get("/get-started", (req, res) => {
+    res.render("get-started");
+  });
+
+  // app.get("/3d-image", (req, res) => {
+  //   // Get the 3D category ID - this would ideally come from your database or API
+  //   // We're hardcoding it here as a fallback
+  //   const categoryId = '6804931c39cff059c0655fd6'; // 3D category ID
+  //   res.render("3d-image", {
+  //     categoryId: categoryId,
+  //     // Add script tag to expose category ID to client-side JavaScript
+  //     categoryScript: `<script>
+  //       window.airbrush3dImage = "${categoryId}";
+  //       console.log("Category ID for 3D:", window.airbrush3dImage);
+  //     </script>`
+  //   });
+  // });
+
+  // app.get("/ghibli-image", (req, res) => {
+  //   // Get the Ghibli category ID - this would ideally come from your database or API
+  //   // We're hardcoding it here as a fallback
+  //   const categoryId = '68054404386a5fc127d44b4a'; // Ghibli category ID
+  //   res.render("ghibli", {
+  //     categoryId: categoryId,
+  //     // Add script tag to expose category ID to client-side JavaScript
+  //     categoryScript: `<script>
+  //       window.airbrushghibli = "${categoryId}";
+  //       console.log("Category ID for Ghibli:", window.airbrushghibli);
+  //     </script>`
+  //   });
+  // });
+
+
+  app.get("/404", (req, res) => {
+    res.render("404");
+  });
+
+  app.get("/faq", (req, res) => {
+    res.render("faq");
+  });
+
   app.get("/free-tool", (req, res) => {
     res.render("free-tool");
   });
@@ -406,6 +304,10 @@ MongoClient.connect(connectionString, {
     res.render("terms-of-service");
   });
 
+  app.get("/lifetime-deal", (req, res) => {
+    res.render("lifetime-deal");
+  });
+
   app.get("/blog", async (req, res) => {
     try {
       const articles = await blogCollection.find({}).toArray();
@@ -415,6 +317,32 @@ MongoClient.connect(connectionString, {
       res.render("blog", { articles: [...articles].reverse() });
     } catch (error) {
       console.error("Error fetching blog articles:", error);
+      res.redirect("/error-page");
+    }
+  });
+
+  app.get("/blog/:url", async (req, res) => {
+    try {
+      const article = await blogCollection.findOne({ url: req.params.url });
+      if (!article) {
+        return res.redirect("/404");
+      }
+      article.date = article.date.toISOString().split("T")[0];
+      const relatedArticles = await blogCollection
+        .aggregate([
+          { $match: { url: { $ne: req.params.url } } },
+          { $sample: { size: 3 } },
+        ])
+        .toArray();
+      relatedArticles.forEach((relatedArticle) => {
+        relatedArticle.date = relatedArticle.date.toISOString().split("T")[0];
+      });
+      res.render("blog-detail", {
+        article: article,
+        relatedArticles: relatedArticles,
+      });
+    } catch (error) {
+      console.error("Error fetching blog article or related articles:", error);
       res.redirect("/error-page");
     }
   });
@@ -429,18 +357,6 @@ MongoClient.connect(connectionString, {
       }
       res.render("generator-page", {
         generatorPage: generatorPage,
-      });
-    } catch (error) {
-      console.error("Error fetching blog article or related articles:", error);
-      res.redirect("/error-page");
-    }
-  });
-
-  app.get("/blog/:title/:id", async (req, res) => {
-    try {
-      res.render("blog", {
-        layout: "main",
-        section: { title: "Blog", description: "Blog" },
       });
     } catch (error) {
       console.error("Error fetching blog article or related articles:", error);
@@ -515,8 +431,6 @@ app.get('/hero-section', (req, res) => {
   res.render('adminIndex', {
     layout: 'adminMain',
     partialName: 'hero-section',
-    title: 'Hero Section',
-    activeMenu: 'hero-section',
     section: { title: 'Hero section', description: 'Studio Ghibli is amazing!' }
   });
 });
@@ -525,7 +439,6 @@ app.get('/edit-category', (req, res) => {
   res.render('adminIndex', {
     layout: 'adminMain',
     partialName: 'edit-category',
-    title: 'Edit Category',
     section: { title: 'Edit Category', description: 'Edit Category' }
   });
 });
@@ -534,7 +447,6 @@ app.get('/text-to-anything', (req, res) => {
   res.render('adminIndex', {
     layout: 'adminMain',
     partialName: 'text-to-anything',
-    title: 'Text to Anything',
     section: { title: 'Text to Anything', description: 'Text to Anything' }
   });
 });
@@ -543,7 +455,6 @@ app.get('/blogs', (req, res) => {
   res.render('adminIndex', {
     layout: 'adminMain',
     partialName: 'blogs',
-    title: 'Blogs',
     section: { title: 'Blogs', description: 'Blogs' }
   });
 });
@@ -552,7 +463,6 @@ app.get('/new-category', (req, res) => {
   res.render('adminIndex', {
     layout: 'adminMain',
     partialName: 'new-category',
-    title: 'New Category',
     section: { title: 'New Category', description: 'New Category' }
   });
 });
@@ -766,21 +676,10 @@ app.get('/images-gallery', (req, res) => {
     return data;
   }
 
-  app.get("/blog/:url", (req, res) => {
-    const newUrl = `/${req.params.url}`;
-    res.redirect(301, newUrl);
-  });
-
-  // Add route update endpoint
-  app.post("/api/update-routes", async (req, res) => {
-    try {
-      const result = await updateRoutes();
-      res.json(result);
-    } catch (error) {
-      console.error('Error updating routes:', error);
-      res.status(500).json({ success: false, message: error.message });
-    }
-  });
+  // app.get("/blog/:url", (req, res) => {
+  //   const newUrl = `/${req.params.url}`;
+  //   res.redirect(301, newUrl);
+  // });
 
   app.all("*", (req, res) => {
     res.redirect("/404");
@@ -839,138 +738,24 @@ app.get("/api/image/generate", async (req, res) => {
   }
 });
 
-let server;
-
-function startServer() {
-  const PORT = process.env.PORT || 8000;
-  server = app.listen(PORT, '0.0.0.0', function () {
-    console.log(`Server listening on port ${PORT}...`);
-  }).on('error', function(err) {
-    console.error('Server failed to start:', err);
-  });
-}
-
-// Function to restart the server using PM2
-async function restartServer() {
-  console.log('Restarting server');
-  
-  // Check if running in PM2 environment
-  if (process.env.PM2_HOME || process.env.PM2_JSON_PROCESSING) {
-    return new Promise((resolve, reject) => {
-      pm2.connect((err) => {
-        if (err) {
-          console.error('PM2 connection error:', err);
-          // Fall back to manual restart if PM2 connection fails
-          manualRestart().then(resolve).catch(reject);
-          return;
-        }
-
-        // First list processes to find the correct name/id
-        pm2.list((err, list) => {
-          if (err) {
-            console.error('PM2 list error:', err);
-            pm2.disconnect();
-            manualRestart().then(resolve).catch(reject);
-            return;
-          }
-          
-          // Find current process
-          const currentProcess = list.find(p => 
-            p.pm2_env.pm_exec_path === process.argv[1] || 
-            p.name === 'server' || 
-            p.pm_id === process.env.pm_id
-          );
-          
-          if (!currentProcess) {
-            console.warn('Current process not found in PM2, using manual restart');
-            pm2.disconnect();
-            manualRestart().then(resolve).catch(reject);
-            return;
-          }
-          
-          // Use the found process id or name
-          const processId = currentProcess.pm_id || 'server';
-          console.log(`Restarting PM2 process: ${processId}`);
-          
-          pm2.restart(processId, (err) => {
-            pm2.disconnect();
-            if (err) {
-              console.error('PM2 restart error:', err);
-              manualRestart().then(resolve).catch(reject);
-            } else {
-              console.log('Server restarted successfully via PM2');
-              resolve();
-            }
-          });
-        });
-      });
-    });
-  } else {
-    // Not running under PM2, use manual restart
-    console.log('Not running under PM2, using manual restart');
-    return manualRestart();
-  }
-}
-
-// Manual restart function (fallback)
-async function manualRestart() {
-  return new Promise((resolve) => {
-    console.log('Performing manual server restart');
-    if (server) {
-      server.close(() => {
-        console.log('Server closed, restarting...');
-        startServer();
-        console.log('Server restarted manually');
-        resolve();
-      });
-    } else {
-      console.log('No server instance to close, starting new server');
-      startServer();
-      resolve();
-    }
-  });
-}
-
-// Modify your route update function
-async function updateRoutes() {
-  try {
-    await initializeDynamicRoutes(app);
-    console.log('Routes initialized, restarting server...');
-    await restartServer();
-    return { success: true, message: 'Routes updated and server restarted' };
-  } catch (error) {
-    console.error('Error updating routes:', error);
-    return { success: false, message: error.message };
-  }
-}
-
-// Export the updateRoutes function
-module.exports = { updateRoutes };
-
-startServer();
-
-// Error handling for uncaught exceptions
-process.on('uncaughtException', (error) => {
-  console.error('Uncaught Exception:', error);
-  if (server) {
-    server.close(() => {
-      console.log('Server closed due to uncaught exception');
-      process.exit(1);
-    });
-  } else {
-    process.exit(1);
-  }
+const server = app.listen(port, function () {
+  console.log(`listening on http://localhost:${port}`);
 });
 
-// Error handling for unhandled promise rejections
+// Global Unhandled Rejection Handler
 process.on('unhandledRejection', (reason, promise) => {
   console.error('Unhandled Rejection at:', promise, 'reason:', reason);
-  if (server) {
-    server.close(() => {
-      console.log('Server closed due to unhandled rejection');
-      process.exit(1);
-    });
-  } else {
+  // Graceful shutdown
+  server.close(() => {
     process.exit(1);
-  }
+  });
+});
+
+// Global Uncaught Exception Handler
+process.on('uncaughtException', (error) => {
+  console.error('Uncaught Exception thrown:', error);
+  // Graceful shutdown
+  server.close(() => {
+    process.exit(1);
+  });
 });
