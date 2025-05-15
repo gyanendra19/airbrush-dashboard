@@ -1,126 +1,108 @@
-<!-- Add this at the top of the file, after the first script tags -->
-<script type="module">
-  import { updateRoutes } from '../../server.js';
-</script>
-
 <!-- New Category Form -->
-<script src="https://unpkg.com/lucide@latest"></script>
-<script>
-  lucide.createIcons();
-</script>
-
-<!-- Add loader HTML -->
-<div id="aiGenerationLoader" class="loader-container d-none">
-  <div class="loader-content">
-    <div class="loader-animation">
-      <div class="pulse-ring"></div>
-      <div class="icon-container">
-        <i class="fas fa-magic"></i>
-      </div>
-    </div>
-    <h4 class="mt-4 text-primary generation-title">Generating AI Content</h4>
-    <div class="progress mt-3" style="height: 6px;">
-      <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%"></div>
-    </div>
-    <p class="text-muted mt-3 mb-0" id="loaderStatus">Initializing...</p>
-    <div class="steps-indicator mt-3">
-      <div class="step active">
-        <div class="step-icon"><i class="fas fa-image"></i></div>
-        <span>Hero</span>
-      </div>
-      <div class="step">
-        <div class="step-icon"><i class="fas fa-images"></i></div>
-        <span>Gallery</span>
-      </div>
-      <div class="step">
-        <div class="step-icon"><i class="fas fa-lightbulb"></i></div>
-        <span>Why use</span>
-      </div>
-      <div class="step">
-        <div class="step-icon"><i class="fas fa-sync"></i></div>
-        <span>Text To</span>
-      </div>
-      <div class="step">
-        <div class="step-icon"><i class="fas fa-blog"></i></div>
-        <span>Blogs</span>
-      </div>
-    </div>
-  </div>
-</div>
-
 <div class="card shadow-sm border-0 mb-4">
   <div class="card-header bg-white py-3">
     <h5 class="card-title mb-0 fw-semibold">Create New Category</h5>
   </div>
   <div class="card-body">
-    <form id="newCategoryForm" class="category-needs-validation" novalidate>
-      <div class="category-row">
+    <form id="newCategoryForm" class="needs-validation" novalidate>
       <div class="mb-3">
-        <label for="categoryName" class="form-label">Category Name <span class="text-danger">*</span></label>
+        <label for="categoryName" class="form-label">Category Name</label>
         <input type="text" class="form-control" id="categoryName" name="categoryName" 
-                 placeholder="Enter category name" required>
-          <div class="invalid-feedback">
-            Please provide a category name.
-          </div>
+               placeholder="Enter category name" required>
+        <div class="invalid-feedback">
+          Please provide a category name.
         </div>
+      </div>
 
       <div class="mb-3">
-        <label for="categorySlug" class="form-label">Category Slug <span class="text-danger">*</span></label>
+        <label for="categorySlug" class="form-label">Category Slug</label>
         <input type="text" class="form-control" id="categorySlug" name="categorySlug" 
-                 placeholder="Enter category slug (e.g., my-category)" required>
+               placeholder="Enter category slug (e.g., my-category)" required>
         <div class="form-text">
           The slug will be used in the URL. Use lowercase letters, numbers, and hyphens only.
-          </div>
-          <div class="invalid-feedback">
-            Please provide a valid category slug.
+        </div>
+        <div class="invalid-feedback">
+          Please provide a valid category slug.
         </div>
       </div>
 
       <div class="mb-3">
         <label for="categoryDescription" class="form-label">Description</label>
         <textarea class="form-control" id="categoryDescription" name="categoryDescription" 
-                  rows="3" placeholder="Enter category description"></textarea>
+                  rows="3" placeholder="Enter category description" required></textarea>
+        <div class="invalid-feedback">
+          Please provide a category description.
         </div>
       </div>
 
-        <div style="display: flex; gap: 20px; margin-top: 20px;" class="mb-3">
-          <div>
-        <label for="categoryImage" class="form-label">Category Image <span class="text-danger">*</span></label>
+      <div class="mb-3">
+        <label for="categoryImage" class="form-label">Category Image</label>
         <input type="file" class="form-control" id="categoryImage" name="categoryImage" 
-        accept="image/*" required />
-            <div class="invalid-feedback">
-              Please select a category image.
-            </div>
-            </div>
+               accept="image/*" required>
+        <div class="form-text">
+          Recommended size: 1200x600px. Max file size: 2MB.
+        </div>
+        <div class="invalid-feedback">
+          Please select a category image.
+        </div>
         <div class="image-preview bg-light rounded overflow-hidden mt-2" style="width: 200px; height: 200px;">
-            <div class="d-flex align-items-center justify-content-center text-muted h-100">
-            <i class="bi bi-image me-2"></i> 
-            <i data-lucide="image" class="me-2"></i>
-            No image selected
+          <div class="d-flex align-items-center justify-content-center text-muted h-100">
+            <i class="bi bi-image me-2"></i> No image selected
           </div>
         </div>
       </div>
       
-      
-      <div style="margin-top: 40px;" class="d-grid gap-2">
-        <button type="submit" class="btn btn-primary catgoey-btn">
-          <i class="bi bi-plus-circle me-2"></i>
-          <i data-lucide="plus-circle" class="me-2"></i>
-          Create Category
+      <div class="d-grid gap-2">
+        <button type="submit" class="btn btn-primary">
+          <i class="bi bi-plus-circle me-2"></i> Create Category
         </button>
       </div>
     </form>
   </div>
 </div>
 
-<!-- Hero Section Form -->
-<div class="card shadow-sm border-0 mb-4 d-none" id="heroSectionForm">
+<!-- Section Forms - Initially Hidden -->
+<div id="sectionForms">
+  <!-- Tabs for Different Section Types -->
+  <ul class="nav nav-tabs mb-4" id="sectionTabs" role="tablist">
+    {{!-- <li class="nav-item" role="presentation">
+      <button class="nav-link active" id="hero-tab" data-bs-toggle="tab" data-bs-target="#hero" type="button" role="tab">
+        Hero Section
+      </button>
+    </li> --}}
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" id="gallery-tab" data-bs-toggle="tab" data-bs-target="#gallery" type="button" role="tab">
+        Images Gallery
+      </button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" id="why-tab" data-bs-toggle="tab" data-bs-target="#why" type="button" role="tab">
+        Why Use Tool
+      </button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" id="text-to-anything-tab" data-bs-toggle="tab" data-bs-target="#text-to-anything" type="button" role="tab">
+        Text to Anything
+      </button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" id="blogs-tab" data-bs-toggle="tab" data-bs-target="#blogs" type="button" role="tab">
+        Blogs
+      </button>
+    </li>
+  </ul>
+
+  <!-- Tab Content -->
+  <div class="tab-content" id="sectionTabsContent">
+    <!-- Hero Section Tab -->
+    <div class="tab-pane fade show active d-none" id="hero" role="tabpanel" aria-labelledby="hero-tab">
+      <div class="card shadow-sm border-0 mb-4">
         <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
           <h5 class="card-title mb-0 fw-semibold">Hero Section</h5>
           <span class="badge bg-primary">Required</span>
         </div>
         <div class="card-body">
-    <form id="heroForm" class="needs-validation" novalidate>
+          <form id="heroSectionForm" class="needs-validation" novalidate>
             <input type="hidden" id="categoryId" name="categoryId">
             <input type="hidden" id="sectionType" name="sectionType" value="hero-section">
             
@@ -163,6 +145,496 @@
               </button>
             </div>
           </form>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Images Gallery Tab (placeholder) -->
+    <div class="tab-pane fade" id="gallery" role="tabpanel" aria-labelledby="gallery-tab">
+      <div class="card shadow-sm border-0 mb-4">
+        <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+          <h5 class="card-title mb-0 fw-semibold">Images Gallery</h5>
+          <span class="badge bg-info">Optional</span>
+        </div>
+        <div class="card-body">
+          <form id="galleryForm" class="needs-validation" novalidate>
+            <input type="hidden" id="galleryCategory" name="categoryId">
+            <input type="hidden" id="galleryType" name="sectionType" value="images-gallery">
+            
+            <!-- Gallery Title and Description -->
+            <div class="mb-4">
+              <div class="mb-3">
+                <label for="galleryTitle" class="form-label">Gallery Title</label>
+                <input type="text" class="form-control" id="galleryTitle" name="title" 
+                      placeholder="Enter gallery title" required>
+                <div class="invalid-feedback">
+                  Please provide a gallery title.
+                </div>
+              </div>
+              
+              <div class="mb-3">
+                <label for="galleryDescription" class="form-label">Gallery Description</label>
+                <textarea class="form-control" id="galleryDescription" name="description" 
+                         rows="2" placeholder="Enter gallery description" required></textarea>
+                <div class="invalid-feedback">
+                  Please provide a gallery description.
+                </div>
+              </div>
+            </div>
+            
+            <!-- Gallery Images Container -->
+            <div class="mb-4 border rounded-3 p-3 bg-light">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <label class="form-label mb-0 fw-semibold">Gallery Images</label>
+                <button type="button" id="addGalleryImage" class="btn btn-sm btn-primary">
+                  <i class="bi bi-plus-lg me-1"></i> Add Image
+                </button>
+              </div>
+              
+              <!-- Gallery Images Repeater -->
+              <div id="galleryImagesContainer">
+                <!-- Single Image Item Template -->
+                <div class="gallery-image-item mb-4 border rounded p-3 bg-white position-relative">
+                  <button type="button" class="btn-close position-absolute top-0 end-0 m-2 remove-gallery-image" 
+                         aria-label="Remove image"></button>
+                  
+                  <div class="row g-3">
+                    <!-- Image Upload -->
+                    <div class="col-md-4">
+                      <div class="mb-3">
+                        <label class="form-label small">Upload Image</label>
+                        <input type="file" class="form-control form-control-sm gallery-image-upload" 
+                               accept="image/*" required>
+                        <div class="invalid-feedback">
+                          Please select an image.
+                        </div>
+                      </div>
+                      <div class="image-preview ratio ratio-16x9 bg-light rounded overflow-hidden mb-2">
+                        <div class="d-flex align-items-center justify-content-center text-muted">
+                          <i class="bi bi-image me-2"></i> No image
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <!-- Image Details -->
+                    <div class="col-md-8">
+                      <div class="mb-3">
+                        <label class="form-label small">Image Title</label>
+                        <input type="text" class="form-control form-control-sm gallery-image-title" 
+                               placeholder="Enter image title" required>
+                        <div class="invalid-feedback">
+                          Please provide an image title.
+                        </div>
+                      </div>
+
+                      <div class="mb-3">
+                        <label class="form-label small">Image Prompt</label>
+                        <textarea class="form-control form-control-sm gallery-image-prompt" rows="2"
+                                  placeholder="Enter image generation prompt"></textarea>
+                        <div class="form-text">
+                          Optional: The prompt used to generate this image
+                        </div>
+                      </div>
+                      
+                      <div class="text-end">
+                        <button type="button" class="btn btn-primary btn-sm save-gallery-image">
+                          <i class="bi bi-save me-1"></i> Save Image
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Saved Gallery Images Container -->
+              <div id="savedGalleryImagesContainer" class="mt-4 border-top pt-3 d-none">
+                <h6 class="fw-semibold mb-3">Saved Images</h6>
+                <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3" id="savedImagesGrid">
+                  <!-- Saved images will appear here -->
+                </div>
+              </div>
+            </div>
+            
+            <div class="d-grid gap-2">
+              <button type="submit" class="btn btn-primary">
+                <i class="bi bi-save me-2"></i> Save Gallery
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Why Use Tool Tab -->
+    <div class="tab-pane fade" id="why" role="tabpanel" aria-labelledby="why-tab">
+      <div class="card shadow-sm border-0 mb-4">
+        <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+          <h5 class="card-title mb-0 fw-semibold">Why Use Tool</h5>
+          <span class="badge bg-info">Optional</span>
+        </div>
+        <div class="card-body">
+          <form id="whyUseToolForm" class="needs-validation" novalidate>
+            <input type="hidden" id="whyUseToolCategory" name="categoryId">
+            <input type="hidden" id="whyUseToolType" name="sectionType" value="why-use-tool">
+            
+            <!-- Main Title and Description -->
+            <div class="mb-4">
+              <div class="mb-3">
+                <label for="whyUseToolTitle" class="form-label">Section Title</label>
+                <input type="text" class="form-control" id="whyUseToolTitle" name="title" 
+                      placeholder="Enter section title" required>
+                <div class="invalid-feedback">
+                  Please provide a section title.
+                </div>
+              </div>
+              
+              <div class="mb-3">
+                <label for="whyUseToolDescription" class="form-label">Section Description</label>
+                <textarea class="form-control" id="whyUseToolDescription" name="description" 
+                         rows="2" placeholder="Enter section description" required></textarea>
+                <div class="invalid-feedback">
+                  Please provide a section description.
+                </div>
+              </div>
+            </div>
+            
+            <!-- Feature Image -->
+            <div class="mb-4 p-3 bg-light rounded-3 border">
+              <label class="form-label fw-semibold mb-3">Feature Image</label>
+              <div class="row">
+                <div class="col-lg-4">
+                  <div class="mb-3">
+                    <input type="file" class="form-control" id="whyUseToolImage" name="image" 
+                           accept="image/*" required>
+                    <div class="invalid-feedback">
+                      Please select an image.
+                    </div>
+                    <div class="form-text mt-1">
+                      Recommended size: 600x400px or larger
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-8">
+                  <div id="whyUseToolImagePreview" class="ratio ratio-16x9 bg-white rounded overflow-hidden border">
+                    <div class="d-flex align-items-center justify-content-center text-muted">
+                      <i class="bi bi-image fs-3 me-2"></i> 
+                      <span>Preview will appear here</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Feature Points -->
+            <div class="mb-4 p-3 bg-light rounded-3 border">
+              <label class="form-label fw-semibold mb-3">Feature Points</label>
+              
+              <!-- Feature 1 -->
+              <div class="mb-3">
+                <div class="input-group">
+                  <span class="input-group-text bg-primary text-white">1</span>
+                  <input type="text" class="form-control" id="whyUseToolFeature1" 
+                         placeholder="Enter first feature point" required>
+                  <div class="invalid-feedback">
+                    Please provide the first feature point.
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Feature 2 -->
+              <div class="mb-3">
+                <div class="input-group">
+                  <span class="input-group-text bg-primary text-white">2</span>
+                  <input type="text" class="form-control" id="whyUseToolFeature2" 
+                         placeholder="Enter second feature point" required>
+                  <div class="invalid-feedback">
+                    Please provide the second feature point.
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Feature 3 -->
+              <div class="mb-3">
+                <div class="input-group">
+                  <span class="input-group-text bg-primary text-white">3</span>
+                  <input type="text" class="form-control" id="whyUseToolFeature3" 
+                         placeholder="Enter third feature point" required>
+                  <div class="invalid-feedback">
+                    Please provide the third feature point.
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Feature 4 -->
+              <div class="mb-3">
+                <div class="input-group">
+                  <span class="input-group-text bg-primary text-white">4</span>
+                  <input type="text" class="form-control" id="whyUseToolFeature4" 
+                         placeholder="Enter fourth feature point" required>
+                  <div class="invalid-feedback">
+                    Please provide the fourth feature point.
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Feature 5 (Optional) -->
+              <div class="mb-1">
+                <div class="input-group">
+                  <span class="input-group-text bg-secondary text-white">5</span>
+                  <input type="text" class="form-control" id="whyUseToolFeature5" 
+                         placeholder="Enter fifth feature point (optional)">
+                </div>
+                <div class="form-text mt-1">
+                  This feature point is optional.
+                </div>
+              </div>
+            </div>
+            
+            <div class="d-grid gap-2">
+              <button type="submit" class="btn btn-primary">
+                <i class="bi bi-save me-2"></i> Save Why Use Tool Section
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Text to Anything Tab -->
+    <div class="tab-pane fade" id="text-to-anything" role="tabpanel" aria-labelledby="text-to-anything-tab">
+      <div class="card shadow-sm border-0 mb-4">
+        <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+          <h5 class="card-title mb-0 fw-semibold">Text to Anything</h5>
+          <span class="badge bg-info">Optional</span>
+        </div>
+        <div class="card-body">
+          <form id="textToAnythingForm" class="needs-validation" novalidate>
+            <input type="hidden" id="textToAnythingCategory" name="categoryId">
+            <input type="hidden" id="textToAnythingType" name="sectionType" value="text-to-anything">
+            
+            <!-- Main Title and Subtitle -->
+            <div class="mb-4">
+              <div class="mb-3">
+                <label for="textToAnythingTitle" class="form-label">Title</label>
+                <input type="text" class="form-control" id="textToAnythingTitle" name="title" 
+                      placeholder="Enter section title" required>
+                <div class="invalid-feedback">
+                  Please provide a section title.
+                </div>
+              </div>
+              
+              <div class="mb-3">
+                <label for="textToAnythingSubtitle" class="form-label">Subtitle</label>
+                <input type="text" class="form-control" id="textToAnythingSubtitle" name="subtitle"
+                       placeholder="Enter section subtitle" required>
+                <div class="invalid-feedback">
+                  Please provide a section subtitle.
+                </div>
+              </div>
+            </div>
+
+            <!-- AI Image Generation Section -->
+          <div class="mb-4">
+            <div class="d-flex align-items-center gap-2">
+          <div class="form-floating flex-grow-1">
+            <input type="text" 
+                   class="form-control" 
+                   id="ai-prompt" 
+                   placeholder="Enter a prompt for AI image generation">
+            <label for="ai-prompt" class="text-muted">AI Image Prompt</label>
+          </div>
+          <button type="button" 
+                  class="btn btn-primary" 
+                  id="generate-ai-image">
+            <i class="fas fa-magic me-2"></i>Generate AI Image
+          </button>
+        </div>
+      </div>
+            
+            <!-- Section Images -->
+            <div class="mb-4 p-3 bg-light rounded-3 border">
+              <label class="form-label fw-semibold mb-3">
+                Section Images 
+                <span class="text-muted small fw-normal">(Main banner and examples)</span>
+              </label>
+              
+              <!-- Main Banner Image -->
+              <div class="mb-4 pb-3 border-bottom">
+                <label class="form-label small text-uppercase fw-semibold text-primary mb-2">Main Banner Image</label>
+                <div class="row g-3">
+                  <div class="col-lg-4">
+                    <div class="mb-3">
+                      <input type="file" class="form-control" id="textToAnythingMainImage" name="mainImage" 
+                             accept="image/*" required>
+                      <div class="invalid-feedback">
+                        Please select a main banner image.
+                      </div>
+                      <div class="form-text mt-1">
+                        Recommended size: 1200x600px
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-lg-8">
+                    <div id="textToAnythingMainImagePreview" class="ratio ratio-21x9 bg-white rounded overflow-hidden border">
+                      <div class="d-flex align-items-center justify-content-center text-muted">
+                        <i class="bi bi-image fs-3 me-2"></i> 
+                        <span>Banner preview will appear here</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Example Images -->
+              {{!-- <div>
+                <label class="form-label small text-uppercase fw-semibold text-primary mb-2">Example Images (Optional)</label>
+                <div class="row g-3 mb-3" id="textToAnythingExampleImages">
+                  <div class="col-6 col-md-3">
+                    <div class="card h-100 border">
+                      <div class="card-body p-2 text-center">
+                        <div class="btn btn-light border w-100 rounded-3 mb-2 text-center py-4" id="addExampleImageBtn">
+                          <i class="bi bi-plus-lg d-block fs-4 mb-1"></i>
+                          <span class="small text-muted">Add Example</span>
+                        </div>
+                        <input type="file" id="exampleImageUpload" class="d-none" accept="image/*" multiple>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="form-text mt-1">
+                  You can add up to 8 example images to showcase the capabilities.
+                </div>
+              </div> --}}
+            </div>
+            
+            <div class="d-grid gap-2">
+              <button type="submit" class="btn btn-primary">
+                <i class="bi bi-save me-2"></i> Save Text to Anything Section
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Blogs Tab -->
+    <div class="tab-pane fade" id="blogs" role="tabpanel" aria-labelledby="blogs-tab">
+      <div class="card shadow-sm border-0 mb-4">
+        <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+          <h5 class="card-title mb-0 fw-semibold">Blog Section</h5>
+          <span class="badge bg-info">Optional</span>
+        </div>
+        <div class="card-body">
+          <form id="blogsForm" class="needs-validation" novalidate>
+            <input type="hidden" id="blogsCategory" name="categoryId">
+            <input type="hidden" id="blogsType" name="sectionType" value="blogs">
+            
+            <!-- Section Title and Description -->
+            <div class="mb-4">
+              <div class="mb-3">
+                <label for="blogsTitle" class="form-label">Section Title</label>
+                <input type="text" class="form-control" id="blogsTitle" name="title" 
+                      placeholder="Enter blog section title" required>
+                <div class="invalid-feedback">
+                  Please provide a section title.
+                </div>
+              </div>
+              
+              <div class="mb-3">
+                <label for="blogsDescription" class="form-label">Section Description</label>
+                <textarea class="form-control" id="blogsDescription" name="description" 
+                         rows="2" placeholder="Enter section description" required></textarea>
+                <div class="invalid-feedback">
+                  Please provide a section description.
+                </div>
+              </div>
+            </div>
+            
+            <!-- Blog Entries -->
+            <div class="mb-4">
+              <h6 class="fw-semibold border-bottom pb-2 mb-3">Blog Entries</h6>
+              
+              <!-- Blog Entries Container -->
+              <div id="blogEntriesContainer">
+                <!-- Single Blog Entry Form -->
+                <div class="blog-entry card shadow-sm border mb-4">
+                  <div class="card-header bg-white py-2 d-flex justify-content-between align-items-center">
+                    <h6 class="mb-0 fw-semibold">Add New Blog</h6>
+                    <div class="form-check form-switch">
+                      <input class="form-check-input blog-lead-toggle" type="checkbox" id="blogLeadToggle">
+                      <label class="form-check-label small" for="blogLeadToggle">Lead Blog</label>
+                    </div>
+                  </div>
+                  <div class="card-body">
+                    <div class="row">
+                      <!-- Blog Image -->
+                      <div class="col-md-4 mb-3 mb-md-0">
+                        <label class="form-label small">Blog Image</label>
+                        <input type="file" class="form-control form-control-sm" id="blogImageUpload" 
+                               accept="image/*" required>
+                        <div class="invalid-feedback">
+                          Please select a blog image.
+                        </div>
+                        <div class="image-preview ratio ratio-16x9 bg-light rounded overflow-hidden mt-2" id="blogImagePreview">
+                          <div class="d-flex align-items-center justify-content-center text-muted">
+                            <i class="bi bi-image me-2"></i> No image
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <!-- Blog Details -->
+                      <div class="col-md-8">
+                        <div class="mb-3">
+                          <label class="form-label small">Blog Title</label>
+                          <input type="text" class="form-control form-control-sm" id="blogTitle" 
+                                 placeholder="Enter blog title" required>
+                          <div class="invalid-feedback">
+                            Please provide a blog title.
+                          </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                          <label class="form-label small">Blog Content</label>
+                          <div class="d-flex justify-content-end mb-2">
+                            <button type="button" class="btn btn-sm btn-success gemini-btn" data-bs-toggle="modal" data-bs-target="#blogGeminiModal">
+                              <i class="fas fa-robot"></i> Generate Content
+                            </button>
+                          </div>
+                          <div id="editor"></div>
+                          <div class="invalid-feedback">
+                            Please provide blog content.
+                          </div>
+                        </div>
+                        
+                        <div class="text-end mt-3">
+                          <button type="button" class="btn btn-primary btn-sm" id="saveBlogBtn">
+                            <i class="bi bi-plus-circle me-1"></i> Save Blog
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Blog Preview Container -->
+                <div id="blogPreviewContainer" class="mt-4 d-none">
+                  <h6 class="fw-semibold border-bottom pb-2 mb-3">Saved Blogs</h6>
+                  <div id="savedBlogsGrid" class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+                    <!-- Saved blogs will appear here -->
+                    </div>
+                  </div>
+              </div>
+            </div>
+            
+            <div class="d-grid gap-2">
+              <button type="submit" class="btn btn-primary">
+                <i class="bi bi-save me-2"></i> Save Blog Section
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -172,11 +644,38 @@
     <i class="bi bi-check-circle-fill me-2"></i>
     <div>
       <strong>Category created successfully!</strong>
+      <p class="mb-0">You can now add sections to your category.</p>
+    </div>
+  </div>
+</div>
+
+<!-- Add Gemini Prompt Modal for Blog Content -->
+<div class="modal fade" id="blogGeminiModal" tabindex="-1" aria-labelledby="blogGeminiModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="blogGeminiModalLabel">Generate Content with Gemini AI</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3">
+          <label for="blogGeminiPromptInput" class="form-label">Enter your prompt</label>
+          <textarea class="form-control" id="blogGeminiPromptInput" rows="3" placeholder="Describe the content you want to generate..."></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-success" id="generateBlogContentBtn">
+          <i class="fas fa-robot me-2"></i>Generate Content
+        </button>
+      </div>
     </div>
   </div>
 </div>
 
 <style>
+  /* ... existing styles ... */
+
   /* Alert container styles */
   .alert-container {
     min-width: 300px;
@@ -200,442 +699,1432 @@
       opacity: 1;
     }
   }
-
-  /* Add styles for Lucide icons */
-  [data-lucide] {
-    width: 1em;
-    height: 1em;
-    stroke-width: 1.5;
-    vertical-align: -0.125em;
-  }
-
-  /* Loader styles */
-  .loader-container {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(255, 255, 255, 0.95);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 9999;
-    backdrop-filter: blur(5px);
-  }
-
-  .loader-content {
-    text-align: center;
-    padding: 2.5rem;
-    background-color: white;
-    border-radius: 1.5rem;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-    min-width: 320px;
-    max-width: 90%;
-    width: 480px;
-  }
-
-  .loader-animation {
-    position: relative;
-    width: 80px;
-    height: 80px;
-    margin: 0 auto;
-  }
-
-  .pulse-ring {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    border: 3px solid var(--bs-primary);
-    opacity: 0;
-    animation: pulse 2s ease-out infinite;
-  }
-
-  .icon-container {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 50px;
-    height: 50px;
-    background: var(--bs-primary);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .icon-container i {
-    color: white;
-    font-size: 24px;
-    animation: bounce 1s ease infinite;
-  }
-
-  .generation-title {
-    font-weight: 600;
-    background: linear-gradient(45deg, var(--bs-primary), #4a90e2);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    margin-bottom: 0;
-  }
-
-  .progress {
-    background-color: rgba(var(--bs-primary-rgb), 0.1);
-    border-radius: 10px;
+  
+  /* Blog Preview Styles */
+  .blog-preview-card {
+    transition: all 0.2s ease;
+    border-radius: 8px;
     overflow: hidden;
   }
-
-  .steps-indicator {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 1.5rem;
-    padding: 0 1rem;
+  
+  .blog-preview-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1) !important;
   }
-
-  .step {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.5rem;
-    opacity: 0.5;
-    transition: opacity 0.3s ease;
+  
+  .blog-card-gradient {
+    background: linear-gradient(to top, rgba(0,0,0,0.6), rgba(0,0,0,0));
+    height: 40px;
   }
-
-  .step.active {
+  
+  .blog-preview-card .btn-close {
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    padding: 0.4rem;
+    width: auto;
+    height: auto;
+  }
+  
+  .blog-preview-card:hover .btn-close {
     opacity: 1;
   }
-
-  .step.completed {
-    opacity: 1;
-    color: var(--bs-primary);
+  
+  .blog-preview-card .card-img-top {
+    transition: transform 0.3s ease;
+  }
+  
+  .blog-preview-card:hover .card-img-top {
+    transform: scale(1.05);
   }
 
-  .step-icon {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    background: #f8f9fa;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.3s ease;
+  /* Gemini Button Styles */
+  .gemini-btn {
+    background-color: rgba(25, 135, 84, 0.8);
+    border: none;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    transition: all 0.2s ease;
   }
 
-  .step.active .step-icon {
-    background: var(--bs-primary);
-    color: white;
+  .gemini-btn:hover {
+    background-color: rgba(25, 135, 84, 1);
     transform: scale(1.1);
   }
 
-  .step.completed .step-icon {
-    background: var(--bs-primary);
-    color: white;
-  }
-
-  @keyframes pulse {
-    0% {
-      transform: scale(0.8);
-      opacity: 0.5;
-    }
-    100% {
-      transform: scale(1.5);
-      opacity: 0;
-    }
-  }
-
-  @keyframes bounce {
-    0%, 100% {
-      transform: translateY(0);
-    }
-    50% {
-      transform: translateY(-5px);
-    }
-  }
-
-  /* Responsive adjustments */
-  @media (max-width: 576px) {
-    .loader-content {
-      padding: 1.5rem;
-      width: 90%;
-    }
-
-    .steps-indicator {
-      flex-wrap: wrap;
-      gap: 1rem;
-      justify-content: center;
-    }
-
-    .step {
-      flex: 0 0 auto;
-      width: 60px;
-    }
+  .gemini-btn i {
+    font-size: 0.875rem;
   }
 </style>
 
+<script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/decoupled-document/ckeditor.js"></script>
 <script>
-  
   document.addEventListener('DOMContentLoaded', function() {
-    const categoryForm = document.getElementById('newCategoryForm');
-    const heroSectionForm = document.getElementById('heroSectionForm');
-    const heroForm = document.getElementById('heroForm');
-    const categoryImageInput = document.getElementById('categoryImage');
-    const categoryImagePreview = document.querySelector('.image-preview');
-    const heroImageInput = document.getElementById('heroImage');
-    const heroImagePreview = document.querySelector('#heroSectionForm .image-preview');
-        // Define token once at the top level
-    const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4MDQ5MWRmMzljZmYwNTljMDY1NWZkMSIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc0NTI5ODM4MCwiZXhwIjoxNzQ1Mzg0NzgwfQ._XjN76nKvPZcxOT8TLWvfdfA-0KzqGjHwnZWX5YdntA";
+    // API Configuration
+    const API_CONFIG = {
+      BASE_URL: 'https://airbrush-admin-backend.onrender.com', // Change this to your actual backend URL
+      ENDPOINTS: {
+        IMAGES: '/api/images',
+        CATEGORIES: '/api/categories',
+        SECTIONS: '/api/sections',
+        CONTENT: '/api/content'
+      }
+    };
 
-    const showAlert = (message, type = 'success') => {
-        // Create alert container if it doesn't exist
-        let alertContainer = document.querySelector('.alert-container');
-        if (!alertContainer) {
-          alertContainer = document.createElement('div');
-          alertContainer.className = 'alert-container';
-          document.body.appendChild(alertContainer);
-        }
-
-        const alertDiv = document.createElement('div');
-        alertDiv.className = `alert alert-${type} alert-dismissible fade show py-2 px-3 mb-2`;
-        alertDiv.style.fontSize = '0.875rem';
-        alertDiv.innerHTML = `
-          <strong>${type === 'success' ? 'Success!' : type === 'danger' ? 'Error!' : 'Note:'}</strong> ${message}
-          <button type="button" class="btn-close btn-close-sm" data-bs-dismiss="alert" aria-label="Close"></button>
-        `;
+    // Reusable error alert function
+    function showErrorAlert(error, duration = 5000) {
+      const errorAlert = document.createElement('div');
+      errorAlert.className = 'alert alert-danger d-flex align-items-center mb-0';
+      errorAlert.innerHTML = `
+        <i class="bi bi-exclamation-circle-fill me-2"></i>
+        <div>
+          <strong>Error!</strong>
+          <p class="mb-0">${error.message || error || 'An unexpected error occurred.'}</p>
+        </div>
+      `;
+      
+      const alertContainer = document.querySelector('.alert-container');
+      if (alertContainer) {
+        alertContainer.appendChild(errorAlert);
         
-        // Add alert to the container
-        alertContainer.appendChild(alertDiv);
+        // Add animation class
+        errorAlert.classList.add('slide-in');
         
-        // Remove alert after 4 seconds
+        // Remove after duration
         setTimeout(() => {
-          alertDiv.classList.add('fade');
+          errorAlert.classList.add('slide-out');
           setTimeout(() => {
-            alertDiv.remove();
-            // Remove container if it's empty
-            if (alertContainer.children.length === 0) {
-              alertContainer.remove();
-            }
-          }, 300);
-        }, 4000);
-      };
+            errorAlert.remove();
+          }, 300); // Match the animation duration
+        }, duration);
+      }
+    }
 
-    // Handle category image preview
-    if (categoryImageInput && categoryImagePreview) {
-      categoryImageInput.addEventListener('change', function(event) {
-        const file = event.target.files[0];
-            if (file) {
-              const objectUrl = URL.createObjectURL(file);
-          categoryImagePreview.innerHTML = `
-            <img src="${objectUrl}" class="w-100 h-100 object-fit-contain" alt="Category Preview">
-          `;
-          categoryImageInput.addEventListener('change', function() {
-            URL.revokeObjectURL(objectUrl);
+    // Add styles for error alerts
+    const style = document.createElement('style');
+    style.textContent = `
+      .slide-in {
+        animation: slideIn 0.3s ease-out;
+      }
+      
+      .slide-out {
+        animation: slideOut 0.3s ease-out;
+      }
+      
+      @keyframes slideIn {
+        from {
+          transform: translateX(100%);
+          opacity: 0;
+        }
+        to {
+          transform: translateX(0);
+          opacity: 1;
+        }
+      }
+      
+      @keyframes slideOut {
+        from {
+          transform: translateX(0);
+          opacity: 1;
+        }
+        to {
+          transform: translateX(100%);
+          opacity: 0;
+        }
+      }
+    `;
+    document.head.appendChild(style);
+
+    const categoryForm = document.getElementById('newCategoryForm');
+    const sectionForms = document.getElementById('sectionForms');
+    let createdCategoryId = null;
+    let createdCategory = null; // Store the full category object
+    
+    // Add Bootstrap tab event handlers
+    const tabList = document.querySelectorAll('button[data-bs-toggle="tab"]');
+    tabList.forEach(tabEl => {
+      tabEl.addEventListener('shown.bs.tab', event => {
+          const targetTab = event.target.getAttribute('data-bs-target');
+        console.log('Tab activated:', targetTab);
+          
+        // Set category ID on all forms when tabs change
+          if (createdCategoryId) {
+      document.querySelectorAll('input[name="categoryId"]').forEach(input => {
+        input.value = createdCategoryId;
           });
-        } else {
-          categoryImagePreview.innerHTML = `
-                  <div class="d-flex align-items-center justify-content-center text-muted h-100">
-                    <i class="bi bi-image me-2"></i> 
-                    <i data-lucide="image" class="me-2"></i>
-                    No image selected
-                  </div>
-                `;
+        }
+      });
+    });
+    
+    // Initialize tab activation events
+    const tabElements = document.querySelectorAll('button[data-bs-toggle="tab"]');
+    console.log('Found tab elements:', tabElements.length);
+    
+    // Add event listener to the gallery tab content
+    const galleryTabContent = document.getElementById('gallery');
+    if (galleryTabContent) {
+      console.log('Gallery tab content found');
+      
+      // Add event listener for when the tab content becomes visible
+      const observer = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+          if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+            const isActive = galleryTabContent.classList.contains('show');
+            console.log('Gallery tab content visibility changed:', isActive);
+            
+            if (isActive) {
+              // Get content ID from URL
+              const urlParams = new URLSearchParams(window.location.search);
+              const contentId = urlParams.get('id');
+              console.log('Content ID from URL:', contentId);
+              
+              if (contentId) {
+                console.log('Fetching gallery content for ID:', contentId);
+                fetchGalleryContent(contentId);
+              }
+            }
+          }
+        });
+      });
+      
+      // Start observing the gallery tab content
+      observer.observe(galleryTabContent, {
+        attributes: true,
+        attributeFilter: ['class']
+      });
+    } else {
+      console.error('Gallery tab content not found!');
+    }
+
+    // Also add direct click handler for gallery tab
+    const galleryTab = document.getElementById('gallery-tab');
+    if (galleryTab) {
+      console.log('Gallery tab button found');
+      
+      galleryTab.addEventListener('click', function() {
+        console.log('Gallery tab clicked');
+        
+        // Get content ID from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const contentId = urlParams.get('id');
+        console.log('Content ID from URL (click):', contentId);
+        
+        if (contentId) {
+          console.log('Fetching gallery content for ID (click):', contentId);
+          fetchGalleryContent(contentId);
         }
       });
     }
-
-    // Handle hero image preview
-    if (heroImageInput && heroImagePreview) {
-      heroImageInput.addEventListener('change', function(event) {
-        const file = event.target.files[0];
+    
+    // Function to initialize image previews for a specific tab
+    function initializeImagePreviews(tabId) {
+      console.log('Initializing image previews for tab:', tabId);
+      
+      // Select all file inputs within the tab
+      const fileInputs = document.querySelectorAll(`${tabId} input[type="file"]`);
+      console.log(`Found ${fileInputs.length} file inputs`);
+      
+      // Add change event listeners to each file input
+      fileInputs.forEach((input, index) => {
+        console.log(`Setting up file input ${index + 1} in ${tabId}`);
+        
+        // Find the closest preview container
+        let previewContainer;
+        
+        // Try different strategies to find the preview container
+        if (tabId === '#hero') {
+          previewContainer = document.querySelector('#hero .image-preview');
+        } else if (input.closest('.col-md-4')) {
+          previewContainer = input.closest('.col-md-4').querySelector('.image-preview');
+        } else if (input.nextElementSibling && input.nextElementSibling.classList.contains('image-preview')) {
+          previewContainer = input.nextElementSibling;
+        } else if (input.closest('.mb-3') && input.closest('.mb-3').nextElementSibling) {
+          previewContainer = input.closest('.mb-3').nextElementSibling;
+        } else {
+          // Last resort - find nearby image-preview by traversing up and then down
+          const parent = input.closest('.card-body') || input.closest('form') || input.parentElement;
+          if (parent) {
+            previewContainer = parent.querySelector('.image-preview');
+          }
+        }
+        
+        if (previewContainer) {
+          console.log(`Found preview container for input ${index + 1}`);
+          
+          // Remove existing event listeners by cloning and replacing
+          const newInput = input.cloneNode(true);
+          input.parentNode.replaceChild(newInput, input);
+          
+          // Add the new change event listener
+          newInput.addEventListener('change', function(event) {
+            console.log(`File input ${index + 1} changed:`, this.files);
+            const file = this.files[0];
+            
             if (file) {
+              // Create object URL for preview
               const objectUrl = URL.createObjectURL(file);
-          heroImagePreview.innerHTML = `
-            <img src="${objectUrl}" class="w-100 h-100 object-fit-contain" alt="Hero Preview">
-          `;
-          heroImageInput.addEventListener('change', function() {
-            URL.revokeObjectURL(objectUrl);
+              console.log('Created object URL:', objectUrl);
+              
+              // Update preview with consistent styling
+              previewContainer.innerHTML = `<img src="${objectUrl}" class="w-100 h-100 object-fit-cover" alt="Preview">`;
+              
+              // Clean up object URL when input changes again
+              const nextChangeHandler = () => {
+                URL.revokeObjectURL(objectUrl);
+                newInput.removeEventListener('change', nextChangeHandler);
+              };
+              
+              newInput.addEventListener('change', nextChangeHandler);
+            } else {
+              // Reset preview if no file selected
+              previewContainer.innerHTML = `
+                <div class="d-flex align-items-center justify-content-center text-muted h-100">
+                  <i class="bi bi-image me-2"></i> No image selected
+                </div>
+              `;
+            }
           });
         } else {
-          heroImagePreview.innerHTML = `
+          console.warn(`No preview container found for file input ${index + 1} in ${tabId}`);
+        }
+      });
+      
+      // Tab-specific initialization
+      if (tabId === '#gallery') {
+        // Initialize Save Gallery Image buttons
+        document.querySelectorAll(`${tabId} .save-gallery-image`).forEach(saveButton => {
+          // Remove existing event listeners by cloning and replacing
+          const newSaveButton = saveButton.cloneNode(true);
+          saveButton.parentNode.replaceChild(newSaveButton, saveButton);
+          
+          // Add click event listener to the new button
+          newSaveButton.addEventListener('click', async function() {
+            // Get the gallery image item container
+            const galleryItem = this.closest('.gallery-image-item');
+            
+            if (!galleryItem) {
+              console.error('Gallery item container not found');
+              return;
+            }
+            
+            // Get form values
+            const fileInput = galleryItem.querySelector('.gallery-image-upload');
+            const titleInput = galleryItem.querySelector('.gallery-image-title');
+            const promptInput = galleryItem.querySelector('.gallery-image-prompt');
+            const previewContainer = galleryItem.querySelector('.image-preview');
+            
+            // Apply Bootstrap validation
+            galleryItem.classList.add('was-validated');
+            
+            // Validate required fields
+            if (!fileInput || !titleInput) {
+              console.error('Required form elements not found');
+              return;
+            }
+            
+            // Validate input values
+            let isValid = true;
+            
+            // Check if image is selected or already exists
+            const imageElement = previewContainer.querySelector('img');
+            if (!imageElement && (!fileInput.files || fileInput.files.length === 0)) {
+              fileInput.setCustomValidity('Please select an image');
+              isValid = false;
+            } else {
+              fileInput.setCustomValidity('');
+            }
+            
+            // Check title
+            if (!titleInput.value.trim()) {
+              titleInput.setCustomValidity('Please provide a title');
+              isValid = false;
+            } else {
+              titleInput.setCustomValidity('');
+            }
+            
+            // If validation failed, stop here
+            if (!isValid) {
+              return;
+            }
+            
+            // Show loading state
+            const originalBtnText = this.innerHTML;
+            this.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Saving...';
+            this.disabled = true;
+            
+            try {
+              // Determine image URL - either from existing element or upload new file
+              let imageUrl;
+              
+              if (fileInput.files && fileInput.files.length > 0) {
+                // Upload the file to Cloudinary
+                const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4MDQ5MWRmMzljZmYwNTljMDY1NWZkMSIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc0NTI5ODM4MCwiZXhwIjoxNzQ1Mzg0NzgwfQ._XjN76nKvPZcxOT8TLWvfdfA-0KzqGjHwnZWX5YdntA";
+                imageUrl = await uploadImage(fileInput.files[0], token);
+                
+                if (!imageUrl) {
+                  throw new Error('Failed to upload image');
+                }
+              } else {
+                throw new Error('No image source available');
+              }
+              
+              // Create gallery image data object with Cloudinary URL
+              const imageData = {
+                url: imageUrl,
+                title: titleInput.value,
+                prompt: promptInput ? promptInput.value : '',
+                timestamp: new Date().getTime()
+              };
+              
+              // Display the saved image
+              displaySavedImage(imageData);
+              
+              // Reset form fields
+              if (titleInput) titleInput.value = '';
+              if (promptInput) promptInput.value = '';
+              
+              // Reset image preview
+              if (previewContainer) {
+                previewContainer.innerHTML = `
+                  <div class="d-flex align-items-center justify-content-center text-muted h-100">
+                    <i class="bi bi-image me-2"></i> No image selected
+                  </div>
+                `;
+              }
+              
+              // Clear file input
+              if (fileInput) {
+                fileInput.value = '';
+              }
+              
+              // Show success message
+              const successAlert = document.createElement('div');
+              successAlert.className = 'alert alert-success d-flex align-items-center mb-0';
+              successAlert.innerHTML = `
+                <i class="bi bi-check-circle-fill me-2"></i>
+                <div>
+                  <strong>Image saved!</strong>
+                  <p class="mb-0">The image has been added to the gallery.</p>
+                </div>
+              `;
+              
+              // Add to alert container
+              const alertContainer = document.querySelector('.alert-container');
+              if (alertContainer) {
+                alertContainer.appendChild(successAlert);
+                
+                // Hide after 3 seconds
+                setTimeout(() => {
+                  successAlert.remove();
+                }, 3000);
+              }
+            } catch (error) {
+              console.error('Error saving image:', error);
+              showErrorAlert(error);
+            } finally {
+              // Restore button state
+              this.innerHTML = originalBtnText;
+              this.disabled = false;
+            }
+          });
+        });
+      } else if (tabId === '#why') {
+        // Initialize Why Use Tool specific image preview
+        const whyToolImage = document.querySelector('#whyUseToolImage');
+        const whyToolPreview = document.querySelector('#whyUseToolImagePreview');
+        
+        if (whyToolImage && whyToolPreview) {
+          whyToolImage.addEventListener('change', function() {
+            const file = this.files[0];
+            if (file) {
+              const objectUrl = URL.createObjectURL(file);
+              whyToolPreview.innerHTML = `<img src="${objectUrl}" class="w-100 h-100 object-fit-cover" alt="Why Use Tool Preview">`;
+              
+              // Clean up on next change
+              whyToolImage.addEventListener('change', function() {
+                URL.revokeObjectURL(objectUrl);
+              }, { once: true });
+            } else {
+              whyToolPreview.innerHTML = `
+                <div class="d-flex align-items-center justify-content-center text-muted">
+                  <i class="bi bi-image fs-3 me-2"></i> 
+                  <span>Preview will appear here</span>
+                </div>
+              `;
+            }
+          });
+        }
+      } else if (tabId === '#text-to-anything') {
+        // Initialize Text to Anything specific image previews
+        const mainImage = document.querySelector('#textToAnythingMainImage');
+        const mainImagePreview = document.querySelector('#textToAnythingMainImagePreview');
+        
+        if (mainImage && mainImagePreview) {
+          mainImage.addEventListener('change', function() {
+            const file = this.files[0];
+            if (file) {
+              const objectUrl = URL.createObjectURL(file);
+              mainImagePreview.innerHTML = `<img src="${objectUrl}" class="w-100 h-100 object-fit-cover" alt="Main Banner Preview">`;
+              
+              // Clean up on next change
+              mainImage.addEventListener('change', function() {
+                URL.revokeObjectURL(objectUrl);
+              }, { once: true });
+            } else {
+              mainImagePreview.innerHTML = `
+                <div class="d-flex align-items-center justify-content-center text-muted">
+                  <i class="bi bi-image fs-3 me-2"></i> 
+                  <span>Banner preview will appear here</span>
+                </div>
+              `;
+            }
+          });
+        }
+      }
+    }
+    
+    // Initialize image previews for all tabs on page load
+    ['#hero', '#gallery', '#why', '#text-to-anything', '#blogs'].forEach(tabId => {
+      initializeImagePreviews(tabId);
+    });
+
+    // Initialize Save Gallery Image buttons
+    document.querySelectorAll('.save-gallery-image').forEach(saveButton => {
+      saveButton.addEventListener('click', async function() {
+        // Get the gallery image item container
+        const galleryItem = this.closest('.gallery-image-item');
+        
+        if (!galleryItem) {
+          console.error('Gallery item container not found');
+          return;
+        }
+        
+        // Get form values
+        const fileInput = galleryItem.querySelector('.gallery-image-upload');
+        const titleInput = galleryItem.querySelector('.gallery-image-title');
+        const descriptionInput = galleryItem.querySelector('.gallery-image-description');
+        const promptInput = galleryItem.querySelector('.gallery-image-prompt');
+        const featuredCheckbox = galleryItem.querySelector('.gallery-image-featured');
+        const previewContainer = galleryItem.querySelector('.image-preview');
+        
+        // Apply Bootstrap validation
+        galleryItem.classList.add('was-validated');
+        
+        // Validate required fields
+        if (!fileInput || !titleInput || !descriptionInput) {
+          console.error('Required form elements not found');
+          return;
+        }
+        
+        // Validate input values
+        let isValid = true;
+        
+        // Check if image is selected or already exists
+        const imageElement = previewContainer.querySelector('img');
+        if (!imageElement && (!fileInput.files || fileInput.files.length === 0)) {
+          fileInput.setCustomValidity('Please select an image');
+          isValid = false;
+        } else {
+          fileInput.setCustomValidity('');
+        }
+        
+        // Check title
+        if (!titleInput.value.trim()) {
+          titleInput.setCustomValidity('Please provide a title');
+          isValid = false;
+        } else {
+          titleInput.setCustomValidity('');
+        }
+        
+        // If validation failed, stop here
+        if (!isValid) {
+          return;
+        }
+        
+        // Show loading state
+        const originalBtnText = this.innerHTML;
+        this.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Saving...';
+        this.disabled = true;
+        
+        try {
+          // Determine image URL - either from existing element or upload new file
+          let imageUrl;
+          
+          if (fileInput.files && fileInput.files.length > 0) {
+            // Upload the file to Cloudinary
+            const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4MDQ5MWRmMzljZmYwNTljMDY1NWZkMSIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc0NTI5ODM4MCwiZXhwIjoxNzQ1Mzg0NzgwfQ._XjN76nKvPZcxOT8TLWvfdfA-0KzqGjHwnZWX5YdntA";
+            imageUrl = await uploadImage(fileInput.files[0], token);
+            
+            if (!imageUrl) {
+              throw new Error('Failed to upload image');
+            }
+          } else {
+            throw new Error('No image source available');
+          }
+          
+          // Create gallery image data object with Cloudinary URL
+          const imageData = {
+            url: imageUrl,
+            title: titleInput.value,
+            prompt: promptInput ? promptInput.value : '',
+            timestamp: new Date().getTime()
+          };
+          
+          // Display the saved image
+          displaySavedImage(imageData);
+          
+          // Reset form fields
+          if (titleInput) titleInput.value = '';
+          if (descriptionInput) descriptionInput.value = '';
+          if (promptInput) promptInput.value = '';
+          if (featuredCheckbox) featuredCheckbox.checked = false;
+          
+          // Reset image preview
+          if (previewContainer) {
+            previewContainer.innerHTML = `
               <div class="d-flex align-items-center justify-content-center text-muted h-100">
                 <i class="bi bi-image me-2"></i> No image selected
               </div>
             `;
+          }
+          
+          // Clear file input
+          if (fileInput) {
+            fileInput.value = '';
+          }
+          
+          // Show success message
+          const successAlert = document.createElement('div');
+          successAlert.className = 'alert alert-success d-flex align-items-center mb-0';
+          successAlert.innerHTML = `
+            <i class="bi bi-check-circle-fill me-2"></i>
+            <div>
+              <strong>Image saved!</strong>
+              <p class="mb-0">The image has been added to the gallery.</p>
+            </div>
+          `;
+          
+          // Add to alert container
+          const alertContainer = document.querySelector('.alert-container');
+          if (alertContainer) {
+            alertContainer.appendChild(successAlert);
+            
+            // Hide after 3 seconds
+            setTimeout(() => {
+              successAlert.remove();
+            }, 3000);
+          }
+        } catch (error) {
+          console.error('Error saving image:', error);
+          showErrorAlert(error);
+        } finally {
+          // Restore button state
+          this.innerHTML = originalBtnText;
+          this.disabled = false;
         }
       });
-    }
-
-    // Handle category form submission
-    categoryForm.addEventListener('submit', async function(e) {
-      e.preventDefault();
-      e.stopPropagation();
+    });
+    
+    // Function to display a saved image in the saved images container
+    function displaySavedImage(imageData) {
+      // Get the saved images container
+      const savedImagesContainer = document.getElementById('savedGalleryImagesContainer');
+      const savedImagesGrid = document.getElementById('savedImagesGrid');
       
-      if (!this.checkValidity()) {
-        this.classList.add('was-validated');
+      if (!savedImagesContainer || !savedImagesGrid) {
+        console.error('Saved images container not found');
         return;
       }
       
-      const submitBtn = this.querySelector('button[type="submit"]');
-      const originalBtnText = submitBtn.innerHTML;
-      submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Creating...';
-      submitBtn.disabled = true;
+      // Create a card for the saved image
+      const imageCard = document.createElement('div');
+      imageCard.className = 'col';
+      imageCard.dataset.timestamp = imageData.timestamp;
+      
+      imageCard.innerHTML = `
+        <div class="card h-100 shadow-sm">
+          <div class="position-relative">
+            <img src="${imageData.url}" class="card-img-top" alt="${imageData.title}" style="height: 180px; object-fit: cover;">
+            ${imageData.featured ? '<span class="position-absolute top-0 start-0 badge bg-primary m-2">Featured</span>' : ''}
+            <button type="button" class="btn-close position-absolute top-0 end-0 m-2 bg-white remove-saved-image" 
+                  aria-label="Remove image"></button>
+          </div>
+          <div class="card-body">
+            <h6 class="card-title">${imageData.title}</h6>
+            ${imageData.prompt ? `<small class="text-muted d-block">Prompt: ${imageData.prompt}</small>` : ''}
+          </div>
+        </div>
+      `;
+      
+      // Add event listener for remove button
+      const removeBtn = imageCard.querySelector('.remove-saved-image');
+      if (removeBtn) {
+        removeBtn.addEventListener('click', function() {
+          imageCard.remove();
+          
+          // Check if any saved images remain
+          if (savedImagesGrid.children.length === 0) {
+            savedImagesContainer.classList.add('d-none');
+          }
+        });
+      }
+      
+      // Add the card to the grid
+      savedImagesGrid.appendChild(imageCard);
+      
+      // Show the saved images container
+      savedImagesContainer.classList.remove('d-none');
+    }
+
+    // Function to switch tabs using Bootstrap's API
+    function switchToTab(tabId) {
+      console.log('=== Tab Switching Debug ===');
+      console.log('Attempting to switch to tab:', tabId);
+      
+      // Get the tab button
+      const tabButton = document.querySelector(`[data-bs-target="${tabId}"]`);
+      if (!tabButton) {
+        console.error('Tab button not found:', tabId);
+        return;
+      }
+      
+      // Create a new Bootstrap Tab instance
+      const tab = new bootstrap.Tab(tabButton);
+      
+      // Show the tab
+      tab.show();
+      
+      console.log('Tab switch completed');
+    }
+    
+    // Function to initialize form submission for a specific tab
+    function initializeFormSubmission(tabId) {
+      let form;
+      
+      switch(tabId) {
+        case '#hero':
+          form = document.getElementById('heroSectionForm');
+          break;
+        case '#gallery':
+          form = document.getElementById('galleryForm');
+          break;
+        case '#why':
+          form = document.getElementById('whyUseToolForm');
+          break;
+        case '#text-to-anything':
+          form = document.getElementById('textToAnythingForm');
+          break;
+        case '#blogs':
+          form = document.getElementById('blogsForm');
+          break;
+        default:
+          return;
+      }
+
+      console.log('Form:', form);
+      
+      if (form) {
+        console.log('Initializing form submission for tab:', tabId);
+        
+        // Remove existing event listener
+        const newForm = form.cloneNode(true);
+        form.parentNode.replaceChild(newForm, form);
+        
+        // Re-add image preview event listeners for the new form
+        initializeImagePreviews(tabId);
+        
+        // Add submit event listener
+        newForm.addEventListener('submit', async function(event) {
+          event.preventDefault();
+          console.log('Form submitted for tab:', tabId);
+          
+          // Remove form validation check for "Save Gallery" button
+          // Show loading state
+          const submitBtn = newForm.querySelector('button[type="submit"]');
+          const originalBtnText = submitBtn.innerHTML;
+          submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Saving...';
+          submitBtn.disabled = true;
+          
+          try {
+            // Get form values with null checks
+            let title, description;
+            
+            if (tabId === '#text-to-anything') {
+              const titleInput = newForm.querySelector('#textToAnythingTitle');
+              const subtitleInput = newForm.querySelector('#textToAnythingSubtitle');
+              
+              if (!titleInput || !subtitleInput) {
+                throw new Error('Required form elements not found for Text to Anything section');
+              }
+              
+              title = titleInput.value;
+              description = subtitleInput.value;
+            } else {
+              const titleInput = newForm.querySelector('[name="title"]');
+              const descriptionInput = newForm.querySelector('[name="description"]');
+              
+              if (!titleInput || !descriptionInput) {
+                throw new Error('Required form elements not found');
+              }
+              
+              title = titleInput.value;
+              description = descriptionInput.value;
+            }
+            
+            const categoryId = createdCategoryId;
+            
+            if (!categoryId) {
+              throw new Error('Category ID not found. Please create a category first.');
+            }
+            
+            // Create section based on the tab
+            const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4MDQ5MWRmMzljZmYwNTljMDY1NWZkMSIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc0NTI5ODM4MCwiZXhwIjoxNzQ1Mzg0NzgwfQ._XjN76nKvPZcxOT8TLWvfdfA-0KzqGjHwnZWX5YdntA";
+            
+            let sectionName, sectionSlug, order;
+            switch(tabId) {
+              case '#hero':
+                sectionName = 'Hero Section';
+                sectionSlug = 'hero-section';
+                order = 1;
+                break;
+              case '#gallery':
+                sectionName = 'Images Gallery';
+                sectionSlug = 'images-gallery';
+                order = 2;
+                break;
+              case '#why':
+                sectionName = 'Why Use Tool';
+                sectionSlug = 'why-use-tool';
+                order = 3;
+                break;
+              case '#text-to-anything':
+                sectionName = 'Text to Anything';
+                sectionSlug = 'text-to-anything';
+                order = 4;
+                break;
+              case '#blogs':
+                sectionName = 'Blogs';
+                sectionSlug = 'blogs';
+                order = 5;
+                
+                // Check for exactly 4 blogs before creating any section
+                if (savedBlogs.length !== 4) {
+                  // Wrong number of blogs - show validation error
+                  const errorAlert = document.createElement('div');
+                  errorAlert.className = 'alert alert-danger d-flex align-items-center mb-0';
+                  errorAlert.innerHTML = `
+                    <i class="bi bi-exclamation-circle-fill me-2"></i>
+                    <div>
+                      <strong>Error!</strong>
+                      <p class="mb-0">You must add exactly 4 blogs before saving this section. You currently have ${savedBlogs.length} blog(s).</p>
+                    </div>
+                  `;
+                  
+                  const alertContainer = newForm.querySelector('.alert-container') || document.querySelector('.alert-container');
+                  if (alertContainer) {
+                    alertContainer.appendChild(errorAlert);
+                    
+                    setTimeout(() => {
+                      errorAlert.remove();
+                    }, 5000);
+                  }
+                  
+                  // Restore button state
+                  submitBtn.innerHTML = originalBtnText;
+                  submitBtn.disabled = false;
+                  
+                  return; // Stop form submission before creating section
+                }
+                break;
+            }
+            
+            // Create section data
+            const sectionData = {
+              name: sectionName,
+              slug: sectionSlug,
+              description: sectionName + ' section',
+              category: categoryId,
+              isFolder: false,
+              order: order,
+              isActive: true
+            };
+            
+            // Create section
+            console.log('Creating section with data:', sectionData);
+            const sectionResponse = await fetch('https://airbrush-admin-backend.onrender.com/api/sections', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+              },
+              body: JSON.stringify(sectionData)
+            });
+            
+            if (!sectionResponse.ok) {
+              const errorText = await sectionResponse.text();
+              console.error('Section creation failed. Status:', sectionResponse.status);
+              console.error('Error response:', errorText);
+              throw new Error('Failed to create section: ' + errorText);
+            }
+            
+            const sectionResult = await sectionResponse.json();
+            console.log('Section created:', sectionResult);
+            
+            // Process images and create content based on the tab
+            let contentData = {
+              section: sectionResult._id,
+              slug: `${sectionSlug}`,
+              title: title,
+              subtitle: description,
+              images: [],
+              fields: [],
+              isActive: true
+            };
+            
+            // Tab-specific processing
+            if (tabId === '#hero') {
+              // Process hero image
+              const heroImage = document.getElementById('heroImage');
+              if (heroImage && heroImage.files.length > 0) {
+                  const imageUrl = await uploadImage(heroImage.files[0], token);
+                  if (imageUrl) {
+                    contentData.images.push({
+                      url: imageUrl,
+                      alt: title,
+                      width: 1200,
+                      height: 600
+                    });
+                }
+              }
+            } else if (tabId === '#gallery') {
+              // Process gallery images from the saved images container
+              const savedImages = document.querySelectorAll('#savedImagesGrid .col');
+              console.log('Found saved images:', savedImages.length);
+              
+              if (savedImages.length > 0) {
+                // Process images from the savedImagesGrid
+                for (const savedImage of savedImages) {
+                  const imageElement = savedImage.querySelector('img');
+                  const imageTitle = savedImage.querySelector('.card-title');
+                  const imagePrompt = savedImage.querySelector('.text-muted');
+                  
+                  if (imageElement && imageElement.src) {
+                    contentData.images.push({
+                      url: imageElement.src,
+                      alt: 'image gallery alt',
+                      title: imageTitle ? imageTitle.textContent : '',
+                      prompt: imagePrompt ? imagePrompt.textContent.replace('Prompt: ', '') : '',
+                      width: 800,
+                      height: 600
+                    });
+                  }
+                }
+                console.log('Images to save:', contentData.images);
+              } else {
+                // Fallback to legacy gallery items if no saved images found
+              const galleryItems = document.querySelectorAll('.gallery-image-item');
+              for (const item of galleryItems) {
+                const fileInput = item.querySelector('.gallery-image-upload');
+                if (fileInput && fileInput.files.length > 0) {
+                  const imageUrl = await uploadImage(fileInput.files[0], token);
+                  if (imageUrl) {
+                  contentData.images.push({
+                    url: imageUrl,
+                      alt: item.querySelector('.gallery-image-title')?.value,
+                      title: item.querySelector('.gallery-image-title')?.value,
+                      prompt: item.querySelector('.gallery-image-prompt')?.value,
+                    width: 800,
+                    height: 600
+                  });
+                  }
+                } else if (item.querySelector('.image-preview img')) {
+                  // Handle existing images
+                  const existingImage = {
+                    url: item.querySelector('.image-preview img').src,
+                    alt: item.querySelector('.gallery-image-title')?.value,
+                    title: item.querySelector('.gallery-image-title')?.value,
+                    prompt: item.querySelector('.gallery-image-prompt')?.value,
+                    width: 800,
+                    height: 600
+                  };
+                  contentData.images.push(existingImage);
+                  }
+                }
+              }
+            } else if (tabId === '#why') {
+              // Process why use tool
+              const whyImage = document.getElementById('whyUseToolImage');
+              if (whyImage && whyImage.files.length > 0) {
+                const imageUrl = await uploadImage(whyImage.files[0], token);
+                if (imageUrl) {
+                  contentData.images.push({
+                    url: imageUrl,
+                    alt: title,
+                    width: 600,
+                    height: 400
+                  });
+                }
+              }
+              
+              // Add feature points with improved error handling
+              try {
+                for (let i = 1; i <= 5; i++) {
+                  const featureId = `whyUseToolFeature${i}`;
+                  const featureInput = document.getElementById(featureId);
+                  
+                  // Only add if element exists and has a value
+                  if (featureInput && featureInput.value && featureInput.value.trim() !== '') {
+                    contentData.fields.push({
+                      value: featureInput.value.trim(),
+                      order: i - 1
+                    });
+                  }
+                }
+              } catch (featureError) {
+                console.warn('Error processing feature points:', featureError);
+                // Continue without blocking the form submission
+              }
+            } else if (tabId === '#text-to-anything') {
+              // Process text to anything images
+              const mainImage = document.getElementById('textToAnythingMainImage');
+              if (mainImage && mainImage.files.length > 0) {
+                const imageUrl = await uploadImage(mainImage.files[0], token);
+                if (imageUrl) {
+                  contentData.images.push({
+                    url: imageUrl,
+                    alt: title,
+                    width: 1200,
+                    height: 600,
+                    isMain: true
+                  });
+                }
+              }
+              
+              // Process example images if present
+              const exampleImages = document.querySelectorAll('[data-image-id]');
+              for (let i = 0; i < exampleImages.length; i++) {
+                const imgElement = exampleImages[i].querySelector('img');
+                if (imgElement && imgElement.src) {
+                  // For simplicity, we assume example images are already uploaded
+                  // In a real implementation, you might need to upload these too
+                  contentData.images.push({
+                    url: imgElement.src,
+                    alt: `Example ${i + 1}`,
+                    width: 600,
+                    height: 600,
+                    order: i + 1,
+                    isExample: true
+                  });
+                }
+              }
+            } else if (tabId === '#blogs') {
+              // Process saved blogs
+              // Add blogs to content data
+              savedBlogs.forEach(blog => {
+                contentData.fields.push({
+                  name: 'blog',
+                  value: {
+                    title: blog.title,
+                    content: blog.content,
+                    url: blog.imageUrl,
+                    isLead: blog.isLead
+                  }
+                });
+              });
+            }
+            
+            // Create content
+            const contentResponse = await fetch('https://airbrush-admin-backend.onrender.com/api/content', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+              },
+              body: JSON.stringify(contentData)
+            });
+            
+            if (!contentResponse.ok) {
+              throw new Error('Content creation failed: ' + contentResponse.statusText);
+            }
+            
+            const contentResult = await contentResponse.json();
+            console.log(`${sectionName} content created:`, contentResult);
+            
+            // If it's the hero section, switch to gallery
+            if (tabId === '#hero') {
+            // Show success message
+              const successAlert = document.createElement('div');
+              successAlert.className = 'alert alert-success d-flex align-items-center mb-0';
+              successAlert.innerHTML = `
+                <i class="bi bi-check-circle-fill me-2"></i>
+                <div>
+                  <strong>Hero Section created successfully!</strong>
+                  <p class="mb-0">Moving to Images Gallery section...</p>
+                </div>
+              `;
+              
+              // Add to alert container
+              const alertContainer = document.querySelector('.alert-container');
+              if (alertContainer) {
+                alertContainer.appendChild(successAlert);
+                
+                // Hide after 3 seconds
+                setTimeout(() => {
+                  successAlert.remove();
+                }, 3000);
+              }
+              
+              // Switch to gallery section
+              switchSection('hero', 'gallery');
+            } else {
+              // Show regular success message for other sections
+              const successAlert = document.createElement('div');
+              successAlert.className = 'alert alert-success d-flex align-items-center mb-0';
+              successAlert.innerHTML = `
+                <i class="bi bi-check-circle-fill me-2"></i>
+                <div>
+                  <strong>${sectionName} created successfully!</strong>
+                  <p class="mb-0">You can now proceed to the next section.</p>
+                </div>
+              `;
+              
+              // Add to alert container
+              const alertContainer = document.querySelector('.alert-container');
+              if (alertContainer) {
+                alertContainer.appendChild(successAlert);
+                
+                // Hide after 3 seconds
+                setTimeout(() => {
+                  successAlert.remove();
+                }, 3000);
+              }
+
+              // Switch to next section based on current tab
+              if (tabId === '#hero') {
+                switchSection('hero', 'gallery');
+              } else if (tabId === '#gallery') {
+                switchSection('gallery', 'why');
+              } else if (tabId === '#why') {
+                switchSection('why', 'text-to-anything');
+              } else if (tabId === '#text-to-anything') {
+                switchSection('text-to-anything', 'blogs');
+              }
+            }
+            
+            // Reset form
+            newForm.reset();
+            newForm.classList.remove('was-validated');
+            
+            // Reset image previews
+            newForm.querySelectorAll('.image-preview').forEach(preview => {
+              preview.innerHTML = `
+                <div class="d-flex align-items-center justify-content-center text-muted h-100">
+                  <i class="bi bi-image me-2"></i> No image selected
+                </div>
+              `;
+            });
+            
+          } catch (error) {
+            console.error('Error creating section:', error);
+            showErrorAlert(error);
+          } finally {
+            // Restore button state
+            submitBtn.innerHTML = originalBtnText;
+            submitBtn.disabled = false;
+          }
+        });
+      } else {
+        console.warn('Form not found for tab:', tabId);
+      }
+    }
+    
+    // Helper function to upload an image
+    async function uploadImage(file, token) {
+      if (!file) return null;
       
       try {
-        // Get form data
-        const formData = new FormData(this);
-        const categoryName = formData.get('categoryName');
-        const categorySlug = formData.get('categorySlug') || categoryName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
-        const categoryDescription = formData.get('categoryDescription');
+        const formData = new FormData();
+        formData.append('images', file);
+        console.log("Uploading file:", file.name);
+        console.log("File size:", file.size);
+        console.log("File type:", file.type);
         
-        const categoryData = {
-          name: categoryName,
-          slug: categorySlug,
-          description: categoryDescription,
-          isActive: true
-        };
-        
-        // Upload category image
-        const categoryImage = formData.get('categoryImage');
-        if (!categoryImage) {
-          throw new Error('Please select a category image');
-        }
-
-        // Validate image file
-        if (!categoryImage.type.startsWith('image/')) {
-          throw new Error('Please select a valid image file');
-        }
-
-        // Check file size (max 2MB)
-        const maxSize = 2 * 1024 * 1024; // 2MB in bytes
-        if (categoryImage.size > maxSize) {
-          throw new Error('Image size should be less than 2MB');
-        }
-
-
-        console.log('Uploading category image...');
-        const imageUrl = await uploadImage(categoryImage, token);
-        if (!imageUrl) {
-          throw new Error('Failed to upload category image');
-        }
-        console.log('Category image uploaded:', imageUrl);
-        
-        // Add image URL to category data
-        categoryData.image = imageUrl;
-
-        // Create category
-        console.log('Creating category with data:', categoryData);
-        const response = await fetch('https://airbrush-admin-backend.onrender.com/api/categories', {
+        const response = await fetch(`${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.IMAGES}`, {
           method: 'POST',
           headers: {
-            'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`
           },
-          body: JSON.stringify(categoryData)
+          body: formData
         });
         
         if (!response.ok) {
-          const errorData = await response.json().catch(() => response.text());
-          throw new Error(typeof errorData === 'string' ? errorData : errorData.message || 'Failed to create category');
+          const errorText = await response.text();
+          console.error('Image upload failed with status:', response.status);
+          console.error('Error response:', errorText);
+          throw new Error(`Image upload failed: ${response.status} ${response.statusText}`);
         }
         
         const result = await response.json();
-        console.log('Category created:', result);
-            
-        if (!result._id) {
-          throw new Error('Category created but no ID returned');
-        }
-
-        // Update routes after category creation
-        try {
-          const result = await updateRoutes();
-          if (result.success) {
-            console.log('Routes updated successfully:', result.message);
-          } else {
-            console.warn('Routes update warning:', result.message);
-          }
-        } catch (error) {
-          console.warn('Routes update warning:', error);
-        }
-            
-        // Show initial success message
-        showAlert('Category created successfully! Starting AI image generation...', 'success');
-
-        // Start AI image generation in the background
-        Promise.resolve(generateImageAndContent('', categoryName, categoryDescription, result._id))
-          .catch(error => {
-            console.error('Error in generateImageAndContent:', error);
-            showAlert('Category created but there was an error generating AI content. Please try again later.', 'warning');
-          });
-      
-            
-        // Reset form
-        this.reset();
-        this.classList.remove('was-validated');
-        const previewContainer = document.querySelector('.image-preview');
-        if (previewContainer) {
-          previewContainer.innerHTML = `
-            <div class="d-flex align-items-center justify-content-center text-muted h-100">
-              <i class="bi bi-image me-2"></i> 
-              <i data-lucide="image" class="me-2"></i>
-              No image selected
-            </div>
-          `;
+        console.log('Image upload response:', result);
+        
+        // Handle the actual response format
+        if (!result || !result.files || !result.files[0]) {
+          console.error('Invalid response format:', result);
+          throw new Error('Invalid image upload response format');
         }
         
+        // Extract just the URL from the file object
+        const fileObject = result.files[0];
+        if (typeof fileObject === 'object' && fileObject.url) {
+          return fileObject.url;
+        }
+        
+        // If it's already a string URL, return it directly
+        return fileObject;
       } catch (error) {
-        console.error('Error creating category:', error);
-        showErrorAlert(error);
-      } finally {
-        submitBtn.innerHTML = originalBtnText;
-        submitBtn.disabled = false;
+        console.error('Error in uploadImage:', error);
+        if (error.message.includes('Failed to fetch')) {
+          showErrorAlert(`Could not connect to the server at ${API_CONFIG.BASE_URL}. Please make sure the backend server is running.`);
+        } else {
+          showErrorAlert(error);
+        }
+        throw error;
       }
-    });
-
-    {{!-- // Handle hero section form submission
-    heroForm.addEventListener('submit', async function(e) {
-      e.preventDefault();
+    }
+    
+    // Function to add gallery image item
+    function addGalleryImageItem(imageData = null) {
+      const galleryImagesContainer = document.getElementById('galleryImagesContainer');
       
-      if (!this.checkValidity()) {
-        e.stopPropagation();
-        this.classList.add('was-validated');
+      if (!galleryImagesContainer) {
+        console.error('Gallery container not found');
         return;
       }
       
-      const submitBtn = this.querySelector('button[type="submit"]');
+      console.log('Adding gallery image item with data:', imageData);
+      
+      // Hide no images message
+      updateGalleryVisibility();
+      
+      // Create new gallery image item
+      const newItem = document.createElement('div');
+      newItem.className = 'gallery-image-item mb-4 border rounded p-3 bg-white position-relative';
+      
+      // Create the HTML string with proper escaping
+      const html = `
+        <button type="button" class="btn-close position-absolute top-0 end-0 m-2 remove-gallery-image" 
+               aria-label="Remove image"></button>
+        
+        <div class="row g-3">
+          <!-- Image Upload -->
+          <div class="col-md-4">
+            <div class="mb-3">
+              <label class="form-label small">Upload Image</label>
+              <input type="file" class="form-control form-control-sm gallery-image-upload" 
+                     accept="image/*" required>
+              <div class="invalid-feedback">
+                Please select an image.
+              </div>
+            </div>
+            <div class="image-preview ratio ratio-16x9 bg-light rounded overflow-hidden mb-2">
+              ${imageData ? 
+                `<img src="${imageData.url}" class="w-100 h-100 object-fit-cover" alt="${imageData.alt || 'Gallery image'}">` :
+                `<div class="d-flex align-items-center justify-content-center text-muted">
+                  <i class="bi bi-image me-2"></i> No image
+                </div>`
+              }
+            </div>
+          </div>
+          
+          <!-- Image Details -->
+          <div class="col-md-8">
+            <div class="mb-3">
+              <label class="form-label small">Image Title</label>
+              <input type="text" class="form-control form-control-sm gallery-image-title" 
+                     placeholder="Enter image title" 
+                     value="${imageData?.title || ''}"
+                     required>
+              <div class="invalid-feedback">
+                Please provide an image title.
+              </div>
+            </div>
+            
+            <div class="mb-3">
+              <label class="form-label small">Image Description</label>
+              <textarea class="form-control form-control-sm gallery-image-description" rows="2"
+                        placeholder="Enter image description" required>${imageData?.description || ''}</textarea>
+              <div class="invalid-feedback">
+                Please provide an image description.
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label small">Image Prompt</label>
+              <textarea class="form-control form-control-sm gallery-image-prompt" rows="2"
+                        placeholder="Enter image generation prompt">${imageData?.prompt || ''}</textarea>
+              <div class="form-text">
+                Optional: The prompt used to generate this image
+              </div>
+            </div>
+            
+            <div class="form-check form-switch">
+              <input class="form-check-input gallery-image-featured" type="checkbox" role="switch"
+                     ${imageData?.featured ? 'checked' : ''}>
+              <label class="form-check-label small">Featured Image</label>
+            </div>
+          </div>
+        </div>
+      `;
+      
+      newItem.innerHTML = html;
+      
+      // Append to container
+      galleryImagesContainer.appendChild(newItem);
+      window.galleryImagesCount = (window.galleryImagesCount || 0) + 1;
+      
+      // Debug log after appending
+      console.log('New item added. Current gallery items:', {
+        count: window.galleryImagesCount,
+        titleValue: newItem.querySelector('.gallery-image-title')?.value,
+        promptValue: newItem.querySelector('.gallery-image-prompt')?.value,
+        descriptionValue: newItem.querySelector('.gallery-image-description')?.value
+      });
+      
+      // Add event listener for remove button
+      const removeBtn = newItem.querySelector('.remove-gallery-image');
+      if (removeBtn) {
+        removeBtn.addEventListener('click', function() {
+          newItem.remove();
+          window.galleryImagesCount--;
+          updateGalleryVisibility();
+        });
+      }
+      
+      // Add event listener for image preview if no existing image
+      if (!imageData) {
+        const fileInput = newItem.querySelector('.gallery-image-upload');
+        const previewContainer = newItem.querySelector('.image-preview');
+        
+        if (fileInput && previewContainer) {
+          fileInput.addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+              const objectUrl = URL.createObjectURL(file);
+              previewContainer.innerHTML = `<img src="${objectUrl}" class="w-100 h-100 object-fit-cover" alt="Image Preview">`;
+            } else {
+              previewContainer.innerHTML = `
+                <div class="d-flex align-items-center justify-content-center text-muted">
+                  <i class="bi bi-image me-2"></i> No image
+                </div>
+              `;
+            }
+          });
+        }
+      }
+    }
+    
+    // Function to update visibility of elements based on gallery image count
+    function updateGalleryVisibility() {
+      const galleryImagesContainer = document.getElementById('galleryImagesContainer');
+      const noGalleryImagesMessage = document.getElementById('noGalleryImages');
+      
+      if (window.galleryImagesCount === 0) {
+        // Show no images message, hide container
+        if (noGalleryImagesMessage) noGalleryImagesMessage.classList.remove('d-none');
+        if (galleryImagesContainer) galleryImagesContainer.classList.add('d-none');
+      } else {
+        // Hide no images message, show container
+        if (noGalleryImagesMessage) noGalleryImagesMessage.classList.add('d-none');
+        if (galleryImagesContainer) galleryImagesContainer.classList.remove('d-none');
+      }
+    }
+    
+    // Initialize category form
+    if (categoryForm) {
+      categoryForm.addEventListener('submit', async function(event) {
+        event.preventDefault();
+        
+        if (!categoryForm.checkValidity()) {
+          event.stopPropagation();
+          categoryForm.classList.add('was-validated');
+        return;
+      }
+      
+        // Show loading state
+        const submitBtn = categoryForm.querySelector('button[type="submit"]');
         const originalBtnText = submitBtn.innerHTML;
-      submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Saving...';
+        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Creating...';
         submitBtn.disabled = true;
         
         try {
-        const categoryId = document.getElementById('categoryId').value;
-        if (!categoryId) {
-          throw new Error('Category ID is missing. Please create a category first.');
-        }
+          // Get form data
+          const categoryName = document.getElementById('categoryName').value;
+          const categorySlug = document.getElementById('categorySlug').value;
+          const categoryDescription = document.getElementById('categoryDescription').value;
+          const categoryImage = document.getElementById('categoryImage').files[0];
+          
+          if (!categoryImage) {
+            throw new Error('Please select an image');
+          }
 
-        // Get hero image
-        const heroImage = document.getElementById('heroImage').files[0];
-        if (!heroImage) {
-          throw new Error('Please select a hero image');
-        }
+          const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4MDQ5MWRmMzljZmYwNTljMDY1NWZkMSIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc0NTI5ODM4MCwiZXhwIjoxNzQ1Mzg0NzgwfQ._XjN76nKvPZcxOT8TLWvfdfA-0KzqGjHwnZWX5YdntA";
+          
+          // Upload image first
+          const formData = new FormData();
+          formData.append('images', categoryImage);
+          console.log("file", categoryImage);
+          console.log("formData", formData);
+          
+          // Use the uploadImage helper function
+          const imageUrl = await uploadImage(categoryImage, token);
+          
+          if (!imageUrl) {
+            throw new Error('Failed to upload image');
+          }
+          
+          // Show preview (optional)
+          const previewContainer = document.querySelector('.image-preview');
+          if (previewContainer) {
+            previewContainer.innerHTML = `<img src="${imageUrl}" class="w-100 h-100 object-fit-cover" alt="Preview">`;
+          }
+          
+          // Create category object
+          const newCategory = {
+            name: categoryName,
+            slug: categorySlug,
+            description: categoryDescription,
+            image: imageUrl,
+            isFolder: true,
+            parent: null
+          };
 
-        // Validate hero image
-        if (!heroImage.type.startsWith('image/')) {
-          throw new Error('Please select a valid image file');
-        }
-
-        // Check file size (max 2MB)
-        const maxSize = 2 * 1024 * 1024; // 2MB in bytes
-        if (heroImage.size > maxSize) {
-          throw new Error('Image size should be less than 2MB');
-        }
+          // Now send this to create the category
+          const categoryResponse = await fetch(`${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.CATEGORIES}`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify(newCategory)
+          });
+          
+          if (!categoryResponse.ok) {
+            const errorText = await categoryResponse.text();
+            console.error('Category creation failed:', errorText);
+            throw new Error('Category creation failed: ' + errorText);
+          }
+          
+          const createdCategory = await categoryResponse.json();
+          console.log('Category created:', createdCategory);
+            
+          // Store the category ID for section creation
+          createdCategoryId = createdCategory._id || createdCategory.id;
 
            // Create section first
-        console.log('Creating hero section...');
             const sectionData = {
               name: 'Hero Section',
               slug: 'hero-section',
               description: 'Hero section for the category',
-          category: categoryId,
+              category: createdCategoryId,
               isFolder: false,
               order: 1,
               isActive: true
@@ -645,38 +2134,360 @@
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
               },
               body: JSON.stringify(sectionData)
             });
             
             if (!sectionResponse.ok) {
-          const errorText = await sectionResponse.text();
-          console.error('Section creation failed:', errorText);
-          throw new Error(`Failed to create section: ${errorText}`);
+              throw new Error('Section creation failed: ' + sectionResponse.statusText);
             }
             
             const sectionResult = await sectionResponse.json();
             console.log('Section created:', sectionResult);
+            
+            // Add GET request to fetch content with static values
+            const getContentResponse = await fetch('https://airbrush-admin-backend.onrender.com/api/content', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                section: sectionResult._id,
+                title: 'Placeholder title for hero section, Change this later',
+                slug: 'hero-section',
+                subtitle: 'Placeholder subtitle for hero section, Change this later',
+                images: [
+                  {
+                    url: 'new image url',
+                    alt: 'Hero Image',
+                    width: 1920,
+                    height: 1080
+                  }
+                ],
+                fields: [],
+                isActive: true
+              })
+            });
+            
+            if (!getContentResponse.ok) {
+              throw new Error('Content fetch failed: ' + getContentResponse.statusText);
+            }
+            
+            const getContentResult = await getContentResponse.json();
+            console.log('Fetched content with static values:', getContentResult);
+          
+          // Store the full category object
+          window.createdCategory = createdCategory;
+            
+          // Set categoryId for all forms
+          document.querySelectorAll('input[name="categoryId"]').forEach(input => {
+            input.value = createdCategoryId;
+          });
+          
+          // Show success notification in bottom right
+          const successAlert = document.getElementById('categorySuccessAlert');
+          if (successAlert) {
+            // Remove any existing alerts
+            const existingAlerts = document.querySelectorAll('.alert:not(#categorySuccessAlert)');
+            existingAlerts.forEach(alert => alert.remove());
+            
+            // Show the alert
+            successAlert.classList.remove('d-none');
+            
+            // Hide after 3 seconds
+            setTimeout(() => {
+              successAlert.classList.add('d-none');
+            }, 3000);
+          }
+            
+          // Hide category form and show section forms
+          categoryForm.parentElement.parentElement.classList.add('d-none');
+          sectionForms.classList.remove('d-none');
+            
+            // Switch to gallery section
+            const galleryTab = document.getElementById('gallery-tab');
+            const galleryContent = document.getElementById('gallery');
+            
+            if (galleryTab && galleryContent) {
+              // Remove active class from hero tab
+              const heroTab = document.getElementById('hero-tab');
+              const heroContent = document.getElementById('hero');
+              if (heroTab && heroContent) {
+                heroTab.classList.remove('active');
+                heroContent.classList.remove('show', 'active');
+              }
+              
+              // Add active class to gallery tab
+              galleryTab.classList.add('active');
+              galleryContent.classList.add('show', 'active');
+              
+              // Trigger Bootstrap's tab event
+              const tabEvent = new Event('shown.bs.tab', { bubbles: true });
+              galleryTab.dispatchEvent(tabEvent);
+            }
+            
+            // Scroll to the section forms
+            sectionForms.scrollIntoView({ behavior: 'smooth' });
+            
+        } catch (error) {
+          console.error('Error creating category:', error);
+          showErrorAlert(error);
+        } finally {
+          // Restore button state
+          submitBtn.innerHTML = originalBtnText;
+          submitBtn.disabled = false;
+        }
+      });
+    }
+    
+    // Update fetchGalleryContent function to include more debugging
+    async function fetchGalleryContent(contentId) {
+      try {
+        console.log('Starting fetchGalleryContent with ID:', contentId);
+        
+        const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4MDQ5MWRmMzljZmYwNTljMDY1NWZkMSIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc0NTI5ODM4MCwiZXhwIjoxNzQ1Mzg0NzgwfQ._XjN76nKvPZcxOT8TLWvfdfA-0KzqGjHwnZWX5YdntA";
+        
+        console.log('Making API request to:', `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.CONTENT}/${contentId}`);
+        const response = await fetch(`${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.CONTENT}/${contentId}`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+
+        if (!response.ok) {
+          console.error('API request failed:', response.status, response.statusText);
+          throw new Error('Failed to fetch gallery content');
+        }
+
+        const content = await response.json();
+        console.log('API Response received:', content);
+
+        // Clear existing gallery items
+        const galleryContainer = document.getElementById('galleryImagesContainer');
+        if (galleryContainer) {
+          console.log('Clearing existing gallery items');
+          galleryContainer.innerHTML = '';
+        } else {
+          console.error('Gallery container not found!');
+          return;
+        }
+
+        // Add each image from the content
+        if (content.images && content.images.length > 0) {
+          console.log('Processing', content.images.length, 'images');
+          
+          // Process images in order
+          const sortedImages = [...content.images].sort((a, b) => (a.order || 0) - (b.order || 0));
+          
+          sortedImages.forEach((image, index) => {
+            console.log(`Processing image ${index + 1}:`, {
+              title: image.title,
+              prompt: image.prompt,
+              alt: image.alt,
+              order: image.order,
+              url: image.url
+            });
+            
+            // Create image data object with all properties
+            const imageData = {
+              url: image.url,
+              title: image.title || '',
+              prompt: image.prompt || '',
+              description: image.alt || '',
+              alt: image.alt || '',
+              featured: false,
+              order: image.order || index
+            };
+            
+            console.log('Created image data object:', imageData);
+            
+            // Add the image item to the gallery
+            addGalleryImageItem(imageData);
+            
+            // Verify the values were set correctly
+            setTimeout(() => {
+              const newItem = galleryContainer.lastElementChild;
+              if (newItem) {
+                const titleInput = newItem.querySelector('.gallery-image-title');
+                const promptInput = newItem.querySelector('.gallery-image-prompt');
+                console.log('Verifying form values:', {
+                  title: titleInput?.value,
+                  prompt: promptInput?.value,
+                  expectedTitle: imageData.title,
+                  expectedPrompt: imageData.prompt
+                });
+              }
+            }, 0);
+          });
+        } else {
+          console.log('No images found in the response');
+        }
+
+        // Update gallery visibility
+        updateGalleryVisibility();
+        console.log('Gallery content fetch completed');
+
+      } catch (error) {
+        console.error('Error in fetchGalleryContent:', error);
+        showErrorAlert(error);
+      }
+    }
+    
+    // Add image preview functionality for category image
+    const categoryImageInput = document.getElementById('categoryImage');
+    const categoryImagePreview = document.querySelector('.image-preview');
+
+    if (categoryImageInput && categoryImagePreview) {
+      categoryImageInput.addEventListener('change', function(event) {
+        const file = event.target.files[0];
+        if (file) {
+          // Create object URL for preview
+          const objectUrl = URL.createObjectURL(file);
+          
+          // Update preview
+          categoryImagePreview.innerHTML = `
+            <img src="${objectUrl}" class="w-100 h-100 object-fit-contain" alt="Category Preview">
+          `;
+          
+          // Clean up object URL when new file is selected
+          categoryImageInput.addEventListener('change', function() {
+            URL.revokeObjectURL(objectUrl);
+          });
+        } else {
+          // Reset preview if no file selected
+          categoryImagePreview.innerHTML = `
+            <div class="d-flex align-items-center justify-content-center text-muted h-100">
+              <i class="bi bi-image me-2"></i> No image selected
+            </div>
+          `;
+        }
+      });
+    }
+
+    // Add image preview functionality for hero image
+    const heroImageInput = document.getElementById('heroImage');
+    const heroImagePreview = document.querySelector('#hero .image-preview');
+
+    if (heroImageInput && heroImagePreview) {
+      heroImageInput.addEventListener('change', function(event) {
+        const file = event.target.files[0];
+        if (file) {
+          // Create object URL for preview
+          const objectUrl = URL.createObjectURL(file);
+          
+          // Update preview - using object-fit-cover to maintain aspect ratio and fill container
+          {{!-- heroImagePreview.innerHTML = `
+            <img src="${objectUrl}" class="w-100 h-100 object-fit-contain" alt="Hero Preview">
+          `; --}}
+          
+          // Clean up object URL when new file is selected
+          heroImageInput.addEventListener('change', function() {
+            URL.revokeObjectURL(objectUrl);
+          });
+        } else {
+          // Reset preview if no file selected
+          heroImagePreview.innerHTML = `
+           <img src="${objectUrl}" class="w-100 h-100 object-fit-contain" alt="Hero Preview">
+
+          `;
+        }
+      });
+    }
+    
+    // Direct event listener for Add Gallery Image button
+    const addGalleryImageBtn = document.getElementById('addGalleryImage');
+    const galleryImagesContainer = document.getElementById('galleryImagesContainer');
+    
+    if (addGalleryImageBtn && galleryImagesContainer) {
+      console.log('Setting up Add Gallery Image button');
+      
+      // Event listener for Add Gallery Image button removed
+    }
+
+    // Add click event for Hero Section save button
+    const heroSaveButton = document.querySelector('#heroSectionForm button[type="submit"]');
+    if (heroSaveButton) {
+      heroSaveButton.addEventListener('click', async function(event) {
+        // Prevent default form submission to handle it manually
+        event.preventDefault();
+        
+        const heroForm = document.getElementById('heroSectionForm');
+        
+        // Validate form
+        if (!heroForm.checkValidity()) {
+          event.stopPropagation();
+          heroForm.classList.add('was-validated');
+          return;
+        }
+        
+        // Show loading state
+        const originalBtnText = this.innerHTML;
+        this.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Saving...';
+        this.disabled = true;
+        
+        try {
+          // Get form values
+          const heroTitle = document.getElementById('heroTitle').value;
+          const heroDescription = document.getElementById('heroDescription').value;
+          const heroImage = document.getElementById('heroImage').files[0];
+          const categoryId = document.getElementById('categoryId').value;
+          
+          if (!categoryId) {
+            throw new Error('Category ID is missing. Please create a category first.');
+          }
+          
+          if (!heroImage) {
+            throw new Error('Please select an image for the hero section.');
+          }
+          
+          const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4MDQ5MWRmMzljZmYwNTljMDY1NWZkMSIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc0NTI5ODM4MCwiZXhwIjoxNzQ1Mzg0NzgwfQ._XjN76nKvPZcxOT8TLWvfdfA-0KzqGjHwnZWX5YdntA";
           
           // Upload hero image
-        console.log('Uploading hero image...');
           const imageUrl = await uploadImage(heroImage, token);
+          
           if (!imageUrl) {
             throw new Error('Failed to upload hero image');
           }
-        console.log('Hero image uploaded:', imageUrl);
-
-        // Create content
-        console.log('Creating hero content...');
+          
+          // Create section
+          const sectionData = {
+            name: 'Hero Section',
+            slug: 'hero-section',
+            description: 'Hero section for the category',
+            category: categoryId,
+            isFolder: false,
+            order: 1,
+            isActive: true
+          };
+          
+          console.log('Creating section with data:', sectionData);
+          const sectionResponse = await fetch(`${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.SECTIONS}`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify(sectionData)
+          });
+          
+          if (!sectionResponse.ok) {
+            const errorText = await sectionResponse.text();
+            console.error('Section creation failed:', errorText);
+            throw new Error('Failed to create section: ' + errorText);
+          }
+          
+          const sectionResult = await sectionResponse.json();
+          console.log('Hero section created:', sectionResult);
+          
+          // Create content for the section
           const contentData = {
             section: sectionResult._id,
-          slug: 'hero-section',
-          title: document.getElementById('heroTitle').value,
-          subtitle: document.getElementById('heroDescription').value,
+            slug: `${sectionSlug}`,
+            title: heroTitle,
+            subtitle: heroDescription,
             images: [{
               url: imageUrl,
-            alt: document.getElementById('heroTitle').value,
+              alt: heroTitle,
               width: 1920,
               height: 1080
             }],
@@ -684,7 +2495,8 @@
             isActive: true
           };
           
-        const contentResponse = await fetch('https://airbrush-admin-backend.onrender.com/api/content', {
+          console.log('Creating content with data:', contentData);
+          const contentResponse = await fetch(`${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.CONTENT}`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -696,550 +2508,670 @@
           if (!contentResponse.ok) {
             const errorText = await contentResponse.text();
             console.error('Content creation failed:', errorText);
-          throw new Error(`Failed to create content: ${errorText}`);
+            throw new Error('Failed to create content: ' + errorText);
           }
           
           const contentResult = await contentResponse.json();
-        console.log('Content created:', contentResult);
+          console.log('Hero content created:', contentResult);
           
-        // Show success message
+          // Show success notification
           const successAlert = document.createElement('div');
           successAlert.className = 'alert alert-success d-flex align-items-center mb-0';
           successAlert.innerHTML = `
             <i class="bi bi-check-circle-fill me-2"></i>
             <div>
-            <strong>Hero Section created successfully!</strong>
-            <p class="mb-0">You can now proceed to add more sections.</p>
+              <strong>Hero Section saved successfully!</strong>
+              <p class="mb-0">Moving to Images Gallery section...</p>
             </div>
           `;
           
+          // Add to alert container
           const alertContainer = document.querySelector('.alert-container');
           if (alertContainer) {
             alertContainer.appendChild(successAlert);
+            
+            // Hide after 3 seconds
             setTimeout(() => {
               successAlert.remove();
             }, 3000);
           }
           
+          
           // Reset form
-        this.reset();
-        this.classList.remove('was-validated');
+          heroForm.reset();
+          heroForm.classList.remove('was-validated');
+          
+          // Reset image preview
+          if (heroImagePreview) {
             heroImagePreview.innerHTML = `
               <div class="d-flex align-items-center justify-content-center text-muted h-100">
                 <i class="bi bi-image me-2"></i> No image selected
               </div>
             `;
+          }
           
         } catch (error) {
-        console.error('Error creating hero section:', error);
+          console.error('Error saving hero section:', error);
           showErrorAlert(error);
         } finally {
-        submitBtn.innerHTML = originalBtnText;
-        submitBtn.disabled = false;
+          // Restore button state
+          this.innerHTML = originalBtnText;
+          this.disabled = false;
+        }
+      });
+    }
+    
+    // Initialize form submission for all section tabs
+    console.log('Initializing form submission for all section tabs');
+    
+    // Array of all tab IDs
+    const tabIds = ['#hero', '#gallery', '#why', '#text-to-anything', '#blogs'];
+    
+    // Blog functionality
+    let editorInstance = null
+    const savedBlogs = [];
+
+     function initializeCKEditor() {
+      console.log('Initializing CKEditor...');
+      const editorElement = document.getElementById('editor');
+
+      if (!editorElement) {
+        console.error('Editor element not found');
+        return;
       }
-    }); --}}
 
-    // Helper function to upload images
-    async function uploadImage(file, token) {
-      if (!file) return null;
+      if (editorInstance) {
+        console.log('CKEditor instance already exists');
+        return;
+      }
 
-      try {
-        console.log('Starting image upload...');
-        const formData = new FormData();
-        formData.append('images', file);
+      if (typeof DecoupledEditor !== 'undefined') {
+        DecoupledEditor
+          .create(editorElement, {
+            // Enhanced toolbar configuration
+            toolbar: {
+              items: [
+                'undo', 'redo',
+                '|',
+                'heading',
+                '|',
+                'fontFamily', 'fontSize', 'fontColor', 'fontBackgroundColor',
+                '|',
+                'bold', 'italic', 'underline', 'strikethrough', 'subscript', 'superscript',
+                '|',
+                'link',
+                '|',
+                'bulletedList', 'numberedList',
+                '|',
+                'alignment',
+                '|',
+                'indent', 'outdent',
+                '|',
+                'insertTable', 'tableColumn', 'tableRow', 'mergeTableCells',
+                '|',
+                'code', 'codeBlock',
+                '|',
+                'blockQuote',
+                '|',
+                'removeFormat'
+              ],
+              shouldNotGroupWhenFull: true
+            },
+            // Table configuration
+            table: {
+              contentToolbar: [
+                'tableColumn',
+                'tableRow',
+                'mergeTableCells',
+                'tableProperties',
+                'tableCellProperties'
+              ],
+              defaultHeadings: { rows: 1, columns: 0 }
+            },
+            // Font options
+            fontFamily: {
+              options: [
+                'default',
+                'Arial, Helvetica, sans-serif',
+                'Courier New, Courier, monospace',
+                'Georgia, serif',
+                'Lucida Sans Unicode, Lucida Grande, sans-serif',
+                'Tahoma, Geneva, sans-serif',
+                'Times New Roman, Times, serif',
+                'Trebuchet MS, Helvetica, sans-serif',
+                'Verdana, Geneva, sans-serif'
+              ],
+              supportAllValues: true
+            },
+            fontSize: {
+              options: [10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 36, 48],
+              supportAllValues: true
+            },
+            // Heading configuration
+            heading: {
+              options: [
+                { model: 'paragraph', title: 'Paragraph', class: 'ck-heading_paragraph' },
+                { model: 'heading1', view: 'h1', title: 'Heading 1', class: 'ck-heading_heading1' },
+                { model: 'heading2', view: 'h2', title: 'Heading 2', class: 'ck-heading_heading2' },
+                { model: 'heading3', view: 'h3', title: 'Heading 3', class: 'ck-heading_heading3' },
+                { model: 'heading4', view: 'h4', title: 'Heading 4', class: 'ck-heading_heading4' }
+              ]
+            },
+            // General configuration
+            placeholder: 'Write your blog content here...',
+            height: '400px'
+          })
+          .then(editor => {
+            editorInstance = editor;
 
-        const response = await fetch('https://airbrush-admin-backend.onrender.com/api/images', {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${token}`
-          },
-          body: formData
-        });
+            // Get the toolbar element
+            const toolbarContainer = document.createElement('div');
+            toolbarContainer.classList.add('document-editor__toolbar');
+            editorElement.parentElement.insertBefore(toolbarContainer, editorElement);
 
-        if (!response.ok) {
-          const errorText = await response.text();
-          console.error('Image upload failed:', errorText);
-          throw new Error(`Failed to upload image: ${errorText}`);
-        }
+            // Add the toolbar to the container
+            toolbarContainer.appendChild(editor.ui.view.toolbar.element);
 
-        const result = await response.json();
-        console.log('Image upload response:', result);
-        
-        if (!result || !result.files || !result.files[0]) {
-          throw new Error('Invalid image upload response format');
-        }
+            // Add styling for the editor
+            editorElement.classList.add('document-editor__editable');
 
-        return result.files[0].url;
-      } catch (error) {
-        console.error('Error uploading image:', error);
-        throw error;
+            console.log('CKEditor initialized successfully with full features');
+          })
+          .catch(error => {
+            console.error('CKEditor initialization failed:', error);
+          });
+      } else {
+        console.error('CKEditor not loaded');
       }
     }
 
-    // Helper function to show error alerts
-    function showErrorAlert(error) {
-      const errorAlert = document.createElement('div');
-      errorAlert.className = 'alert alert-danger d-flex align-items-center mb-0';
-      errorAlert.innerHTML = `
-        <i class="bi bi-exclamation-triangle-fill me-2"></i>
-            <div>
-          <strong>Error!</strong>
-          <p class="mb-0">${error.message}</p>
+    
+    // Initialize blog save button functionality
+    const initializeBlogFunctionality = () => {
+      const saveBlogBtn = document.getElementById('saveBlogBtn');
+      const blogImageUpload = document.getElementById('blogImageUpload');
+      const blogTitle = document.getElementById('blogTitle');
+      const blogLeadToggle = document.getElementById('blogLeadToggle');
+      const blogImagePreview = document.getElementById('blogImagePreview');
+      const savedBlogsGrid = document.getElementById('savedBlogsGrid');
+      const blogPreviewContainer = document.getElementById('blogPreviewContainer');
+      
+      if (!saveBlogBtn || !blogImageUpload || !blogTitle || !savedBlogsGrid) {
+        console.error('Blog elements not found');
+        return;
+      }
+
+      // Initialize CKEditor when blog tab is shown
+      const blogsTab = document.getElementById('blogs-tab');
+      if (blogsTab) {
+        blogsTab.addEventListener('shown.bs.tab', function () {
+          console.log('Blog tab shown, initializing CKEditor...');
+          initializeCKEditor();
+        });
+      }
+      
+      // Add image preview functionality
+      blogImageUpload.addEventListener('change', function(event) {
+        const file = this.files[0];
+        if (file) {
+          const objectUrl = URL.createObjectURL(file);
+          blogImagePreview.innerHTML = `<img src="${objectUrl}" class="w-100 h-100 object-fit-cover" alt="Blog Image Preview">`;
+        } else {
+          blogImagePreview.innerHTML = `
+            <div class="d-flex align-items-center justify-content-center text-muted">
+              <i class="bi bi-image me-2"></i> No image
+            </div>
+          `;
+        }
+      });
+      
+      // Add save blog button functionality
+      saveBlogBtn.addEventListener('click', async function() {
+        // Validate form
+        if (!blogTitle.value.trim()) {
+          blogTitle.classList.add('is-invalid');
+          return;
+        } else {
+          blogTitle.classList.remove('is-invalid');
+        }
+        
+        // Get CKEditor content
+        let editorContent = '';
+        if (editorInstance) {
+          editorContent = editorInstance.getData();
+          if (!editorContent.trim()) {
+            // Show error for empty content
+            const editorElement = document.getElementById('editor');
+            if (editorElement) {
+              editorElement.classList.add('is-invalid');
+            }
+            return;
+          } else {
+            const editorElement = document.getElementById('editor');
+            if (editorElement) {
+              editorElement.classList.remove('is-invalid');
+            }
+          }
+        } else {
+          console.error('CKEditor instance not found');
+          return;
+        }
+        
+        if (!blogImageUpload.files || blogImageUpload.files.length === 0) {
+          blogImageUpload.classList.add('is-invalid');
+          return;
+        } else {
+          blogImageUpload.classList.remove('is-invalid');
+        }
+        
+        // Show loading state
+        const originalBtnText = this.innerHTML;
+        this.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Saving...';
+        this.disabled = true;
+        
+        try {
+          // Upload image to Cloudinary
+          const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4MDQ5MWRmMzljZmYwNTljMDY1NWZkMSIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc0NTI5ODM4MCwiZXhwIjoxNzQ1Mzg0NzgwfQ._XjN76nKvPZcxOT8TLWvfdfA-0KzqGjHwnZWX5YdntA";
+          const imageUrl = await uploadImage(blogImageUpload.files[0], token);
+          
+          if (!imageUrl) {
+            throw new Error('Failed to upload blog image');
+          }
+          
+          // Create blog data object
+          const blogData = {
+            title: blogTitle.value,
+            content: editorContent,
+            imageUrl: imageUrl,
+            isLead: blogLeadToggle.checked,
+            timestamp: new Date().getTime()
+          };
+          
+          // Add to saved blogs array
+          savedBlogs.push(blogData);
+          
+          // Create a preview card
+          const blogCard = document.createElement('div');
+          blogCard.className = 'col';
+          blogCard.innerHTML = `
+            <div class="card h-100 shadow-sm border-0 blog-preview-card">
+              <div class="position-relative overflow-hidden">
+                <img src="${blogData.imageUrl}" class="card-img-top" alt="${blogData.title}" style="height: 160px; object-fit: cover;">
+                ${blogData.isLead ? '<span class="position-absolute top-0 start-0 badge bg-primary m-2 py-2 px-3">Lead Blog</span>' : ''}
+                <button type="button" class="btn-close position-absolute top-0 end-0 m-2 bg-white rounded-circle shadow-sm remove-blog" 
+                      aria-label="Remove blog" data-timestamp="${blogData.timestamp}"></button>
+                <div class="blog-card-gradient position-absolute bottom-0 start-0 w-100 py-2"></div>
+              </div>
+              <div class="card-body p-3">
+                <h6 class="card-title fw-bold mb-2">${blogData.title}</h6>
+                <p class="card-text small text-muted mb-0">${blogData.content.length > 100 ? blogData.content.substring(0, 100) + '...' : blogData.content}</p>
+              </div>
             </div>
           `;
           
+          // Add remove button functionality
+          const removeBtn = blogCard.querySelector('.remove-blog');
+          removeBtn.addEventListener('click', function() {
+            const timestamp = this.getAttribute('data-timestamp');
+            const index = savedBlogs.findIndex(blog => blog.timestamp.toString() === timestamp);
+            
+            if (index !== -1) {
+              savedBlogs.splice(index, 1);
+              blogCard.remove();
+              
+              // Hide container if no blogs left
+              if (savedBlogs.length === 0) {
+                blogPreviewContainer.classList.add('d-none');
+              }
+            }
+          });
+          
+          // Add to grid
+          savedBlogsGrid.appendChild(blogCard);
+          
+          // Show preview container
+          blogPreviewContainer.classList.remove('d-none');
+          
+          // Reset form
+          blogTitle.value = '';
+          editorInstance.setData(''); // Clear CKEditor content
+          blogLeadToggle.checked = false;
+          blogImageUpload.value = '';
+          blogImagePreview.innerHTML = `
+            <div class="d-flex align-items-center justify-content-center text-muted">
+              <i class="bi bi-image me-2"></i> No image
+            </div>
+          `;
+          
+          // Show success message
+          const successAlert = document.createElement('div');
+          successAlert.className = 'alert alert-success d-flex align-items-center mb-0';
+          successAlert.innerHTML = `
+            <i class="bi bi-check-circle-fill me-2"></i>
+            <div>
+              <strong>Blog saved!</strong>
+              <p class="mb-0">The blog has been added to the preview.</p>
+            </div>
+          `;
+          
+          // Add to alert container
           const alertContainer = document.querySelector('.alert-container');
           if (alertContainer) {
-        alertContainer.appendChild(errorAlert);
+            alertContainer.appendChild(successAlert);
+            
+            // Hide after 3 seconds
             setTimeout(() => {
-          errorAlert.remove();
-        }, 5000);
+              successAlert.remove();
+            }, 3000);
+          }
+        } catch (error) {
+          console.error('Error saving blog:', error);
+          showErrorAlert(error);
+        } finally {
+          // Restore button state
+          this.innerHTML = originalBtnText;
+          this.disabled = false;
+        }
+      });
+    };
+    
+    // Add event listeners for tab activation to initialize forms when tabs are shown
+    const tabButtons = document.querySelectorAll('button[data-bs-toggle="tab"]');
+    tabButtons.forEach(tabButton => {
+      tabButton.addEventListener('shown.bs.tab', function(event) {
+        const targetTabId = event.target.getAttribute('data-bs-target');
+        console.log('Tab activated, initializing form:', targetTabId);
+        
+        // Initialize form submission for the activated tab
+        initializeFormSubmission(targetTabId);
+        
+        // Initialize blog functionality if blogs tab is activated
+        if (targetTabId === '#blogs') {
+          initializeBlogFunctionality();
+        }
+      });
+    });
+    
+    // Also initialize the first tab (Hero section) which is visible by default
+    initializeFormSubmission('#hero');
+    
+    // Initialize blog functionality
+    initializeBlogFunctionality();
+    
+    // Initialize the save buttons for all other tabs
+    tabIds.forEach(tabId => {
+      if (tabId !== '#hero') { // Hero already has a special handler above
+        const form = document.querySelector(`${tabId} form`);
+        const submitBtn = form?.querySelector('button[type="submit"]');
+        
+        if (submitBtn) {
+          console.log(`Setting up save button for ${tabId}`);
+          
+          submitBtn.addEventListener('click', function(event) {
+            // Prevent default action
+            event.preventDefault();
+            
+            console.log(`${tabId} save button clicked`);
+            
+            // Get the form
+            const form = this.closest('form');
+            if (!form) {
+              console.error('Form not found for', tabId);
+              return;
+            }
+            
+            // Submit the form
+            const submitEvent = new Event('submit', {
+              bubbles: true,
+              cancelable: true
+            });
+            form.dispatchEvent(submitEvent);
+          });
+        } else {
+          console.warn(`Save button not found for ${tabId}`);
+        }
+      }
+    });
+
+    function switchSection(fromSection, toSection) {
+      console.log(`Switching from ${fromSection} to ${toSection}`);
+      
+      const fromTab = document.getElementById(`${fromSection}-tab`);
+      const fromContent = document.getElementById(fromSection);
+      const toTab = document.getElementById(`${toSection}-tab`);
+      const toContent = document.getElementById(toSection);
+      
+      if (fromTab && fromContent && toTab && toContent) {
+        // Remove active classes from source section
+        fromTab.classList.remove('active');
+        fromContent.classList.remove('show', 'active');
+        
+        // Add active classes to target section
+        toTab.classList.add('active');
+        toContent.classList.add('show', 'active');
+        
+        // Trigger Bootstrap's tab event
+        const tabEvent = new Event('shown.bs.tab', { bubbles: true });
+        toTab.dispatchEvent(tabEvent);
+        
+        // Scroll to the target section and to the top of the page
+        toContent.scrollIntoView({ behavior: 'smooth' });
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        
+        console.log(`Successfully switched to ${toSection} section`);
+      } else {
+        console.error('Could not find required elements for tab switching');
       }
     }
 
-    // Add AI image generation function
-    async function generateImageAndContent(prompt, categoryName, categoryDescription, categoryId) {
-      if (!categoryId) {
-        showAlert('Category ID is missing', 'warning');
+    // Add Gemini AI content generation function for blog content
+    async function generateBlogContent(prompt) {
+      if (!prompt) {
+        showErrorAlert('Please enter a prompt for content generation', 'warning');
         return;
       }
 
-      if (!categoryName) {
-        showAlert('Category name is missing', 'warning');
-        return;
-      }
-
-      // Show loader
-      const loader = document.getElementById('aiGenerationLoader');
-      const loaderStatus = document.getElementById('loaderStatus');
-      const progressBar = loader.querySelector('.progress-bar');
-      const steps = loader.querySelectorAll('.step');
-      loader.classList.remove('d-none');
-
-      function updateProgress(sectionIndex, subProgress = 0) {
-        const totalSections = 5;
-        const progressPerSection = 100 / totalSections;
-        const progress = (sectionIndex * progressPerSection) + (subProgress * progressPerSection);
-        progressBar.style.width = `${progress}%`;
-        
-        // Update steps
-        steps.forEach((step, index) => {
-          if (index < sectionIndex) {
-            step.classList.remove('active');
-            step.classList.add('completed');
-          } else if (index === sectionIndex) {
-            step.classList.add('active');
-            step.classList.remove('completed');
-          } else {
-            step.classList.remove('active', 'completed');
-          }
-        });
-      }
+      const generateButton = document.getElementById('generateBlogContentBtn');
+      const originalButtonText = generateButton.innerHTML;
+      generateButton.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Generating...';
+      generateButton.disabled = true;
 
       try {
-        // Define sections with their specific prompts
-        const sections = [
-          {
-            name: 'Hero Section',
-            slug: 'hero-section',
-            description: 'Hero section for the category',
-            order: 1,
-            promptTemplate: `Create a hero section image for ${categoryName}.
-              Context: ${categoryDescription}.`
+        const response = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=AIzaSyDYGuO7Q2LSPUIyuKzlQKLMvj_5ltr6hAU', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
           },
-          {
-            name: 'Images Gallery',
-            slug: 'images-gallery',
-            description: 'Showcase of images and examples',
-            order: 2,
-            promptTemplate: `Create a gallery showcase image for ${categoryName}.
-              Context: ${categoryDescription}.`
-          },
-          {
-            name: `Why Use tool`,
-            slug: 'why-use-tool',
-            description: 'Benefits and features section',
-            order: 3,
-            promptTemplate: `Create an image highlighting why users should use ${categoryName}.
-              Context: ${categoryDescription}`
-          },
-          {
-            name: `Text to Anything`,
-            slug: 'text-to-anything',
-            description: 'Text to specific output conversion capabilities',
-            order: 4,
-            promptTemplate: `Create an image demonstrating text-to-${categoryName.toLowerCase()} transformation.
-              Context: ${categoryDescription}`
-          },
-          {
-            name: 'Blogs',
-            slug: 'blogs',
-            description: 'Blog posts and articles section',
-            order: 5,
-            promptTemplate: `Create a blog section image for ${categoryName}.
-              Context: ${categoryDescription}`
+          body: JSON.stringify({
+            contents: [{
+              parts: [{
+                text: prompt
+              }]
+            }]
+          })
+        });
+
+        if (!response.ok) {
+          throw new Error('Gemini API request failed');
+        }
+
+        const data = await response.json();
+        
+        if (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts[0]) {
+          const generatedContent = data.candidates[0].content.parts[0].text;
+          
+          // Set the generated content in the editor
+          if (editorInstance) {
+            editorInstance.setData(generatedContent);
+            
+            // Show success message
+            const successAlert = document.createElement('div');
+            successAlert.className = 'alert alert-success d-flex align-items-center mb-0';
+            successAlert.innerHTML = `
+              <i class="bi bi-check-circle-fill me-2"></i>
+              <div>
+                <strong>Content generated successfully!</strong>
+                <p class="mb-0">The content has been added to the editor.</p>
+              </div>
+            `;
+            
+            // Add to alert container
+            const alertContainer = document.querySelector('.alert-container');
+            if (alertContainer) {
+              alertContainer.appendChild(successAlert);
+              
+              // Hide after 3 seconds
+              setTimeout(() => {
+                successAlert.remove();
+              }, 3000);
+            }
+            
+            // Close the modal
+            const modal = bootstrap.Modal.getInstance(document.getElementById('blogGeminiModal'));
+            modal.hide();
+          } else {
+            throw new Error('Editor instance not found');
           }
-        ];
+        } else {
+          throw new Error('No content generated');
+        }
+      } catch (error) {
+        console.error('Error generating content:', error);
+        showErrorAlert('Failed to generate content. Please try again.', 'danger');
+      } finally {
+        generateButton.innerHTML = originalButtonText;
+        generateButton.disabled = false;
+      }
+    }
 
-        // Process each section
-        const contentDataArray = [];
-        for (let sectionIndex = 0; sectionIndex < sections.length; sectionIndex++) {
-          const section = sections[sectionIndex];
-          try {
-            console.log(`Processing ${section.name}...`);
-            loaderStatus.textContent = `Generating content for ${section.name}...`;
-            updateProgress(sectionIndex);
+    // Add event listener for the generate content button in the modal
+    document.getElementById('generateBlogContentBtn').addEventListener('click', function() {
+      const prompt = document.getElementById('blogGeminiPromptInput').value.trim();
+      generateBlogContent(prompt);
+    });
 
-            if(section.name === 'Images Gallery') {
-              loaderStatus.textContent = `Generating gallery images (this may take a few minutes)...`;
+    // Clear the prompt input when the modal is closed
+    document.getElementById('blogGeminiModal').addEventListener('hidden.bs.modal', function() {
+      document.getElementById('blogGeminiPromptInput').value = '';
+    });
 
-              // Generate all prompts in parallel
-              const promptPromises = Array(15).fill().map(() => 
-                fetch('https://airbrush-admin-backend.onrender.com/api/images/generate-prompt', {
-              method: 'POST',
-              headers: {
-                    'Content-Type': 'application/json'
-              },
-              body: JSON.stringify({
-                    categoryName: categoryName,
-                    type: 'prompt'
-                  })
-                }).then(res => {
-                  if (!res.ok) throw new Error('Prompt generation failed');
-                  return res.json();
-                })
-              );
+    // Add AI image generation functionality
+    const generateAIImage = async (prompt) => {
+      if (!prompt) {
+        showErrorAlert('Please enter a prompt for image generation');
+        return;
+      }
 
-              const promptResults = await Promise.all(promptPromises);
-              loaderStatus.textContent = 'Generating images...';
-              updateProgress(sectionIndex, 0.4);
+      const generateButton = document.getElementById('generate-ai-image');
+      const originalButtonText = generateButton.innerHTML;
+      generateButton.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Generating...';
+      generateButton.disabled = true;
 
-              // Extract all prompts
-              const prompts = promptResults.map(data => {
-                let promptText = data.prompt.candidates[0].content.parts[0].text;
-                // Remove asterisks from the prompt
-                promptText = promptText.replace(/\*/g, '');
-                return promptText.trim();
-              });
+      try {
+        const response = await fetch('https://api.deepinfra.com/v1/openai/images/generations', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ofZxkV2E7aTDvbirZCB16zJHSbbfOxdN`
+          },
+          body: JSON.stringify({
+            prompt: prompt,
+            size: "1024x1024",
+            model: "black-forest-labs/FLUX-1-dev",
+            n: 1,
+            response_format: "b64_json"
+          })
+        });
 
-              // Generate all images in parallel
-              const imagePromises = prompts.map(promptText =>
-                fetch('https://airbrush-admin-backend.onrender.com/api/images/generate-image', {
-                  method: 'POST',
-                  headers: {
-                    'Content-Type': 'application/json'
-                  },
-                  body: JSON.stringify({
-                    prompt: promptText
-              })
-                }).then(res => {
-                  if (!res.ok) throw new Error('Image generation failed');
-                  return res.json();
-                })
-              );
+        if (!response.ok) {
+          throw new Error('AI image generation failed');
+        }
 
-              const imageResults = await Promise.all(imagePromises);
-              loaderStatus.textContent = 'Processing generated images...';
-              updateProgress(sectionIndex, 0.8);
-
-              // Process all images
-              const processedImages = await Promise.all(imageResults.map(async (data, index) => {
-                const base64Data = data.imageData;
-              const byteCharacters = atob(base64Data);
-              const byteArrays = [];
-              
-              for (let i = 0; i < byteCharacters.length; i++) {
-                byteArrays.push(byteCharacters.charCodeAt(i));
-              }
-              
-              const byteArray = new Uint8Array(byteArrays);
-              const blob = new Blob([byteArray], { type: 'image/png' });
-                const file = new File([blob], `ai-generated-image-${index + 1}.png`, { type: 'image/png' });
-                
-                const formData = new FormData();
-                formData.append('images', file);
-                
-                const uploadResponse = await fetch('https://airbrush-admin-backend.onrender.com/api/images', {
-                  method: 'POST',
-                  body: formData
-                });
-
-                if (!uploadResponse.ok) throw new Error('Upload failed');
-                return uploadResponse.json();
-              }));
-
-              loaderStatus.textContent = 'Finalizing...';
-              updateProgress(sectionIndex, 1);
-
-              // Add all processed images to the gallery with their prompts
-              const galleryImages = [];
-              processedImages.forEach((uploadData, index) => {
-                if (uploadData.files && uploadData.files.length > 0) {
-                  galleryImages.push({
-                    url: uploadData.files[0].url,
-                    alt: "Gallery image",
-                    prompt: prompts[index],
-                    width: 1200,
-                    height: 800,
-                    order: index + 1
-                  });
-                }
-              });
-
-              contentDataArray.push({
-                section: 'Images Gallery',
-                slug: `${section.slug}`,
-                title: `Image Gallery`,
-                subtitle: `Beautiful ${categoryName} images`,
-                images: galleryImages
-              });
+        const data = await response.json();
+        
+        if (data.data && data.data[0] && data.data[0].b64_json) {
+          // Convert base64 to blob
+          const base64Data = data.data[0].b64_json;
+          const byteCharacters = atob(base64Data);
+          const byteArrays = [];
+          
+          for (let i = 0; i < byteCharacters.length; i++) {
+            byteArrays.push(byteCharacters.charCodeAt(i));
+          }
+          
+          const byteArray = new Uint8Array(byteArrays);
+          const blob = new Blob([byteArray], { type: 'image/png' });
+          
+          // Create a file from the blob
+          const file = new File([blob], 'ai-generated-image.png', { type: 'image/png' });
+          
+          // Upload the generated image
+          const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4MDQ5MWRmMzljZmYwNTljMDY1NWZkMSIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc0NTI5ODM4MCwiZXhwIjoxNzQ1Mzg0NzgwfQ._XjN76nKvPZcxOT8TLWvfdfA-0KzqGjHwnZWX5YdntA";
+          const imageUrl = await uploadImage(file, token);
+          
+          if (imageUrl) {
+            // Update the main banner preview
+            const mainImagePreview = document.getElementById('textToAnythingMainImagePreview');
+            if (mainImagePreview) {
+              mainImagePreview.innerHTML = `<img src="${imageUrl}" class="w-100 h-100 object-fit-cover" alt="Generated Image">`;
             }
-
-            if(section.name === 'Blogs') {
-              loaderStatus.textContent = `Generating blog content (this may take a few minutes)...`;
-              updateProgress(sectionIndex, 0.2);
-
-              // Generate all prompts and content in parallel
-              const blogPromises = Array(4).fill().map(() => 
-                Promise.all([
-                  // Generate image prompt
-                  fetch('https://airbrush-admin-backend.onrender.com/api/images/generate-prompt', {
-                    method: 'POST',
-                    headers: {
-                      'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                      categoryName: categoryName,
-                      type: 'prompt'
-                    })
-                  }).then(res => {
-                    if (!res.ok) throw new Error('Prompt generation failed');
-                    return res.json();
-                  }),
-                  // Generate blog content
-                  fetch('https://airbrush-admin-backend.onrender.com/api/images/generate-prompt', {
-                    method: 'POST',
-                    headers: {
-                      'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                      categoryName: categoryName,
-                      type: 'content'
-                    })
-                  }).then(res => {
-                    if (!res.ok) throw new Error('Content generation failed');
-                    return res.json();
-                  })
-                ])  
-              );
-
-              const blogResults = await Promise.all(blogPromises);
-              loaderStatus.textContent = 'Generating blog images...';
-              updateProgress(sectionIndex, 0.4);
-
-              // Extract prompts and content
-              const promptsAndContent = blogResults.map(([promptData, contentData]) => ({
-                prompt: promptData.prompt.candidates[0].content.parts[0].text,
-                content: contentData.prompt.candidates[0].content.parts[0].text
-              }));
-
-              // Generate all images in parallel
-              const imagePromises = promptsAndContent.map(({ prompt }) =>
-                fetch('https://airbrush-admin-backend.onrender.com/api/images/generate-image', {
-                  method: 'POST',
-                  headers: {
-                    'Content-Type': 'application/json'
-                  },
-                  body: JSON.stringify({
-                    prompt: prompt
-                  })
-                }).then(res => {
-                  if (!res.ok) throw new Error('Image generation failed');
-                  return res.json();
-                })
-              );
-
-              const imageResults = await Promise.all(imagePromises);
-              loaderStatus.textContent = 'Processing blog images...';
-              updateProgress(sectionIndex, 0.6);
-
-              // Process all images in parallel
-              const processedImages = await Promise.all(imageResults.map(async (imageData, index) => {
-                const base64Data = imageData.imageData;
-                const byteCharacters = atob(base64Data);
-                const byteArrays = [];
-
-                for (let j = 0; j < byteCharacters.length; j++) {
-                  byteArrays.push(byteCharacters.charCodeAt(j));
-                }
-
-                const byteArray = new Uint8Array(byteArrays);
-                const blob = new Blob([byteArray], { type: 'image/png' });
-                const file = new File([blob], `${section.slug}-${index + 1}.png`, { type: 'image/png' });
-                
-                return uploadImage(file, token);
-              }));
-
-              loaderStatus.textContent = 'Finalizing blog content...';
-              updateProgress(sectionIndex, 0.8);
-
-              // Create the content object with all blog posts
-              contentDataArray.push({
-                section: 'Blogs',
-                slug: `${section.slug}`,
-                title: `Blog Section`,
-                subtitle: `Beautiful ${categoryName} blogs`,
-                images: processedImages.map((imageUrl, index) => ({
-                  url: imageUrl,
-                  title: `Beautiful ${categoryName} image ${index + 1}`,
-                  content: promptsAndContent[index].content,
-                  prompt: promptsAndContent[index].prompt,
-                  alt: `Beautiful ${categoryName} image ${index + 1}`,
-                  width: 1024,
-                  height: 1024
-                }))
-              });
-
-              updateProgress(sectionIndex, 1);
+            
+            // Create a hidden file input and set the file
+            const mainImageInput = document.getElementById('textToAnythingMainImage');
+            if (mainImageInput) {
+              // Create a new FileList object
+              const dataTransfer = new DataTransfer();
+              dataTransfer.items.add(file);
+              mainImageInput.files = dataTransfer.files;
+              
+              // Trigger change event
+              mainImageInput.dispatchEvent(new Event('change'));
             }
-
-             const imageResponse = await fetch('https://airbrush-admin-backend.onrender.com/api/images/generate-image', {
-                 method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                  prompt: section.promptTemplate
-                })
-              });
-
-              if (!imageResponse.ok) {
-                throw new Error('Image generation failed');
-              }
-
-              const imageData = await imageResponse.json();
-              const base64Data = imageData.imageData;
-              const byteCharacters = atob(base64Data);
-              const byteArrays = [];
-
-              for (let j = 0; j < byteCharacters.length; j++) {   
-                byteArrays.push(byteCharacters.charCodeAt(j));
-              }
-
-              const byteArray = new Uint8Array(byteArrays);
-              const blob = new Blob([byteArray], { type: 'image/png' });
+            
+            // Show success message
+            const successAlert = document.createElement('div');
+            successAlert.className = 'alert alert-success d-flex align-items-center mb-0';
+            successAlert.innerHTML = `
+              <i class="bi bi-check-circle-fill me-2"></i>
+              <div>
+                <strong>Image generated successfully!</strong>
+                <p class="mb-0">The image has been set as the main banner.</p>
+              </div>
+            `;
+            
+            // Add to alert container
+            const alertContainer = document.querySelector('.alert-container');
+            if (alertContainer) {
+              alertContainer.appendChild(successAlert);
               
-              const file = new File([blob], `${section.slug}.png`, { type: 'image/png' });
-              
-              // Upload the generated image
-              const mainImageUrl = await uploadImage(file, token);
-              
-              if (mainImageUrl) {
-                // Create section
-                console.log(`Creating section for ${section.name}...`);
-                const sectionResponse = await fetch('https://airbrush-admin-backend.onrender.com/api/sections', {
-                  method: 'POST',
-                  headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                  },
-                  body: JSON.stringify({
-                    name: section.name,
-                    slug: section.slug,
-                    description: section.description,
-                    category: categoryId,
-                    isFolder: false,
-                    order: section.order,
-                    isActive: true
-                  })
-                });
-
-                if (!sectionResponse.ok) {
-                  throw new Error(`Failed to create section for ${section.name}`);
-                }
-
-                const sectionResult = await sectionResponse.json();
-                console.log(`Section created for ${section.name}:`, sectionResult);
-
-                let contentData;
-                if(section.name === 'Images Gallery') {
-                  contentData = {
-                    section: sectionResult._id,
-                    slug: section.slug,
-                    title: section.name,
-                    subtitle: section.description,
-                    images: contentDataArray[contentDataArray.length - 1]?.images,
-                    fields: [],
-                    isActive: true
-                  }
-                } else if(section.name === 'Blogs') {
-                  const blogImages = contentDataArray[contentDataArray.length - 1]?.images || [];
-                  const fields = blogImages.map(image => ({
-                    value: {
-                      url: image.url,
-                      title: image.title,
-                      content: image.content
-                    }
-                  }));
-                  
-                  contentData = {
-                    section: sectionResult._id,
-                    slug: section.slug,
-                    title: section.name,
-                    subtitle: section.description,
-                    images: blogImages,
-                    fields: fields,
-                    isActive: true
-                  }
-                } else {
-                // Create content with the generated image
-                contentData = {
-                  section: sectionResult._id,
-                  slug: section.slug,
-                  title: section.name,
-                  subtitle: section.description,
-                  images: [{
-                    url: mainImageUrl,
-                    alt: section.name,
-                    width: 1024,
-                    height: 1024
-                  }],
-                  fields: [],
-                  isActive: true
-                };
-                }
-
-
-                const contentResponse = await fetch('https://airbrush-admin-backend.onrender.com/api/content', {
-                  method: 'POST',
-                  headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                  },
-                  body: JSON.stringify(contentData)
-                });
-
-                if (!contentResponse.ok) {
-                  throw new Error(`Failed to create content for ${section.name}`);
-                }
-
-                const contentResult = await contentResponse.json();
-                console.log(`Content created for ${section.name}:`, contentResult);
-                showAlert(`${section.name} created successfully!`, 'success');
+              // Hide after 3 seconds
+              setTimeout(() => {
+                successAlert.remove();
+              }, 3000);
             }
-          } catch (error) {
-            console.error(`Error processing ${section.name}:`, error);
-            showAlert(`Failed to process ${section.name}. ${error.message}`, 'danger');
           }
         }
       } catch (error) {
-        console.error('Error in generateImageAndContent:', error);
-        showAlert('Failed to generate AI images. Please try again.', 'danger');
+        console.error('Error generating AI image:', error);
+        showErrorAlert('Failed to generate image. Please try again.');
       } finally {
-        // Hide loader
-        loader.classList.add('d-none');
+        generateButton.innerHTML = originalButtonText;
+        generateButton.disabled = false;
       }
+    };
+
+    // Add event listener for the generate button after DOM is loaded
+    const textToAnythingTab = document.getElementById('text-to-anything-tab');
+    if (textToAnythingTab) {
+      textToAnythingTab.addEventListener('shown.bs.tab', function() {
+        const generateButton = document.getElementById('generate-ai-image');
+        if (generateButton) {
+          generateButton.addEventListener('click', function() {
+            const prompt = document.getElementById('ai-prompt').value.trim();
+            generateAIImage(prompt);
+          });
+        }
+      });
     }
-    } 
-  );
+  });
 </script>

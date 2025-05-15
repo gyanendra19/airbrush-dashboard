@@ -1,11 +1,12 @@
 {{!-- Character Showcase Styles --}}
 <style>
     .character-section {
-        min-height: 100vh;
+        min-height: auto;
         padding: 1rem;
         display: flex;
         flex-direction: column;
         gap: 1.5rem;
+        position: relative;
     }
 
     .character-nav {
@@ -184,13 +185,20 @@
         background: linear-gradient(180deg, #6248E2 22.26%, #FF6154 100%);
         border-radius: 12px;
         padding: 2rem;
-        display: flex;
+        display: none;
         justify-content: center;
         align-items: center;
         width: 90%;
         height: 40%;
         position: relative;
         margin-inline: auto;
+        margin-top: 0;
+        transition: all 0.3s ease;
+    }
+
+    .character-main.show {
+        display: flex;
+        margin-top: 2rem;
     }
 
     .character-image {
@@ -207,6 +215,13 @@
         padding: 1rem;
         width: 90%;
         margin-inline: auto;
+        display: none;
+        transition: all 0.3s ease;
+    }
+
+    .character-thumbnails.show {
+        display: block;
+        margin-top: 2rem;
     }
 
     .thumbnail-container {
@@ -240,28 +255,84 @@
         z-index: 2;
     }
 
+    .prompt-and-subscription {
+        width: 85%;
+        margin-inline: auto;
+        position: relative;
+        margin-top: 1.5rem;
+    }
+
     .character-prompt-container {
         background-color: #12033B;
         border-radius: 1rem;
-        width: 85%;
+        width: 100%;
         height: 150px;
-        margin-inline: auto;
-        margin-top: 1.5rem;
         padding: 1.4rem;
-        margin-bottom: 1.5rem;
-        position: relative border: 1px solid #555454;
+        position: relative;
+        border: 1px solid #555454;
+    }
+
+    .subscription-container {
+        background-color: #12033B;
+        border-radius: 1rem;
+        margin-top: 24px;
+        top: 150px;
+        width: 180px;
+        height: 60px;
+        padding: 0.8rem;
+        border: 1px solid gray;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 1rem;
+        position: absolute;
+        right: 0;
+        box-shadow: 0 4px 15px rgba(255, 215, 0, 0.1);
+    }
+
+    .subscription-container img {
+        width: 42px;
+        height: 42px;
+        border-radius: 25%;
+    }
+
+    .subscription-text {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        padding-left: 0.5rem;
+    }
+
+    .subscription-container .title {
+        color: gray;
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin: 0;
+        line-height: 1;
+        margin-bottom: 0.2rem;
+    }
+
+    .subscription-container .subtitle {
+        color: #ffffff;
+        font-size: 2rem;
+        font-weight: 500;
+        border-radius: 2rem;
+        margin: 0;
+        line-height: 1;
     }
 
     .prompt-input {
         display: flex;
         align-items: flex-start;
         gap: 1rem;
-        margin-bottom: 1rem
+        margin-bottom: 1rem;
+        position: relative;
+        z-index: 1;
     }
 
     .ai-icon {
-        width: 32px;
-        height: 32px;
+        width: 28px;
+        height: 28px;
         background-color: #333;
         border-radius: 6px;
         display: flex;
@@ -269,7 +340,8 @@
         justify-content: center;
         color: #00ffcc;
         font-weight: bold;
-        font-size: 14px
+        margin-left: 0%;
+        font-size: 12px
     }
 
     .edit-icon {
@@ -303,24 +375,37 @@
         right: 1.5rem;
         bottom: 1.5rem;
         background: linear-gradient(90deg, #1E0A69 0%, #000000 100%);
-        color: white;
+        color: #ffffff;
         border: 1px solid rgba(255, 255, 255, 0.2);
-        border-radius: 2rem;
+        border-radius: 4rem;
         padding: 0.5rem 1.5rem;
         display: flex;
         align-items: center;
         gap: 0.5rem;
         cursor: pointer;
         width: auto;
-        transition: all 0.2s ease
+        transition: all 0.2s ease;
+        font-weight: 500;
+        z-index: 2;
+    }
+
+    .generate-btn .ai-icon {
+        margin-right: 0.5rem;
+        /* Adds space between the star and the other content */
     }
 
     .generate-btn:hover {
-        background-color: #3a1a6a
+        background-color: #3a1a6a;
+        color: #ffffff;
+    }
+
+    .generate-btn img {
+        display: inline-block;
+        /* Ensures the image aligns with text */
     }
 
     .generate-btn .icon {
-        font-size: 1.2rem
+        font-size: 1 rem
     }
 
     .character-options {
@@ -328,6 +413,7 @@
         gap: 1rem;
         width: 85%;
         margin-inline: auto;
+        margin-top: 2rem;
         margin-bottom: 2rem;
         justify-content: space-between;
     }
@@ -432,7 +518,8 @@
 
         .character-model-preview {
             display: grid;
-            grid-template-columns: repeat(1, 1fr); !important
+            grid-template-columns: repeat(1, 1fr);
+            !important
         }
 
         .character-model-preview video {
@@ -474,22 +561,44 @@
         .thumbnail-wrapper {
             width: 100%;
         }
+
+        .prompt-and-subscription {
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .subscription-container {
+            position: static;
+            width: 100%;
+            height: auto;
+            padding: 1rem;
+            margin-top: 1rem;
+        }
     }
 </style>
 
 {{!-- Character Showcase Content --}}
 <section class="character-section">
-    <div class="character-prompt-container">
-        <div class="prompt-input">
-            <div class="ai-icon"><img src="/images/svg/AIIcon.svg" alt="AI" width="32" height="32"></div>
-            <textarea
-                placeholder="A modern and sleek banner design for UX/UI design, featuring a minimalist layout with ample negative space........."
-                rows="5"></textarea>
+    <div class="prompt-and-subscription">
+        <div class="character-prompt-container">
+            <div class="prompt-input">
+                <div class="ai-icon"><img src="/images/svg/AIIcon.svg" alt="AI" width="28" height="28"></div>
+                <textarea
+                    placeholder="A modern and sleek banner design for UX/UI design, featuring a minimalist layout with ample negative space........."
+                    rows="5"></textarea>
+            </div>
+            <button class="generate-btn" onclick="handleGenerate()">
+                <img src="/images/svg/generateIcon.svg" alt="AI" width="24" height="24">
+                Generate
+            </button>
         </div>
-        <button class="generate-btn">
-            <img src="/images/svg/generateIcon.svg" alt="AI" width="32" height="32">
-            Generate
-        </button>
+        <div class="subscription-container">
+            <img src="/images/generator-images/Subscription Get Pro.png" alt="Golden Crown">
+            <div class="subscription-text">
+                <p class="title">Subscription</p>
+                <p class="subtitle">Get Pro</p>
+            </div>
+        </div>
     </div>
 
     <div class="character-options">
@@ -505,26 +614,7 @@
         </div>
     </div>
     <main class="character-main">
-        <img src="/images/dragon.png" alt="3D Character Boy" class="character-image">
-        <div class="hover-overlay">
-            <div class="hover-content">
-                <div class="hover-buttons">
-                    <button class="download-btn">
-                        <img src="/images/download.svg" alt="Download">
-                    </button>
-                    <button class="expand-btn">
-                        <img src="/images/delete.svg" alt="Expand">
-                    </button>
-                </div>
-                <div class="text-content">
-                    <h3>Lorem ipsum</h3>
-                    <p>Lorem ipsum dolor sit amet consectetur. Morbi urna id cursus enim placerat est
-                        ultrices
-                        ornare duis. Molestie eget maecenas gravida aliquam nunc nibh suscipit risus nisi.
-                    </p>
-                </div>
-            </div>
-        </div>
+        <img src="/images/ai-images-generator/generating .gif" alt="Generating" class="character-image">
     </main>
 
     <div class="character-thumbnails">
@@ -625,3 +715,22 @@
         </div>
     </div>
 </section>
+
+<script>
+    function handleGenerate() {
+        const textarea = document.querySelector('.prompt-input textarea');
+        if (textarea.value.trim() !== '') {
+            // Show the generating container
+            document.querySelector('.character-main').classList.add('show');
+
+            // Hide the thumbnails initially
+            document.querySelector('.character-thumbnails').classList.remove('show');
+
+            // Simulate generation time (you can replace this with your actual generation logic)
+            setTimeout(() => {
+                // After generation is complete, show the thumbnails
+                document.querySelector('.character-thumbnails').classList.add('show');
+            }, 3000); // Adjust this time based on your actual generation time
+        }
+    }
+</script>

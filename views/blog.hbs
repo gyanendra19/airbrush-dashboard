@@ -1,5 +1,3 @@
-<script src="https://kit.fontawesome.com/your-kit-code.js" crossorigin="anonymous"></script>
-<!-- Blog Post Template -->
 <!DOCTYPE html>
 <html lang="en">
 
@@ -8,25 +6,21 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="shortcut icon" type="image/x-icon"
-        href="https://ai4chat-files.s3.amazonaws.com/images/airbrush/image-1737741097321.jpg">
-    <title>Airbrush - Best AI Art, Image & Stock Photo Generator</title>
-    <meta name="description"
-        content="With Airbrush's AI technology, you can create original stock photos, NFTs, art, and more - in just seconds.">
-    <meta name="robots" content="index, follow">
-
-    <!-- FB meta tags -->
-    <meta property="og:title" content="Airbrush - Best AI Art, Image & Stock Photo Generator">
-    <meta property="og:description"
-        content="With Airbrush's AI technology, you can create original stock photos, NFTs, art, and more - in just seconds.">
-    <meta property="og:image" content="https://i.postimg.cc/x8Hy7mQ9/Screenshot-297.png">
-    <meta property="og:url" content="https://www.airbrush.ai">
-
-    <!-- Twitter meta tags -->
-    <meta name="twitter:title" content="Airbrush - Best AI Art, Image & Stock Photo Generator">
-    <meta name="twitter:description"
-        content="With Airbrush's AI technology, you can create original stock photos, NFTs, art, and more - in just seconds.">
-    <meta name="twitter:image" content="https://i.postimg.cc/x8Hy7mQ9/Screenshot-297.png">
+    <link rel="shortcut icon" type="image/x-icon" href="https://ai4chat-files.s3.amazonaws.com/images/airbrush/image-1737741097321.jpg">
+    <title>Blog - Airbrush</title>
+		<meta name="description" content="Discover Airbrush's latest in AI communication: tips, trends, and tools for effortless content creation. Join our innovative community!">
+		<meta name="robots" content="index, follow">
+		
+		<!-- FB meta tags -->
+		<meta property="og:title" content="Blog - Airbrush">
+		<meta property="og:description" content="Discover Airbrush's latest in AI communication: tips, trends, and tools for effortless content creation. Join our innovative community!">
+		<meta property="og:image" content="https://i.postimg.cc/x8Hy7mQ9/Screenshot-297.png">
+		<meta property="og:url" content="https://www.airbrush.ai">
+		
+		<!-- Twitter meta tags -->
+		<meta name="twitter:title" content="Blog - Airbrush AI">
+		<meta name="twitter:description" content="Discover Airbrush AI's latest in AI communication: tips, trends, and tools for effortless content creation. Join our innovative community!">
+		<meta name="twitter:image" content="https://i.postimg.cc/x8Hy7mQ9/Screenshot-297.png">
 
 
 
@@ -41,103 +35,191 @@
 </head>
 
 <body class="dark-version">
-  {{> desktop-menu}}
-<div style="margin-top: 100px;" class="blog-container">
-  <!-- Hero Section -->
-  <div class="blog-hero">
-    <div class="blog-image-container">
-      <img src="{{blog.image}}" alt="{{blog.title}}" class="blog-hero-image">
-      <div class="blog-meta">
-        <span class="blog-date">
-          <i class="fas fa-calendar-alt"></i>
-          {{blog.date}}
-        </span>
-        <span class="blog-category">
-          <i class="fas fa-folder"></i>
-          {{blog.category}}
-        </span>
-      </div>
-    </div>
-  </div>
 
-  <!-- Content Section -->
-  <div class="blog-content-wrapper">
-    <div class="blog-header">
-      <h1 class="blog-title">{{blog.title}}</h1>
-      <div class="blog-author">
-        <img src="{{blog.author.avatar}}" alt="{{blog.author.name}}" class="author-avatar">
-        <div class="author-info">
-          <span class="author-name">{{blog.author.name}}</span>
-          <span class="author-role">{{blog.author.role}}</span>
+    {{> desktop-menu}}
+
+<!-- rts breadcrumb area start-->
+    {{!-- <div class="rts-bread-crumb-area bg_image">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="breadcrumb-inne">
+                        <div class="title-area">
+                            <h1 class="bread-title">Blog</h1>
+                            <div class="inner-wrapper">
+                                <a href="https://www.airbrush.ai">Home</a>/
+                                <a href="#" class="active">Blog</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
+    </div> --}}
+    <!-- rts breadcrumb area end -->
+<style>
+.flex-app {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
 
-    <div class="blog-content">
-      {{{blog.content}}}
-    </div>
+.app-btn {
+  width: 45%;
+  max-width: 220px;
+  color: #fff;
+  margin: 20px 10px;
+  text-align: left;
+  border-radius: 5px;
+  text-decoration: none;
+  font-family: "Lucida Grande", sans-serif;
+  font-size: 15px;
+  text-transform: uppercase;
+  border: 1px #3996fb solid;
+  padding: 10px 10px;
+}
 
-    <!-- Tags Section -->
-    <div class="blog-tags">
-      {{#each blog.tags}}
-        <span class="tag">{{this}}</span>
-      {{/each}}
-    </div>
+.app-btn.blu {
+  background-color: #101010;
+  transition: background-color 0.25s linear;
+}
 
-    <!-- Share Section -->
-    <div class="blog-share">
-      <h4>Share this post</h4>
-      <div class="share-buttons">
-        <a href="https://twitter.com/intent/tweet?url={{encodeURIComponent url}}&text={{encodeURIComponent blog.title}}" class="share-button twitter" target="_blank">
-          <i class="fab fa-twitter"></i>
-        </a>
-        <a href="https://www.facebook.com/sharer/sharer.php?u={{encodeURIComponent url}}" class="share-button facebook" target="_blank">
-          <i class="fab fa-facebook-f" style="width: 10px"></i>
-        </a>
-        <a href="https://www.linkedin.com/shareArticle?mini=true&url={{encodeURIComponent url}}&title={{encodeURIComponent blog.title}}" class="share-button linkedin" target="_blank">
-          <i class="fab fa-linkedin-in"></i>
-        </a>
-      </div>
-    </div>
+.app-btn.blu:hover {
+  background-color: #454545;
+}
 
-    <!-- Related Posts -->
-    {{#if relatedPosts}}
-    <div class="related-posts">
-      <h3>Related Posts</h3>
-      <div class="related-posts-grid">
-        {{#each relatedPosts}}
-        <a href="/blog/{{this.slug}}" class="related-post-card">
-          <img src="{{this.image}}" alt="{{this.title}}" class="related-post-image">
-          <div class="related-post-content">
-            <h4>{{this.title}}</h4>
-            <p>{{this.excerpt}}</p>
-          </div>
-        </a>
-        {{/each}}
-      </div>
+.app-btn i {
+  width: 20%;
+  text-align: center;
+  font-size: 36px;
+  margin-right: 7px;
+}
+
+.app-btn .big-txt {
+  font-size: 25px;
+  text-transform: capitalize;
+}
+
+/* Media query for screens below 768 pixels */
+@media screen and (max-width: 768px) {
+  .flex-app {
+    flex-direction: column; /* Stack children vertically */
+  }
+
+  .app-btn {
+    width: 90%; /* Adjust the button width to take more space */
+    margin: 7px auto; /* Center the buttons horizontally */
+  }
+  
+  .app-btn i {
+    margin-bottom: 7px; /* Add space below the icon */
+  }
+  
+  .app-btn span {
+    margin-top: 7px; /* Add space above the text */
+  }
+}
+
+
+</style>
+
+
+
+<!-- rts blgo area start -->
+    <div class="rts-blog-area-rts-section-gap bg-smooth-1">
+        <div class="container">
+              <div id="blog-container">
+                <!-- Blog posts will be dynamically displayed here -->
+              </div>
+
+              <div id="loading-message" style="text-align: center; display: none; margin-top: 1rem; color:#454545">
+                 Loading more posts...
+              </div>
+        </div>
     </div>
-    {{/if}}
-  </div>
+    <!-- rts blgo area end -->
+
+
+<div id="all-posts" style="display: none;">
+{{#each articles}}
+    <div class="" style="margin-top: 5rem;">
+        <!-- single blog area start -->
+        <div class="single-blog-area-wrapper">
+                {{#if this.imageUrl}}
+                  <a href="/blog/{{this.url}}" class="thumbnail">
+                    <img src="{{this.imageUrl}}" alt="{{this.title}}">
+                  </a>
+                {{/if}}
+            <div class="inner-content">
+                {{!-- <div class="head">
+                    <span class="tag">Blog Content</span>
+                    <span class="time">{{this.timeToRead}} minute read</span>
+                </div> --}}
+                <div class="body">
+                    <a href="/blog/{{this.url}}">
+                        <h5 class="title">{{this.title}}</h5>
+                    </a>
+                    <div>
+                      <div style=" color:#e3e3e3; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">
+                          {{{this.summary}}}
+                      </div>
+                    </div>
+                    <div class="author-area">
+                        {{!-- <div class="author">
+                            <img src="/images/blog/04.png" alt="Samuel - Airbrush AI">
+                            <div class="info">
+                                <p>Samuel</p>
+                                <span>Author</span>
+                            </div>
+                        </div> --}}
+                        <a href="/blog/{{this.url}}">Read More <i class="fa-solid fa-arrow-right"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- single blog area end -->
+    </div>
+    {{/each}}
 </div>
 
-  {{> footer}}
 
-  
+
+
+
+
+
+
+
+
+
+
+		
+		
+		
+		{{!-- {{> apps}} --}}
+
+    {{!-- {{> cta}} --}}
+
+    {{> footer}}
+
+
+
     <div id="anywhere-home" class="">
     </div>
-
+    
     {{> mobile-menu}}
 
 
     <!-- rts backto top start -->
     <div class="progress-wrap">
         <svg class="progress-circle svg-content" width="100%" height="100%" viewBox="-1 -1 102 102">
-            <path d="M50,1 a49,49 0 0,1 0,98 a49,49 0 0,1 0,-98"
-                style="transition: stroke-dashoffset 10ms linear 0s; stroke-dasharray: 307.919, 307.919; stroke-dashoffset: 307.919;">
-            </path>
+            <path d="M50,1 a49,49 0 0,1 0,98 a49,49 0 0,1 0,-98" style="transition: stroke-dashoffset 10ms linear 0s; stroke-dasharray: 307.919, 307.919; stroke-dashoffset: 307.919;"></path>
         </svg>
     </div>
     <!-- rts backto top end -->
+
 
     <script src="/js/vendor/jquery.min.js" defer></script>
     <script src="/js/vendor/metismenu.js" defer></script>
@@ -145,329 +227,57 @@
     <script src="/js/plugins/swiper.js" defer></script>
     <script src="/js/plugins/contact.form.js" defer></script>
     <script src="/js/main.js" defer></script>
+
+    <script>
+      const blogContainer = document.getElementById("blog-container");
+      const allPostsContainer = document.getElementById("all-posts");
+      const allPosts = Array.from(allPostsContainer.children); 
+      const postsPerPage = 20; 
+      let currentPage = 1; 
+      let isLoading = false; 
+
+      const loadingMessage = document.getElementById("loading-message");
+
+      function renderPosts(page) {
+        const startIndex = (page - 1) * postsPerPage;
+        const endIndex = page * postsPerPage;
+
+        const postsToRender = allPosts.slice(startIndex, endIndex);
+        postsToRender.forEach((post) => {
+          blogContainer.appendChild(post); 
+        });
+
+        if (endIndex >= allPosts.length) {
+          window.removeEventListener("scroll", handleScroll);
+        }
+      }
+
+      function handleScroll() {
+        if (
+          window.innerHeight + window.scrollY >= document.body.offsetHeight - 200 &&
+          !isLoading
+        ) {
+          isLoading = true; 
+
+          loadingMessage.style.display = "block";
+
+          setTimeout(() => {
+            currentPage++;
+            renderPosts(currentPage);
+
+            loadingMessage.style.display = "none";
+            isLoading = false;
+          }, 1500); 
+        }
+      }
+
+      renderPosts(currentPage);
+
+      window.addEventListener("scroll", handleScroll);
+    </script>
+
 </body>
 
 
-<style>
-  .blog-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 2rem;
-  }
 
-  .blog-hero {
-    margin-bottom: 3rem;
-  }
-
-  .blog-image-container {
-    position: relative;
-    border-radius: 1rem;
-    overflow: hidden;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-  }
-
-  .blog-hero-image {
-    width: 100%;
-    height: 500px;
-    object-fit: cover;
-    transition: transform 0.3s ease;
-  }
-
-  .blog-meta {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    padding: 1.5rem;
-    background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
-    color: white;
-    display: flex;
-    gap: 1rem;
-  }
-
-  .blog-meta span {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-size: 0.9rem;
-  }
-
-  .blog-content-wrapper {
-    max-width: 800px;
-    margin: 0 auto;
-  }
-
-  .blog-header {
-    margin-bottom: 2rem;
-  }
-
-  .blog-title {
-    font-size: 2.5rem;
-    font-weight: 700;
-    margin-bottom: 1.5rem;
-    line-height: 1.2;
-  }
-
-  .blog-author {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    margin-bottom: 2rem;
-  }
-
-  .author-avatar {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    object-fit: cover;
-  }
-
-  .author-info {
-    display: flex;
-    flex-direction: column;
-  }
-
-  .author-name {
-    font-weight: 600;
-    color: var(--bs-primary);
-  }
-
-  .author-role {
-    font-size: 0.9rem;
-    color: #666;
-  }
-
-  .blog-content {
-    font-size: 1.1rem;
-    line-height: 1.8;
-    color: #333;
-  }
-
-  .blog-content p {
-    margin-bottom: 1.5rem;
-  }
-
-  .blog-content h2 {
-    margin: 2rem 0 1rem;
-    font-weight: 600;
-  }
-
-  .blog-tags {
-    margin: 3rem 0;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-  }
-
-  .tag {
-    padding: 0.5rem 1rem;
-    background-color: #f0f0f0;
-    border-radius: 2rem;
-    font-size: 0.9rem;
-    color: #666;
-    transition: all 0.3s ease;
-  }
-
-  .tag:hover {
-    background-color: var(--bs-primary);
-    color: white;
-  }
-
-  .blog-share {
-    margin: 3rem 0;
-    text-align: center;
-  }
-
-  .share-buttons {
-    display: flex;
-    justify-content: center;
-    gap: 1rem;
-    margin-top: 1rem;
-  }
-
-  .share-button {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    transition: transform 0.3s ease;
-  }
-
-  .share-button:hover {
-    transform: translateY(-3px);
-  }
-
-  .twitter { background-color: #1DA1F2; }
-  .facebook { background-color: #4267B2; }
-  .linkedin { background-color: #0077B5; }
-
-  .related-posts {
-    margin-top: 4rem;
-    padding-top: 3rem;
-    border-top: 1px solid #eee;
-  }
-
-  .related-posts h3 {
-    margin-bottom: 2rem;
-    font-weight: 600;
-  }
-
-  .related-posts-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 2rem;
-  }
-
-  .related-post-card {
-    text-decoration: none;
-    color: inherit;
-    border-radius: 0.5rem;
-    overflow: hidden;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    transition: transform 0.3s ease;
-  }
-
-  .related-post-card:hover {
-    transform: translateY(-5px);
-  }
-
-  .related-post-image {
-    width: 100%;
-    height: 200px;
-    object-fit: cover;
-  }
-
-  .related-post-content {
-    padding: 1rem;
-  }
-
-  .related-post-content h4 {
-    font-size: 1.1rem;
-    margin-bottom: 0.5rem;
-    color: #333;
-  }
-
-  .related-post-content p {
-    font-size: 0.9rem;
-    color: #666;
-    margin: 0;
-  }
-
-  @media (max-width: 768px) {
-    .blog-container {
-      padding: 1rem;
-    }
-
-    .blog-hero-image {
-      height: 300px;
-    }
-
-    .blog-title {
-      font-size: 2rem;
-    }
-
-    .blog-content {
-      font-size: 1rem;
-    }
-  }
-</style> 
-
-<!-- Add marked library -->
-<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-
-<script>
-async function fetchAndRenderBlogContent() {
-    try {
-        // Get contentId and title from URL
-        const pathParts = window.location.pathname.split('/');
-        const contentId = pathParts[pathParts.length - 1];
-        const encodedTitle = pathParts[pathParts.length - 2];
-        const title = decodeURIComponent(encodedTitle.replace(/-/g, ' '));
-
-        // Fetch content from API
-        const response = await fetch(`https://airbrush-admin-backend.onrender.com/api/content/id/${contentId}`);
-        if (!response.ok) {
-            throw new Error('Failed to fetch blog content');
-        }
-
-        const content = await response.json();
-        console.log(content, 'content');
-        
-        // Find the specific blog post from fields array that matches the title
-        const blogPost = content.fields.find(field => {
-            const fieldTitle = (field.value.title || '').replace(/-/g, ' ');
-            const searchTitle = title.replace(/-/g, ' ');
-            return fieldTitle.toLowerCase() === searchTitle.toLowerCase();
-        });
-
-
-        // Update the page content
-        document.querySelector('.blog-hero-image').src = blogPost.value.url || '/images/placeholder.png';
-        document.querySelector('.blog-hero-image').alt = blogPost.value.title;
-        {{!-- document.querySelector('.blog-date').textContent = formatDate(blogPost.value.date); --}}
-        {{!-- document.querySelector('.blog-category').textContent = blogPost.value.category || 'Uncategorized'; --}}
-        document.querySelector('.blog-title').textContent = blogPost.value.title;
-        
-        // Update author information if available
-        const authorName = blogPost.value.author?.name || 'Anonymous';
-        const authorRole = blogPost.value.author?.role || 'Contributor';
-        const authorAvatar = blogPost.value.author?.avatar || '/images/default-avatar.png';
-        
-        document.querySelector('.author-name').textContent = authorName;
-        document.querySelector('.author-role').textContent = authorRole;
-        document.querySelector('.author-avatar').src = authorAvatar;
-        
-        // Update content
-        document.querySelector('.blog-content').innerHTML = marked.parse(blogPost.value.content || '');
-        
-        // Update tags
-        const tagsContainer = document.querySelector('.blog-tags');
-        tagsContainer.innerHTML = '';
-        if (blogPost.value.tags && Array.isArray(blogPost.value.tags)) {
-            blogPost.value.tags.forEach(tag => {
-                const tagSpan = document.createElement('span');
-                tagSpan.className = 'tag';
-                tagSpan.textContent = tag;
-                tagsContainer.appendChild(tagSpan);
-            });
-        }
-
-        // Update share buttons with current URL
-        const currentUrl = window.location.href;
-        const encodedUrl = encodeURIComponent(currentUrl);
-        const encodedBlogTitle = encodeURIComponent(blogPost.value.title);
-        
-        document.querySelector('.share-button.twitter').href = `https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodedBlogTitle}`;
-        document.querySelector('.share-button.facebook').href = `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`;
-        document.querySelector('.share-button.linkedin').href = `https://www.linkedin.com/shareArticle?mini=true&url=${encodedUrl}&title=${encodedBlogTitle}`;
-
-    } catch (error) {
-        console.error('Error fetching blog content:', error);
-    }
-}
-
-function formatDate(dateString) {
-    try {
-        const date = new Date(dateString);
-        return date.toLocaleDateString('en-US', {
-            day: 'numeric',
-            month: 'short',
-            year: 'numeric'
-        });
-    } catch (e) {
-        console.warn('Error formatting date:', e);
-        return new Date().toLocaleDateString('en-US', {
-            day: 'numeric',
-            month: 'short',
-            year: 'numeric'
-        });
-    }
-}
-
-// Call the function when the page loads
-document.addEventListener('DOMContentLoaded', fetchAndRenderBlogContent);
-</script> 
 </html>

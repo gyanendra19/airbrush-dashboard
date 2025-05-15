@@ -404,14 +404,14 @@
             </button>
           </div>
           <div class="card-body p-2">
-            {{!-- <div class="mb-2">
+            <div class="mb-2">
               <label class="form-label small mb-1">Title</label>
               <input type="text" 
                      class="form-control form-control-sm image-title" 
                      value="${imageData?.title || ''}" 
                      placeholder="Enter image title"
                      data-original-title="${imageData?.title || ''}">
-            </div> --}}
+            </div>
             <div class="mb-2">
               <label class="form-label small mb-1">Prompt</label>
               <textarea class="form-control form-control-sm image-prompt" 
@@ -426,16 +426,16 @@
       galleryContainer.appendChild(imageCard);
       
       // Add input change handlers
-      {{!-- const titleInput = imageCard.querySelector('.image-title'); --}}
+      const titleInput = imageCard.querySelector('.image-title');
       const promptInput = imageCard.querySelector('.image-prompt');
       
-      {{!-- titleInput.addEventListener('change', function() {
+      titleInput.addEventListener('change', function() {
         const imageUrl = imageSrc;
         const index = galleryImages.findIndex(img => img.url === imageUrl);
         if (index !== -1) {
           galleryImages[index].title = this.value;
         }
-      }); --}}
+      });
       
       promptInput.addEventListener('change', function() {
         const imageUrl = imageSrc;
@@ -475,13 +475,18 @@
       generateButton.disabled = true;
 
       try {
-        const response = await fetch('https://airbrush-admin-backend.onrender.com/api/images/generate-image', {
+        const response = await fetch('https://api.deepinfra.com/v1/openai/images/generations', {
           method: 'POST',
           headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ofZxkV2E7aTDvbirZCB16zJHSbbfOxdN`
           },
           body: JSON.stringify({
-            prompt: prompt
+            prompt: prompt,
+            size: "1024x1024",
+            model: "black-forest-labs/FLUX-1-dev",
+            n: 1,
+            response_format: "b64_json"
           })
         });
 
@@ -490,10 +495,10 @@
         }
 
         const data = await response.json();
-        const base64Data = data.imageData;
         
-        if (base64Data) {
+        if (data.data && data.data[0] && data.data[0].b64_json) {
           // Convert base64 to blob
+          const base64Data = data.data[0].b64_json;
           const byteCharacters = atob(base64Data);
           const byteArrays = [];
           
@@ -560,10 +565,6 @@
   
   .img-cover {
     object-fit: cover;
-  }
-
-  textarea {
-    height: 8rem;
   }
   
   .btn-remove-image {

@@ -5,9 +5,6 @@
   "main": "server.js",
   "scripts": {
     "dev": "nodemon server.js",
-    "build": "npm install",
-    "start": "pm2-runtime start ecosystem.config.js --env production",
-    "deploy": "pm2 deploy ecosystem.config.js production",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
@@ -27,7 +24,6 @@
     "node-fetch": "^2.6.12",
     "nodemon": "^3.1.7",
     "path": "^0.12.7",
-    "pm2": "^6.0.5",
     "uuid": "^8.3.2"
   }
 }
