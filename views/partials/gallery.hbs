@@ -159,6 +159,7 @@
     .feature-card {
         position: relative;
         width: 270px;
+        height: 285px;
         padding: 0px;
         border-radius: 16px;
         overflow: hidden;
@@ -174,13 +175,34 @@
 
     .feature-card .image-container {
         width: 93%;
-        aspect-ratio: 1/1;
+        height: 200px;
         margin: auto;
         margin-bottom: 0;
         margin-top: 8px;
         overflow: hidden;
         border-radius: 9px;
         position: relative;
+    }
+
+    .use-prompt-overlay {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: white;
+        color: #4526B1;
+        padding: 10px 20px;
+        border-radius: 20px;
+        font-weight: 600;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        z-index: 5;
+        pointer-events: none;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+
+    .feature-card .image-container:hover .use-prompt-overlay {
+        opacity: 1;
     }
 
     .feature-card img {
@@ -385,6 +407,7 @@
         left: -10%;
         height: 145px;
         width: 130%;
+        margin-bottom: -139px;
 
     }
 

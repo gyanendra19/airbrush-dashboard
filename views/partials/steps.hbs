@@ -1,5 +1,5 @@
 <!-- Steps Section -->
-<div class="steps-section rts-case-area bg-smooth-2" style="padding: 80px 0; background: transparent; height: 1200px;">
+<div class="steps-section rts-case-area bg-smooth-2" style="padding: 80px 0; background: transparent; height: 1200px;" id="stepsSection">
     <div class="container" style="background: transparent; height: 100%;">
         <div class="row justify-content-center" style="background: transparent; height: 100%;">
             <div class="col-12 text-center mb-4" style="background: transparent; height: 100%;">
@@ -34,17 +34,20 @@
                         background: transparent;
                     ">
                         <svg width="100%" height="1200" viewBox="0 0 1200 1200" style="position: absolute; top: 0; left: 0;">
-                            <path d="M 250,10 C 200,400 500,-150, 780,180 C 600,300 800,500 400,500 C 200,400 200,700 800,700"
-                                stroke="#7153D9" 
+                            <path id="dottedPath" class="steps-path" d="M 250,-10 
+     C 400,20 650,50 780,180 
+     C 800,400 400,500 350,650 
+     C 360,770 620,780 680,870"
+                                stroke="#FFFFFF" 
                                 stroke-width="2" 
                                 stroke-dasharray="5,5" 
                                 fill="none"
                             />
                             <!-- Circles at connection points -->
-                            <circle cx="250" cy="-10" r="25" fill="#FFFFFF" stroke="#7153D9" stroke-width="2"/>
-                            <circle cx="780" cy="180" r="25" fill="#FFFFFF" stroke="#7153D9" stroke-width="2"/>
-                            <circle cx="350" cy="650" r="25" fill="#FFFFFF" stroke="#7153D9" stroke-width="2"/>
-                            <circle cx="680" cy="870" r="25" fill="#FFFFFF" stroke="#7153D9" stroke-width="2"/>
+                            <circle id="dot1" class="step-dot" cx="250" cy="-10" r="25" fill="#FFFFFF" stroke="#7153D9" stroke-width="2"/>
+                            <circle id="dot2" class="step-dot" cx="780" cy="180" r="25" fill="#FFFFFF" stroke="#7153D9" stroke-width="2"/>
+                            <circle id="dot3" class="step-dot" cx="350" cy="650" r="25" fill="#FFFFFF" stroke="#7153D9" stroke-width="2"/>
+                            <circle id="dot4" class="step-dot" cx="680" cy="870" r="25" fill="#FFFFFF" stroke="#7153D9" stroke-width="2"/>
                         </svg>
                     </div>
 
@@ -58,7 +61,7 @@
                         background: transparent;
                     ">
                         <!-- Step 1 -->
-                        <div style="
+                        <div class="step-box" style="
                             background: rgba(255, 240, 245, 0.95);
                             border-radius: 16px;
                             padding: 24px;
@@ -78,7 +81,7 @@
                             ">
                                 <div style="color: #FFFFFF; font-size: 16px; font-weight: bold;">Step</div>
                             </div>
-                            <div style="
+                            <div class="step-number" style="
                                 color: #4526B1;
                                 font-size: 100px;
                                 font-weight: bold;
@@ -95,7 +98,7 @@
                         </div>
 
                         <!-- Step 2 -->
-                        <div style="
+                        <div class="step-box" style="
                             background: rgba(255, 240, 245, 0.95);
                             border-radius: 16px;
                             padding: 24px;
@@ -117,7 +120,7 @@
                             ">
                                 <div style="color: #FFFFFF; font-size: 16px; font-weight: bold;">Step</div>
                             </div>
-                            <div style="
+                            <div class="step-number" style="
                                 color: #4526B1;
                                 font-size: 100px;
                                 font-weight: bold;
@@ -134,7 +137,7 @@
                         </div>
 
                         <!-- Step 3 -->
-                        <div style="
+                        <div class="step-box" style="
                             background: rgba(255, 240, 245, 0.95);
                             border-radius: 16px;
                             padding: 24px;
@@ -156,7 +159,7 @@
                             ">
                                 <div style="color: #FFFFFF; font-size: 16px; font-weight: bold;">Step</div>
                             </div>
-                            <div style="
+                            <div class="step-number" style="
                                 color: #4526B1;
                                 font-size: 100px;
                                 font-weight: bold;
@@ -168,12 +171,12 @@
                                 text-align: center;
                                 margin-top: -20px;
                             ">03</div>
-                            <h3 style="color: #333; font-size: 20px; margin: -6px; margin-left: 1px;1px; font-family: 'Outfit', sans-serif;">Provide short description</h3>
+                            <h3 style="color: #333; font-size: 20px; margin: -6px; margin-left: 1px; font-family: 'Outfit', sans-serif;">Provide short description</h3>
                             <p style="color: #000000; font-size: 16px; font-family: 'Outfit', sans-serif; margin-top: -6px;">Provide description of the type of the image you want to generate</p>
                         </div>
 
                         <!-- Step 4 -->
-                        <div style="
+                        <div class="step-box" style="
                             background: rgba(255, 240, 245, 0.95);
                             border-radius: 16px;
                             padding: 24px;
@@ -194,7 +197,7 @@
                             ">
                                 <div style="color: #FFFFFF; font-size: 16px; font-weight: bold;">Step</div>
                             </div>
-                            <div style="
+                            <div class="step-number" style="
                                 color: #4526B1;
                                 font-size: 100px;
                                 font-weight: bold;
@@ -206,7 +209,7 @@
                                 text-align: center;
                                 margin-top: -20px;
                             ">04</div>
-                            <h3 style="color: #333; font-size: 20px; margin: -24px; margin-left: 1px; font-family: 'Outfit', sans-serif;">Create your account</h3>
+                            <h3 style="color: #333; font-size: 20px; margin: -24px; margin-left: 1px; font-family: 'Outfit', sans-serif;">Download Your Image</h3>
                             <p style="color: #000000; font-size: 16px; font-family: 'Outfit', sans-serif; margin-top: 8px;">You can click on the download button to download it to your device for further use</p>
                         </div>
                     </div>
@@ -220,9 +223,221 @@
 @media (max-width: 768px) {
     .steps-section [style*="grid-template-columns"] {
         grid-template-columns: 1fr !important;
+        gap: 15px !important;
     }
+    
+    .steps-section .step-box {
+        width: 240px !important;
+        height: 200px !important;
+        padding: 15px !important;
+        margin: 0 auto !important;
+        transform: scale(0.9) !important;
+        transition: all 0.3s ease !important;
+    }
+    
+    .steps-section .step-box.glow-mobile {
+        box-shadow: 0 0 15px rgba(255, 99, 71, 0.8) !important;
+        transform: scale(0.95) !important;
+        border: 1px solid rgba(255, 99, 71, 0.5) !important;
+    }
+    
+    .steps-section .step-number {
+        font-size: 70px !important;
+        margin-top: -15px !important;
+        margin-bottom: 10px !important;
+    }
+    
+    .steps-section h3 {
+        font-size: 16px !important;
+        margin: -5px !important;
+        margin-left: 1px !important;
+    }
+    
+    .steps-section p {
+        font-size: 13px !important;
+        margin-top: -5px !important;
+    }
+    
     .steps-section [style*="margin-top"] {
         margin-top: 0 !important;
     }
+    
+    .steps-section {
+        height: auto !important;
+        padding: 50px 0 !important;
+    }
+    
+    .steps-section .step-box div[style*="border-radius: 16px 0 0 0"] {
+        padding: 6px 12px !important;
+        margin: -15px -15px 10px -15px !important;
+    }
+    
+    .steps-section .step-box div[style*="border-radius: 16px 0 0 0"] div {
+        font-size: 14px !important;
+    }
+    
+    /* Hide dots and path on mobile */
+    .steps-section .step-dot {
+        display: none !important;
+    }
+    
+    .steps-section .steps-path {
+        display: none !important;
+    }
 }
-</style> 
+
+@media (max-width: 480px) {
+    .steps-section .step-box {
+        width: 220px !important;
+        height: 180px !important;
+        padding: 12px !important;
+        right: 0 !important;
+        left: 0 !important;
+        top: 0 !important;
+        position: relative !important;
+    }
+    
+    .steps-section .step-number {
+        font-size: 60px !important;
+        margin-top: -10px !important;
+        margin-bottom: 5px !important;
+    }
+    
+    .steps-section h3 {
+        font-size: 14px !important;
+        margin: -4px !important;
+        margin-left: 1px !important;
+    }
+    
+    .steps-section p {
+        font-size: 12px !important;
+        margin-top: -4px !important;
+        line-height: 1.2 !important;
+    }
+    
+    .steps-section .step-box div[style*="border-radius: 16px 0 0 0"] {
+        padding: 5px 10px !important;
+        margin: -12px -12px 8px -12px !important;
+    }
+}
+
+.step-dot {
+    transition: all 0.5s ease;
+}
+
+.step-dot.glow {
+    fill: #ff3333;
+    filter: drop-shadow(0 0 8px rgba(255, 0, 0, 0.8));
+    stroke: #ff0000;
+}
+
+.steps-path {
+    transition: all 0.5s ease;
+    stroke: #FFFFFF; /* Ensure white color initially */
+}
+
+.steps-path.glow {
+    stroke: #ff0000;
+    filter: drop-shadow(0 0 10px rgba(255, 0, 0, 0.9));
+    stroke-width: 4;
+    stroke-dasharray: 10,10; /* Larger dash pattern when glowing */
+    animation: dashAnimation 1.5s linear infinite;
+}
+
+@keyframes dashAnimation {
+    to {
+        stroke-dashoffset: -20;
+    }
+}
+</style>
+
+<script>
+// Execute immediately when page loads to ensure proper initial state
+(function() {
+    // Get the path element
+    const path = document.getElementById('dottedPath');
+    
+    // Force path to be white initially
+    if (path) {
+        path.setAttribute('stroke', '#FFFFFF');
+        path.classList.remove('glow');
+    }
+})();
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Get all elements that should glow
+    const dots = document.querySelectorAll('.step-dot');
+    const path = document.getElementById('dottedPath');
+    const stepBoxes = document.querySelectorAll('.step-box');
+    
+    // Make sure path starts with original color
+    path.setAttribute('stroke', '#FFFFFF');
+    path.classList.remove('glow');
+    
+    // Function to check if element is in viewport with offset
+    const isInViewport = function(element) {
+        const rect = element.getBoundingClientRect();
+        // Element just needs to be in viewport with a small offset
+        const offset = 150; 
+        return (
+            rect.top <= (window.innerHeight - offset) &&
+            rect.bottom >= offset
+        );
+    };
+    
+    // Special check for path - apply when scrolled just a bit
+    const isPathVisible = function() {
+        const rect = path.getBoundingClientRect();
+        // Only require a small amount of scrolling
+        const hasScrolled = window.scrollY > 50; // Reduced to trigger earlier
+        
+        return (
+            hasScrolled &&
+            rect.top < window.innerHeight &&
+            rect.bottom > 0
+        );
+    };
+    
+    // Function to handle scroll events
+    const handleScroll = function() {
+        // Handle path dots
+        dots.forEach(dot => {
+            if (isInViewport(dot)) {
+                dot.classList.add('glow');
+            } else {
+                dot.classList.remove('glow');
+            }
+        });
+        
+        // Handle dotted path - always check for visibility
+        if (isPathVisible()) {
+            path.classList.add('glow');
+        } else {
+            path.classList.remove('glow');
+            path.setAttribute('stroke', '#FFFFFF'); // Reset to white when not glowing
+        }
+        
+        // For mobile: Handle step boxes glow effect
+        if (window.innerWidth <= 768) {
+            stepBoxes.forEach(box => {
+                if (isInViewport(box)) {
+                    box.classList.add('glow-mobile');
+                } else {
+                    box.classList.remove('glow-mobile');
+                }
+            });
+        }
+    };
+    
+    // Force initial state - ensure path is white before any scrolling
+    path.setAttribute('stroke', '#FFFFFF');
+    path.style.stroke = '#FFFFFF';
+    
+    // Run once initially to check, then on scroll
+    setTimeout(handleScroll, 500); // Give a moment for everything to render
+    window.addEventListener('scroll', handleScroll);
+    
+    // Also run when screen size changes (in case of rotation)
+    window.addEventListener('resize', handleScroll);
+});
+</script> 

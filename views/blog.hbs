@@ -47,16 +47,6 @@
   <div class="blog-hero">
     <div class="blog-image-container">
       <img src="{{blog.image}}" alt="{{blog.title}}" class="blog-hero-image">
-      <div class="blog-meta">
-        <span class="blog-date">
-          <i class="fas fa-calendar-alt"></i>
-          {{blog.date}}
-        </span>
-        <span class="blog-category">
-          <i class="fas fa-folder"></i>
-          {{blog.category}}
-        </span>
-      </div>
     </div>
   </div>
 
@@ -64,13 +54,6 @@
   <div class="blog-content-wrapper">
     <div class="blog-header">
       <h1 class="blog-title">{{blog.title}}</h1>
-      <div class="blog-author">
-        <img src="{{blog.author.avatar}}" alt="{{blog.author.name}}" class="author-avatar">
-        <div class="author-info">
-          <span class="author-name">{{blog.author.name}}</span>
-          <span class="author-role">{{blog.author.role}}</span>
-        </div>
-      </div>
     </div>
 
     <div class="blog-content">
@@ -159,6 +142,10 @@
     margin-bottom: 3rem;
   }
 
+  .blog-content a{
+    color: rgb(127, 193, 247);
+  }
+
   .blog-image-container {
     position: relative;
     border-radius: 1rem;
@@ -169,7 +156,6 @@
   .blog-hero-image {
     width: 100%;
     height: 500px;
-    object-fit: cover;
     transition: transform 0.3s ease;
   }
 
@@ -384,8 +370,10 @@ async function fetchAndRenderBlogContent() {
         // Get contentId and title from URL
         const pathParts = window.location.pathname.split('/');
         const contentId = pathParts[pathParts.length - 1];
-        const encodedTitle = pathParts[pathParts.length - 2];
-        const title = decodeURIComponent(encodedTitle.replace(/-/g, ' '));
+        const blogId = pathParts[pathParts.length - 2];
+
+        console.log(blogId, 'blogId');
+        console.log(contentId, 'contentId');
 
         // Fetch content from API
         const response = await fetch(`https://airbrush-admin-backend.onrender.com/api/content/id/${contentId}`);
@@ -398,30 +386,31 @@ async function fetchAndRenderBlogContent() {
         
         // Find the specific blog post from fields array that matches the title
         const blogPost = content.fields.find(field => {
-            const fieldTitle = (field.value.title || '').replace(/-/g, ' ');
-            const searchTitle = title.replace(/-/g, ' ');
-            return fieldTitle.toLowerCase() === searchTitle.toLowerCase();
+            const fieldId = field._id || '';
+            console.log(fieldId, 'fieldId');
+            console.log(blogId, 'blogId');
+            return fieldId === blogId;
         });
 
 
         // Update the page content
         document.querySelector('.blog-hero-image').src = blogPost.value.url || '/images/placeholder.png';
-        document.querySelector('.blog-hero-image').alt = blogPost.value.title;
+        {{!-- document.querySelector('.blog-hero-image').alt = blogPost.value.title; --}}
         {{!-- document.querySelector('.blog-date').textContent = formatDate(blogPost.value.date); --}}
         {{!-- document.querySelector('.blog-category').textContent = blogPost.value.category || 'Uncategorized'; --}}
-        document.querySelector('.blog-title').textContent = blogPost.value.title;
+        {{!-- document.querySelector('.blog-title').textContent = blogPost.value.title; --}}
         
         // Update author information if available
         const authorName = blogPost.value.author?.name || 'Anonymous';
         const authorRole = blogPost.value.author?.role || 'Contributor';
         const authorAvatar = blogPost.value.author?.avatar || '/images/default-avatar.png';
         
-        document.querySelector('.author-name').textContent = authorName;
+        {{!-- document.querySelector('.author-name').textContent = authorName;
         document.querySelector('.author-role').textContent = authorRole;
-        document.querySelector('.author-avatar').src = authorAvatar;
+        document.querySelector('.author-avatar').src = authorAvatar; --}}
         
         // Update content
-        document.querySelector('.blog-content').innerHTML = marked.parse(blogPost.value.content || '');
+        document.querySelector('.blog-content').innerHTML = blogPost.value.content || '';
         
         // Update tags
         const tagsContainer = document.querySelector('.blog-tags');

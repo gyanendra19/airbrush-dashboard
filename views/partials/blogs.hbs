@@ -423,7 +423,10 @@
   }
 </style>
 
+<!-- Blog Section Script -->
 <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/decoupled-document/ckeditor.js"></script>
+<!-- Add marked library for markdown parsing -->
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <script>
   // Helper function to show alerts
       const showAlert = (message, type = 'success') => {
@@ -529,9 +532,132 @@
       
       // JWT Token for authorization
       const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4MDQ5MWRmMzljZmYwNTljMDY1NWZkMSIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc0NTIyNTEyMSwiZXhwIjoxNzQ1MzExNTIxfQ.O1xfunWURBxt7tqcgXH_yWEyq-7VOA61LX6qrmEHXoA';
+      console.log(contentId, 'contentId');
       
-      // Add AI image generation function
-      async function generateAIImage(prompt, cardIndex) {
+      // Helper function to save changes to database
+      const saveChangesToDatabase = async () => {
+        if (!contentId) {
+          console.error('No content ID available for update');
+          return false;
+        }
+        
+        // Update blog data from form inputs
+        blogCards.forEach((card, index) => {
+          const titleInput = card.querySelector('.blog-title');
+          const isLeadCheckbox = card.querySelector('.blog-is-lead');
+          
+          blogData[index].title = titleInput.value.trim();
+          blogData[index].content = card.editor ? card.editor.getData() : '';
+          blogData[index].isLead = isLeadCheckbox ? isLeadCheckbox.checked : false;
+        });
+
+        console.log(blogData, 'blogData');
+        
+        // Prepare fields array according to the expected format with nested value objects
+        const fields = [];
+        
+        for (let i = 0; i < 4; i++) {
+          fields.push({
+            value: {
+              title: blogData[i].title,
+              content: blogData[i].content,
+              url: blogData[i].image.url,
+              isLead: blogData[i].isLead
+            },
+            order: 0
+          });
+        }
+        
+        // Prepare data for API
+        const updateData = {
+          fields: fields,
+          isActive: true
+        };
+        
+        console.log('Saving blog data to database:', updateData);
+        
+        try {
+          // Send update request
+          const response = await fetch(`https://airbrush-admin-backend.onrender.com/api/content/${contentId}`, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify(updateData)
+          });
+          
+          if (!response.ok) {
+            // Try to get the error details
+            const errorText = await response.text();
+            console.error('Server response:', errorText);
+            throw new Error('Failed to save changes: ' + response.statusText);
+          }
+          
+          const result = await response.json();
+          console.log('Changes saved successfully to database:', result);
+          return true;
+        } catch (error) {
+          console.error('Error saving blog data to database:', error);
+          return false;
+        }
+      };
+      
+      // Upload image function
+      const uploadImage = async (file, cardIndex) => {
+        const card = document.querySelector(`.blog-card[data-index="${cardIndex}"]`);
+        const imageElement = card.querySelector('.blog-image');
+        const loadingIndicator = document.createElement('div');
+        loadingIndicator.className = 'loading-indicator';
+        loadingIndicator.innerHTML = '<div class="spinner-border text-light" role="status"></div>';
+        
+        try {
+          // Show loading indicator
+          card.querySelector('.position-relative').appendChild(loadingIndicator);
+          
+          // Create form data
+          const formData = new FormData();
+          formData.append('images', file);
+          
+          // Upload to backend API
+          const response = await fetch('https://airbrush-admin-backend.onrender.com/api/images', {
+            method: 'POST',
+            body: formData
+          });
+          
+          if (!response.ok) {
+            throw new Error('Upload failed');
+          }
+          
+          const data = await response.json();
+          console.log('Upload response:', data);
+          
+          if (data.files && data.files.length > 0) {
+            // Update the image source with the first uploaded file's URL
+            imageElement.src = data.files[0].url;
+            
+            // Update the blog data
+            blogData[cardIndex].image.url = data.files[0].url;
+            
+            // Save changes to database immediately
+            await saveChangesToDatabase();
+            
+            // Show success message
+            showAlert('Image uploaded successfully', 'success');
+          } else {
+            throw new Error('No files were uploaded');
+          }
+        } catch (error) {
+          console.error('Error uploading image:', error);
+          showAlert('Failed to upload image. Please try again.', 'danger');
+        } finally {
+          // Remove loading indicator
+          loadingIndicator.remove();
+        }
+      };
+      
+      // AI image generation function
+      const generateAIImage = async (prompt, cardIndex) => {
         if (!prompt) {
           showAlert('Please enter a prompt for image generation', 'warning');
           return;
@@ -608,6 +734,9 @@
               
               // Update the blog data
               blogData[cardIndex].image.url = uploadData.files[0].url;
+
+              // Save changes to database immediately
+              await saveChangesToDatabase();
               
               showAlert('AI image generated and uploaded successfully!', 'success');
               // Close the modal
@@ -630,7 +759,121 @@
           generateButton.innerHTML = originalButtonText;
           generateButton.disabled = false;
         }
-      }
+      };
+      
+      // Gemini content generation function
+      const generateGeminiContent = async (prompt, cardIndex) => {
+        if (!prompt) {
+          showAlert('Please enter a prompt for content generation', 'warning');
+          return;
+        }
+
+        const generateButton = document.getElementById('generateContentBtn');
+        const originalButtonText = generateButton.innerHTML;
+        generateButton.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Generating...';
+        generateButton.disabled = true;
+
+        try {
+          const response = await fetch('https://airbrush-admin-backend.onrender.com/api/images/generate-prompt', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              categoryName: prompt,
+              type: 'content'
+            })
+          });
+
+          if (!response.ok) {
+            throw new Error('Content generation failed');
+          }
+
+          const data = await response.json();
+          
+          if (data.prompt && data.prompt.candidates && data.prompt.candidates[0] && data.prompt.candidates[0].content && data.prompt.candidates[0].content.parts[0]) {
+            const generatedContent = data.prompt.candidates[0].content.parts[0].text;
+            console.log(generatedContent, 'generatedContent');
+            
+            // Get the card and editor
+            const card = document.querySelector(`.blog-card[data-index="${cardIndex}"]`);
+            if (card && card.editor) {
+              // Parse the content using marked to convert markdown to HTML
+              try {
+                // Configure marked to allow HTML
+                marked.setOptions({
+                  sanitize: false,  // Allow HTML in the input
+                  gfm: true,        // GitHub Flavored Markdown
+                  breaks: true      // Convert line breaks to <br>
+                });
+                
+                // Parse the generated content to HTML
+                const parsedContent = marked.parse(generatedContent);
+                console.log(parsedContent, 'parsedContent after marked.parse()');
+                
+                // Set the parsed HTML content in the editor
+                card.editor.setData(parsedContent);
+                
+                // Update the blog data with the editor content
+                blogData[cardIndex].content = card.editor.getData();
+                console.log(blogData[cardIndex].content, 'content saved to blogData');
+              } catch (parseError) {
+                console.error('Error parsing content with marked:', parseError);
+                // Fallback to setting the raw content
+                card.editor.setData(generatedContent);
+                blogData[cardIndex].content = card.editor.getData();
+              }
+              
+              // Save changes to database immediately
+              await saveChangesToDatabase();
+              
+              showAlert('Content generated successfully!', 'success');
+              // Close the modal
+              const modal = bootstrap.Modal.getInstance(document.getElementById('geminiPromptModal'));
+              modal.hide();
+            }
+          } else {
+            throw new Error('No content generated');
+          }
+        } catch (error) {
+          console.error('Error generating content:', error);
+          showAlert('Failed to generate content. Please try again.', 'danger');
+        } finally {
+          generateButton.innerHTML = originalButtonText;
+          generateButton.disabled = false;
+        }
+      };
+      
+      // Save all blog data - update to use the shared function
+      const saveChanges = async () => {
+        if (!contentId) {
+          console.error('No content ID available for update');
+          showAlert('Cannot save changes: Missing content ID.', 'warning');
+          return;
+        }
+        
+        // Show loading state
+        saveBtn.disabled = true;
+        saveBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Saving...';
+        
+        try {
+          const success = await saveChangesToDatabase();
+          
+          if (success) {
+            // Show success message
+            showAlert('Your blog posts have been saved successfully.', 'success');
+          } else {
+            throw new Error('Failed to save changes');
+          }
+        } catch (error) {
+          console.error('Error saving blog data:', error);
+          showAlert('Failed to save changes. Please try again.', 'danger');
+        } finally {
+          // Reset button
+          saveBtn.disabled = false;
+          saveBtn.innerHTML = '<i class="bi bi-check-lg me-1"></i>Save Changes';
+        }
+      };
 
       // Add event listeners for AI generation buttons
       document.querySelectorAll('.ai-generate-btn').forEach(button => {
@@ -651,6 +894,27 @@
       // Clear the prompt input when the modal is closed
       document.getElementById('aiPromptModal').addEventListener('hidden.bs.modal', function() {
         document.getElementById('aiPromptInput').value = '';
+      });
+
+      // Add event listeners for Gemini buttons
+      document.querySelectorAll('.gemini-btn').forEach(button => {
+        button.addEventListener('click', function() {
+          const cardIndex = this.getAttribute('data-card-index');
+          // Store the card index in the modal for later use
+          document.getElementById('geminiPromptModal').setAttribute('data-card-index', cardIndex);
+        });
+      });
+
+      // Add event listener for the generate content button in the modal
+      document.getElementById('generateContentBtn').addEventListener('click', function() {
+        const cardIndex = document.getElementById('geminiPromptModal').getAttribute('data-card-index');
+        const prompt = document.getElementById('geminiPromptInput').value.trim();
+        generateGeminiContent(prompt, cardIndex);
+      });
+
+      // Clear the prompt input when the modal is closed
+      document.getElementById('geminiPromptModal').addEventListener('hidden.bs.modal', function() {
+        document.getElementById('geminiPromptInput').value = '';
       });
 
       // Create new section and content if categoryId is present
@@ -817,84 +1081,6 @@
         });
       };
       
-      // Save all blog data
-      const saveChanges = async () => {
-        if (!contentId) {
-          console.error('No content ID available for update');
-          showAlert('Cannot save changes: Missing content ID.', 'warning');
-          return;
-        }
-        
-        // Update blog data from form inputs
-        blogCards.forEach((card, index) => {
-          const titleInput = card.querySelector('.blog-title');
-          const isLeadCheckbox = card.querySelector('.blog-is-lead');
-          
-          blogData[index].title = titleInput.value.trim();
-          blogData[index].content = card.editor ? card.editor.getData() : '';
-          blogData[index].isLead = isLeadCheckbox ? isLeadCheckbox.checked : false;
-        });
-        
-        // Prepare fields array according to the expected format with nested value objects
-        const fields = [];
-        
-        for (let i = 0; i < 4; i++) {
-          fields.push({
-            value: {
-              title: blogData[i].title,
-              content: blogData[i].content,
-              url: blogData[i].image.url,
-              isLead: blogData[i].isLead
-            },
-            order: 0
-          });
-        }
-        
-        // Prepare data for API
-        const updateData = {
-          fields: fields,
-          isActive: true
-        };
-        
-        console.log('Saving blog data:', updateData);
-        
-        // Show loading state
-        saveBtn.disabled = true;
-        saveBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Saving...';
-        
-        try {
-          // Send update request
-          const response = await fetch(`https://airbrush-admin-backend.onrender.com/api/content/${contentId}`, {
-            method: 'PUT',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify(updateData)
-          });
-          
-          if (!response.ok) {
-            // Try to get the error details
-            const errorText = await response.text();
-            console.error('Server response:', errorText);
-            throw new Error('Failed to save changes: ' + response.statusText);
-          }
-          
-          const result = await response.json();
-          console.log('Changes saved successfully:', result);
-          
-          // Show success message
-          showAlert('Your blog posts have been saved successfully.', 'success');
-        } catch (error) {
-          console.error('Error saving blog data:', error);
-          showAlert('Failed to save changes. Please try again.', 'danger');
-        } finally {
-          // Reset button
-          saveBtn.disabled = false;
-          saveBtn.innerHTML = '<i class="bi bi-check-lg me-1"></i>Save Changes';
-        }
-      };
-      
       // Form submission
       blogForm.addEventListener('submit', function(e) {
         e.preventDefault();
@@ -930,56 +1116,6 @@
         });
       });
       
-      // Upload image function
-      const uploadImage = async (file, cardIndex) => {
-        const card = document.querySelector(`.blog-card[data-index="${cardIndex}"]`);
-        const imageElement = card.querySelector('.blog-image');
-        const loadingIndicator = document.createElement('div');
-        loadingIndicator.className = 'loading-indicator';
-        loadingIndicator.innerHTML = '<div class="spinner-border text-light" role="status"></div>';
-        
-        try {
-          // Show loading indicator
-          card.querySelector('.position-relative').appendChild(loadingIndicator);
-          
-          // Create form data
-          const formData = new FormData();
-          formData.append('images', file); // Changed from 'file' to 'images' to match working implementation
-          
-          // Upload to backend API
-          const response = await fetch('https://airbrush-admin-backend.onrender.com/api/images', {
-            method: 'POST',
-            body: formData
-          });
-          
-          if (!response.ok) {
-            throw new Error('Upload failed');
-          }
-          
-          const data = await response.json();
-          console.log('Upload response:', data);
-          
-          if (data.files && data.files.length > 0) {
-            // Update the image source with the first uploaded file's URL
-            imageElement.src = data.files[0].url;
-            
-            // Update the blog data
-            blogData[cardIndex].image.url = data.files[0].url;
-            
-            // Show success message
-            showAlert('Image uploaded successfully', 'success');
-          } else {
-            throw new Error('No files were uploaded');
-          }
-        } catch (error) {
-          console.error('Error uploading image:', error);
-          showAlert('Failed to upload image. Please try again.', 'danger');
-        } finally {
-          // Remove loading indicator
-          loadingIndicator.remove();
-        }
-      };
-      
       // Set up event listeners for isLead checkboxes - allow only one to be selected
       document.querySelectorAll('.blog-is-lead').forEach(checkbox => {
         checkbox.addEventListener('change', function() {
@@ -999,85 +1135,5 @@
         fetchContent();
       }
     }
-
-    // Add Gemini AI content generation function
-    async function generateGeminiContent(prompt, cardIndex) {
-      if (!prompt) {
-        showAlert('Please enter a prompt for content generation', 'warning');
-        return;
-      }
-
-      const generateButton = document.getElementById('generateContentBtn');
-      const originalButtonText = generateButton.innerHTML;
-      generateButton.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Generating...';
-      generateButton.disabled = true;
-
-      try {
-        const response = await fetch('https://airbrush-admin-backend.onrender.com/api/images/generate-prompt', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            categoryName: prompt,
-            type: 'content'
-          })
-        });
-
-        if (!response.ok) {
-          throw new Error('Content generation failed');
-        }
-
-        const data = await response.json();
-        
-        if (data.prompt && data.prompt.candidates && data.prompt.candidates[0] && data.prompt.candidates[0].content && data.prompt.candidates[0].content.parts[0]) {
-          const generatedContent = data.prompt.candidates[0].content.parts[0].text;
-          
-          // Get the card and editor
-          const card = document.querySelector(`.blog-card[data-index="${cardIndex}"]`);
-          if (card && card.editor) {
-            // Set the generated content in the editor
-            card.editor.setData(generatedContent);
-            
-            // Update the blog data
-            blogData[cardIndex].content = generatedContent;
-            
-            showAlert('Content generated successfully!', 'success');
-            // Close the modal
-            const modal = bootstrap.Modal.getInstance(document.getElementById('geminiPromptModal'));
-            modal.hide();
-          }
-        } else {
-          throw new Error('No content generated');
-        }
-      } catch (error) {
-        console.error('Error generating content:', error);
-        showAlert('Failed to generate content. Please try again.', 'danger');
-      } finally {
-        generateButton.innerHTML = originalButtonText;
-        generateButton.disabled = false;
-      }
-    }
-
-    // Add event listeners for Gemini buttons
-    document.querySelectorAll('.gemini-btn').forEach(button => {
-      button.addEventListener('click', function() {
-        const cardIndex = this.getAttribute('data-card-index');
-        // Store the card index in the modal for later use
-        document.getElementById('geminiPromptModal').setAttribute('data-card-index', cardIndex);
-      });
-    });
-
-    // Add event listener for the generate content button in the modal
-    document.getElementById('generateContentBtn').addEventListener('click', function() {
-      const cardIndex = document.getElementById('geminiPromptModal').getAttribute('data-card-index');
-      const prompt = document.getElementById('geminiPromptInput').value.trim();
-      generateGeminiContent(prompt, cardIndex);
-    });
-
-    // Clear the prompt input when the modal is closed
-    document.getElementById('geminiPromptModal').addEventListener('hidden.bs.modal', function() {
-      document.getElementById('geminiPromptInput').value = '';
-    });
   });
 </script>

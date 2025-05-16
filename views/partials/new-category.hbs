@@ -8,6 +8,8 @@
 <script>
   lucide.createIcons();
 </script>
+<!-- Add marked library for markdown parsing -->
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
 <!-- Add loader HTML -->
 <div id="aiGenerationLoader" class="loader-container d-none">
@@ -894,7 +896,7 @@
               loaderStatus.textContent = `Generating gallery images (this may take a few minutes)...`;
 
               // Generate all prompts in parallel
-              const promptPromises = Array(15).fill().map(() => 
+              const promptPromises = Array(20).fill().map(() => 
                 fetch('https://airbrush-admin-backend.onrender.com/api/images/generate-prompt', {
               method: 'POST',
               headers: {
@@ -1087,11 +1089,11 @@
               contentDataArray.push({
                 section: 'Blogs',
                 slug: `${section.slug}`,
-                title: `Blog Section`,
+                title: 'Blog Section', // Extract first line as title
                 subtitle: `Beautiful ${categoryName} blogs`,
                 images: processedImages.map((imageUrl, index) => ({
                   url: imageUrl,
-                  title: `Beautiful ${categoryName} image ${index + 1}`,
+                  title: promptsAndContent[index].content.split('\n')[0],
                   content: promptsAndContent[index].content,
                   prompt: promptsAndContent[index].prompt,
                   alt: `Beautiful ${categoryName} image ${index + 1}`,
@@ -1103,14 +1105,16 @@
               updateProgress(sectionIndex, 1);
             }
 
-             const imageResponse = await fetch('https://airbrush-admin-backend.onrender.com/api/images/generate-image', {
-                 method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                  prompt: section.promptTemplate
-                })
+            let mainImageUrl = '';
+            if(section.name === 'Hero Section' || section.name === 'Text to Anything' || section.name === 'Why Use tool') {
+              const imageResponse = await fetch('https://airbrush-admin-backend.onrender.com/api/images/generate-image', {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json'
+                  },
+                  body: JSON.stringify({
+                    prompt: section.promptTemplate
+                  })
               });
 
               if (!imageResponse.ok) {
@@ -1132,101 +1136,160 @@
               const file = new File([blob], `${section.slug}.png`, { type: 'image/png' });
               
               // Upload the generated image
-              const mainImageUrl = await uploadImage(file, token);
-              
-              if (mainImageUrl) {
-                // Create section
-                console.log(`Creating section for ${section.name}...`);
-                const sectionResponse = await fetch('https://airbrush-admin-backend.onrender.com/api/sections', {
-                  method: 'POST',
-                  headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                  },
-                  body: JSON.stringify({
-                    name: section.name,
-                    slug: section.slug,
-                    description: section.description,
-                    category: categoryId,
-                    isFolder: false,
-                    order: section.order,
-                    isActive: true
-                  })
-                });
-
-                if (!sectionResponse.ok) {
-                  throw new Error(`Failed to create section for ${section.name}`);
-                }
-
-                const sectionResult = await sectionResponse.json();
-                console.log(`Section created for ${section.name}:`, sectionResult);
-
-                let contentData;
-                if(section.name === 'Images Gallery') {
-                  contentData = {
-                    section: sectionResult._id,
-                    slug: section.slug,
-                    title: section.name,
-                    subtitle: section.description,
-                    images: contentDataArray[contentDataArray.length - 1]?.images,
-                    fields: [],
-                    isActive: true
-                  }
-                } else if(section.name === 'Blogs') {
-                  const blogImages = contentDataArray[contentDataArray.length - 1]?.images || [];
-                  const fields = blogImages.map(image => ({
-                    value: {
-                      url: image.url,
-                      title: image.title,
-                      content: image.content
-                    }
-                  }));
-                  
-                  contentData = {
-                    section: sectionResult._id,
-                    slug: section.slug,
-                    title: section.name,
-                    subtitle: section.description,
-                    images: blogImages,
-                    fields: fields,
-                    isActive: true
-                  }
-                } else {
-                // Create content with the generated image
-                contentData = {
-                  section: sectionResult._id,
-                  slug: section.slug,
-                  title: section.name,
-                  subtitle: section.description,
-                  images: [{
-                    url: mainImageUrl,
-                    alt: section.name,
-                    width: 1024,
-                    height: 1024
-                  }],
-                  fields: [],
-                  isActive: true
-                };
-                }
-
-
-                const contentResponse = await fetch('https://airbrush-admin-backend.onrender.com/api/content', {
-                  method: 'POST',
-                  headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                  },
-                  body: JSON.stringify(contentData)
-                });
-
-                if (!contentResponse.ok) {
-                  throw new Error(`Failed to create content for ${section.name}`);
-                }
-
-                const contentResult = await contentResponse.json();
-                console.log(`Content created for ${section.name}:`, contentResult);
-                showAlert(`${section.name} created successfully!`, 'success');
+              mainImageUrl = await uploadImage(file, token);
             }
+              
+            // Generate title and description for the section
+            let generatedTitle = section.name;
+            let generatedDescription = section.description;
+            
+            // All sections get description generation (no title generation)
+            if(section.name === 'Hero Section' || section.name === 'Text to Anything' || section.name === 'Why Use tool') {
+            console.log(`Generating description for ${section.name}...`);
+            const promptResponse = await fetch('https://airbrush-admin-backend.onrender.com/api/images/generate-prompt', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                categoryName: categoryName,
+                type: 'description',
+                prompt: `Generate a concise description (10-15 words) for the "${section.name}" section of a ${categoryName} category. 
+                Context: ${categoryDescription}.
+                The description should be engaging and highlight the key value of this section.`
+              })
+            });
+
+            if (!promptResponse.ok) {
+              throw new Error(`Failed to generate description for ${section.name}`);
+            }
+
+            const promptData = await promptResponse.json();
+            console.log(`Description generated for ${section.name}:`, promptData);
+            
+            try {
+              const textContent = promptData.prompt.candidates[0].content.parts[0].text;
+              // Clean up the text (remove quotes, etc)
+              generatedDescription = textContent.replace(/^["']|["']$/g, '').trim();
+              
+              // Ensure description is not too long (10-15 words)
+              const words = generatedDescription.split(/\s+/);
+              if (words.length > 15) {
+                generatedDescription = words.slice(0, 15).join(' ');
+              }
+            } catch (error) {
+                console.error(`Error parsing description: ${error.message}`);
+              }
+            }
+            
+            // Create section
+            console.log(`Creating section for ${section.name}...`);
+            const sectionResponse = await fetch('https://airbrush-admin-backend.onrender.com/api/sections', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+              },
+              body: JSON.stringify({
+                name: section.name,
+                slug: section.slug,
+                description: section.description,
+                category: categoryId,
+                isFolder: false,
+                order: section.order,
+                isActive: true
+              })
+            });
+
+            if (!sectionResponse.ok) {
+              throw new Error(`Failed to create section for ${section.name}`);
+            }
+
+            const sectionResult = await sectionResponse.json();
+            console.log(`Section created for ${section.name}:`, sectionResult);
+
+            let contentData;
+            if(section.name === 'Images Gallery') {
+              contentData = {
+                section: sectionResult._id,
+                slug: section.slug,
+                title: section.name,
+                subtitle: section.description,
+                images: contentDataArray[contentDataArray.length - 1]?.images,
+                fields: [],
+                isActive: true
+              }
+            } else if(section.name === 'Blogs') {
+              const blogImages = contentDataArray[contentDataArray.length - 1]?.images || [];
+              
+              // Configure marked to allow HTML
+              marked.setOptions({
+                sanitize: false,  // Allow HTML in the input
+                gfm: true,        // GitHub Flavored Markdown
+                breaks: true      // Convert line breaks to <br>
+              });
+              
+              // Parse content with marked before creating fields
+              const fields = blogImages.map(image => {
+                // Parse the blog content from markdown to HTML
+                const parsedContent = marked.parse(image.content || '');
+                console.log('Original content:', image.content);
+                console.log('Parsed content:', parsedContent);
+                
+                return {
+                  value: {
+                    url: image.url,
+                    title: image.title,
+                    content: parsedContent
+                  }
+                };
+              });
+              
+              contentData = {
+                section: sectionResult._id,
+                slug: section.slug,
+                title: section.name,
+                subtitle: generatedDescription || 'No description',
+                images: blogImages,
+                fields: fields,
+                isActive: true
+              }
+            } else {
+            // Create content with the generated image
+            contentData = {
+              section: sectionResult._id,
+              slug: section.slug,
+              title: section.name === 'Hero Section' ? 'Hero Section' : section.name === 'Text to Anything' ? `Text to ${categoryName}` : `Why Use ${categoryName}`,
+              subtitle: (generatedDescription || 'No description').replace(/[\*\#]/g, ''),
+              images: [{
+                url: mainImageUrl || '',
+                alt: generatedTitle,
+                width: 1024,
+                height: 1024
+              }],
+              fields: [],
+              isActive: true
+            };
+            }
+
+
+            const contentResponse = await fetch('https://airbrush-admin-backend.onrender.com/api/content', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+              },
+              body: JSON.stringify(contentData)
+            });
+
+            if (!contentResponse.ok) {
+              throw new Error(`Failed to create content for ${section.name}`);
+            }
+
+            const contentResult = await contentResponse.json();
+            console.log(`Content created for ${section.name}:`, contentResult);
+            showAlert(`${section.name} created successfully!`, 'success');
+        
           } catch (error) {
             console.error(`Error processing ${section.name}:`, error);
             showAlert(`Failed to process ${section.name}. ${error.message}`, 'danger');

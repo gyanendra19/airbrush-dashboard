@@ -205,7 +205,7 @@
         <h2 class="blog-title">Our <span class="blog-text">Blog</span></h2>
 
         <!-- Featured Blog Post -->
-        <div class="featured-blog" onclick="navigateToBlog(this.dataset.contentId, this.dataset.title)" style="cursor: pointer;">
+        <div class="featured-blog" onclick="navigateToBlog(this.dataset.blogId, this.dataset.contentId)" style="cursor: pointer;">
             <div class="lead-blog-overlay"></div>
             <img src="/images/flower.png" alt="Featured Blog Post">
             <div class="featured-blog-content">
@@ -225,10 +225,12 @@
 <script>
     // Function to wait for categories to be initialized if needed
     function ensureCategoriesInitialized() {
+        console.log('ensureCategoriesInitialized');
         // If categories are already initialized, return resolved promise
         if (window.categoriesInitialized) {
             return Promise.resolve();
         }
+        console.log('categoriesInitializedjsksj');
         
         // Otherwise, return a promise that resolves when the categories are ready
         return new Promise(resolve => {
@@ -328,7 +330,7 @@
             content.fields.forEach(field => {
                 if (field.value && typeof field.value === 'object') {
                     blogPosts.push({
-                        id: content._id,
+                        id: field._id,
                         title: field.value.title,
                         url: field.value.url,
                         date: field.value.date || '', // Use date if available
@@ -337,16 +339,18 @@
                     });
                 }
             });
+
+            console.log(content, blogPosts, 'blogPosts');
             
             console.log('Organized blog posts:', blogPosts);
             
             // Find the featured blog (marked as lead)
             const featuredBlog = blogPosts.find(post => post.lead === true);
             if (featuredBlog) {
-                updateFeaturedBlog(featuredBlog);
+                updateFeaturedBlog(featuredBlog, content);
             } else if (blogPosts.length > 0) {
                 // If no lead blog is specified, use the first one
-                updateFeaturedBlog(blogPosts[0]);
+                updateFeaturedBlog(blogPosts[0], content);
                 // Remove the first blog from regular blogs if it's now the featured one
                 blogPosts.shift();
             }
@@ -356,7 +360,7 @@
                 ? blogPosts.filter(post => post.lead !== true) 
                 : blogPosts;
                 
-            updateBlogGrid(regularBlogs);
+            updateBlogGrid(regularBlogs, content);
         }
         
         // Force a repaint to ensure everything is updated
@@ -383,24 +387,24 @@
             .replace(/-+$/, '');         // Trim - from end of text
     }
 
-    function navigateToBlog(contentId, title) {
-        if (contentId && title) {
-            const slug = slugify(title);
-            window.location.href = `/blog/${slug}/${contentId}`;
+    function navigateToBlog(blogId, contentId) {
+        if (contentId && blogId) {
+            window.location.href = `/blog/${blogId}/${contentId}`;
         }
     }
 
     // Function to update the featured blog
-    function updateFeaturedBlog(featuredBlog) {
+    function updateFeaturedBlog(featuredBlog, content) {
         const featuredElement = document.querySelector('.featured-blog');
         if (!featuredElement) {
             console.warn('Featured blog element not found');
             return;
         }
         
+        console.log(content, 'contentId');
         // Set content ID and title for navigation
-        featuredElement.dataset.contentId = featuredBlog._id || featuredBlog.id;
-        featuredElement.dataset.title = featuredBlog.title;
+        featuredElement.dataset.blogId = featuredBlog._id || featuredBlog.id;
+        featuredElement.dataset.contentId = content._id;
         
         // Update featured blog image
         const featuredImage = featuredElement.querySelector('img');
@@ -418,7 +422,7 @@
             if (displayTitle.length > 60) {
                 displayTitle = displayTitle.substring(0, 60) + '...';
             }
-            featuredTitle.textContent = displayTitle;
+            featuredTitle.textContent = displayTitle.replace(/[\*\#]/g, '');
         }
         
         // Update featured blog date
@@ -431,7 +435,7 @@
     }
     
     // Function to update the blog grid
-    function updateBlogGrid(blogs) {
+    function updateBlogGrid(blogs, content) {
         const blogGrid = document.querySelector('.blog-posts-grid');
         if (!blogGrid) {
             console.warn('Blog grid not found');
@@ -441,15 +445,16 @@
         // Clear existing blog posts
         blogGrid.innerHTML = '';
         
+        console.log(blogs, 'blogsskks');
         // Create new blog posts
         blogs.forEach((blog, index) => {
             const blogPost = document.createElement('div');
             blogPost.className = 'blog-post';
-            blogPost.dataset.contentId = blog._id || blog.id;
-            blogPost.dataset.title = blog.title;
-            blogPost.onclick = () => navigateToBlog(blog._id || blog.id, blog.title);
+            blogPost.dataset.blogId = blog._id || blog.id;
+            blogPost.dataset.contentId = content._id;
+            blogPost.onclick = () => navigateToBlog(blog._id || blog.id, content._id);
             
-            let displayTitle = blog.title;
+            let displayTitle = blog.title.replace(/[\*\#\:\-]/g, ' ').replace(/\s+/g, ' ').trim();
             if (displayTitle.length > 40) {
                 displayTitle = displayTitle.substring(0, 40) + '...';
             }
