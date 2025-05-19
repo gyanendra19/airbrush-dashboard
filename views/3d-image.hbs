@@ -3,28 +3,22 @@
 
 
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="shortcut icon" type="image/x-icon"
-        href="https://ai4chat-files.s3.amazonaws.com/images/airbrush/image-1737741097321.jpg">
-    <title>Airbrush - Best AI Art, Image & Stock Photo Generator</title>
-    <meta name="description"
-        content="With Airbrush's AI technology, you can create original stock photos, NFTs, art, and more - in just seconds.">
-    <meta name="robots" content="index, follow">
-
-    <!-- FB meta tags -->
-    <meta property="og:title" content="Airbrush - Best AI Art, Image & Stock Photo Generator">
-    <meta property="og:description"
-        content="With Airbrush's AI technology, you can create original stock photos, NFTs, art, and more - in just seconds.">
-    <meta property="og:image" content="https://i.postimg.cc/x8Hy7mQ9/Screenshot-297.png">
-    <meta property="og:url" content="https://www.airbrush.ai">
-
-    <!-- Twitter meta tags -->
-    <meta name="twitter:title" content="Airbrush - Best AI Art, Image & Stock Photo Generator">
-    <meta name="twitter:description"
-        content="With Airbrush's AI technology, you can create original stock photos, NFTs, art, and more - in just seconds.">
-    <meta name="twitter:image" content="https://i.postimg.cc/x8Hy7mQ9/Screenshot-297.png">
+    {{#if category.metaTags}}
+    <script>
+        // Parse the meta tags from HTML string format
+        const metaTagsString = `{{category.metaTags}}`;
+        const metaTags = metaTagsString
+            .replace(/<meta[^>]*content="([^"]*)"[^>]*>/g, '$1')
+            .split(',')
+            .map(tag => tag.trim());
+        metaTags.forEach(tag => {
+            const meta = document.createElement('meta');
+            meta.setAttribute('name', 'keywords');
+            meta.setAttribute('content', tag);
+            document.head.appendChild(meta);
+        });
+    </script>
+    {{/if}}
 
     <!-- Initialize category IDs before any components load -->
     <script>
@@ -96,7 +90,7 @@
 
     {{> imagination}}
 
-    {{> character}}
+    {{> character}}     
 
     {{> characters}}
 

@@ -488,11 +488,44 @@
         const categoryName = formData.get('categoryName');
         const categorySlug = formData.get('categorySlug') || categoryName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
         const categoryDescription = formData.get('categoryDescription');
+        let metaTags
+        // Generate metatags using the prompt API before creating the category
+        console.log('Generating metatags for category...');
+        let metatags = [];
+        try {
+          const promptResponse = await fetch('https://airbrush-admin-backend.onrender.com/api/images/generate-prompt', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              categoryName: categoryName,
+              type: 'meta',
+            })
+          });
+
+          if (promptResponse.ok) {
+            const promptData = await promptResponse.json();
+            console.log('Metatags generated:', promptData);
+            
+            try {
+              metaTags = promptData.prompt.candidates[0].content.parts[0].text;
+              // Clean up the text and split into array
+            } catch (error) {
+              console.error(`Error parsing metatags: ${error.message}`);
+            }
+          } else {
+            console.warn('Failed to generate metatags, continuing without them');
+          }
+        } catch (error) {
+          console.warn('Error generating metatags:', error);
+        }
         
         const categoryData = {
           name: categoryName,
           slug: categorySlug,
           description: categoryDescription,
+          metaTags: metaTags || '', // Add the generated metatags to category data
           isActive: true
         };
         
@@ -896,7 +929,7 @@
               loaderStatus.textContent = `Generating gallery images (this may take a few minutes)...`;
 
               // Generate all prompts in parallel
-              const promptPromises = Array(20).fill().map(() => 
+              const promptPromises = Array(2).fill().map(() => 
                 fetch('https://airbrush-admin-backend.onrender.com/api/images/generate-prompt', {
               method: 'POST',
               headers: {
@@ -1243,7 +1276,7 @@
                     content: parsedContent
                   }
                 };
-              });
+              }); 
               
               contentData = {
                 section: sectionResult._id,
