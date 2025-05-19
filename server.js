@@ -840,7 +840,7 @@ app.get("/api/image/generate", async (req, res) => {
 });
 
 let server;
-
+// add comment
 function startServer() {
   const PORT = process.env.PORT || 6000;
   server = app.listen(PORT, '0.0.0.0', function () {
