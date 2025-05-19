@@ -152,7 +152,7 @@ app.use(async (req, res, next) => {
       
       try {
         await initializeDynamicRoutes(app);
-        updateRoutes();
+        // updateRoutes();
 
         
         // Update cache
@@ -851,101 +851,101 @@ function startServer() {
 }
 
 // Function to restart the server using PM2
-async function restartServer() {
-  console.log('Restarting server');
+// async function restartServer() {
+//   console.log('Restarting server');
   
-  // Check if running in PM2 environment
-  if (process.env.PM2_HOME || process.env.PM2_JSON_PROCESSING) {
-    return new Promise((resolve, reject) => {
-      pm2.connect((err) => {
-        if (err) {
-          console.error('PM2 connection error:', err);
-          // Fall back to manual restart if PM2 connection fails
-          manualRestart().then(resolve).catch(reject);
-          return;
-        }
+//   // Check if running in PM2 environment
+//   if (process.env.PM2_HOME || process.env.PM2_JSON_PROCESSING) {
+//     return new Promise((resolve, reject) => {
+//       pm2.connect((err) => {
+//         if (err) {
+//           console.error('PM2 connection error:', err);
+//           // Fall back to manual restart if PM2 connection fails
+//           manualRestart().then(resolve).catch(reject);
+//           return;
+//         }
 
-        // First list processes to find the correct name/id
-        pm2.list((err, list) => {
-          if (err) {
-            console.error('PM2 list error:', err);
-            pm2.disconnect();
-            manualRestart().then(resolve).catch(reject);
-            return;
-          }
+//         // First list processes to find the correct name/id
+//         pm2.list((err, list) => {
+//           if (err) {
+//             console.error('PM2 list error:', err);
+//             pm2.disconnect();
+//             manualRestart().then(resolve).catch(reject);
+//             return;
+//           }
           
-          // Find current process
-          const currentProcess = list.find(p => 
-            p.pm2_env.pm_exec_path === process.argv[1] || 
-            p.name === 'server' || 
-            p.pm_id === process.env.pm_id
-          );
+//           // Find current process
+//           const currentProcess = list.find(p => 
+//             p.pm2_env.pm_exec_path === process.argv[1] || 
+//             p.name === 'server' || 
+//             p.pm_id === process.env.pm_id
+//           );
           
-          if (!currentProcess) {
-            console.warn('Current process not found in PM2, using manual restart');
-            pm2.disconnect();
-            manualRestart().then(resolve).catch(reject);
-            return;
-          }
+//           if (!currentProcess) {
+//             console.warn('Current process not found in PM2, using manual restart');
+//             pm2.disconnect();
+//             manualRestart().then(resolve).catch(reject);
+//             return;
+//           }
           
-          // Use the found process id or name
-          const processId = currentProcess.pm_id || 'server';
-          console.log(`Restarting PM2 process: ${processId}`);
+//           // Use the found process id or name
+//           const processId = currentProcess.pm_id || 'server';
+//           console.log(`Restarting PM2 process: ${processId}`);
           
-          pm2.restart(processId, (err) => {
-            pm2.disconnect();
-            if (err) {
-              console.error('PM2 restart error:', err);
-              manualRestart().then(resolve).catch(reject);
-            } else {
-              console.log('Server restarted successfully via PM2');
-              resolve();
-            }
-          });
-        });
-      });
-    });
-  } else {
-    // Not running under PM2, use manual restart
-    console.log('Not running under PM2, using manual restart');
-    return manualRestart();
-  }
-}
+//           pm2.restart(processId, (err) => {
+//             pm2.disconnect();
+//             if (err) {
+//               console.error('PM2 restart error:', err);
+//               manualRestart().then(resolve).catch(reject);
+//             } else {
+//               console.log('Server restarted successfully via PM2');
+//               resolve();
+//             }
+//           });
+//         });
+//       });
+//     });
+//   } else {
+//     // Not running under PM2, use manual restart
+//     console.log('Not running under PM2, using manual restart');
+//     return manualRestart();
+//   }
+// }
 
 // Manual restart function (fallback)
-async function manualRestart() {
-  return new Promise((resolve) => {
-    console.log('Performing manual server restart');
-    if (server) {
-      server.close(() => {
-        console.log('Server closed, restarting...');
-        startServer();
-        console.log('Server restarted manually');
-        resolve();
-      });
-    } else {
-      console.log('No server instance to close, starting new server');
-      startServer();
-      resolve();
-    }
-  });
-}
+// async function manualRestart() {
+//   return new Promise((resolve) => {
+//     console.log('Performing manual server restart');
+//     if (server) {
+//       server.close(() => {
+//         console.log('Server closed, restarting...');
+//         startServer();
+//         console.log('Server restarted manually');
+//         resolve();
+//       });
+//     } else {
+//       console.log('No server instance to close, starting new server');
+//       startServer();
+//       resolve();
+//     }
+//   });
+// }
 
 // Modify your route update function
-async function updateRoutes() {
-  try {
-    await initializeDynamicRoutes(app);
-    console.log('Routes initialized, restarting server...');
-    await restartServer();
-    return { success: true, message: 'Routes updated and server restarted' };
-  } catch (error) {
-    console.error('Error updating routes:', error);
-    return { success: false, message: error.message };
-  }
-}
+// async function updateRoutes() {
+//   try {
+//     await initializeDynamicRoutes(app);
+//     console.log('Routes initialized, restarting server...');
+//     await restartServer();
+//     return { success: true, message: 'Routes updated and server restarted' };
+//   } catch (error) {
+//     console.error('Error updating routes:', error);
+//     return { success: false, message: error.message };
+//   }
+// }
 
 // Export the updateRoutes function
-module.exports = { updateRoutes };
+// module.exports = { updateRoutes };
 
 startServer();
 
