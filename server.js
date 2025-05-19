@@ -842,7 +842,7 @@ app.get("/api/image/generate", async (req, res) => {
 let server;
 
 function startServer() {
-  const PORT = process.env.PORT || 8000;
+  const PORT = process.env.PORT || 6000;
   server = app.listen(PORT, '0.0.0.0', function () {
     console.log(`Server listening on port ${PORT}...`);
   }).on('error', function(err) {
