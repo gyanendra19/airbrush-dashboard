@@ -19,7 +19,7 @@ echo "Installing dependencies and starting server..."
 # Note: Using sudo for npm install is generally discouraged due to potential
 # permission issues and security risks. Consider fixing directory permissions
 # or using a Node.js version manager (like nvm) instead.
-cd anthropic/backend || { echo "Failed to change directory to anthropic/backend"; exit 1; }
+
 
 # Install project dependencies in the backend directory
 sudo npm install || { echo "Failed to install backend dependencies"; exit 1; }
