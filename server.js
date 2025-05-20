@@ -117,49 +117,6 @@ const routeCache = {
   minRefreshInterval: 10 * 1000 // 10 seconds minimum between refreshes
 };
 
-// Middleware to refresh dynamic routes with caching and rate limiting
-// app.use(async (req, res, next) => {
-//   try {
-//     const now = Date.now();
-    
-//     // Skip refresh if:
-//     // 1. Cache is valid (within timeout)
-//     // 2. Another refresh is in progress
-//     // 3. Last refresh was too recent (rate limiting)
-//     if (
-//       routeCache.categories && 
-//       routeCache.lastFetch && 
-//       (now - routeCache.lastFetch < routeCache.cacheTimeout) &&
-//       !routeCache.isRefreshing &&
-//       (now - routeCache.lastFetch < routeCache.minRefreshInterval)
-//     ) {
-//       return next();
-//     }
-
-//     // Prevent concurrent refreshes
-//     if (!routeCache.isRefreshing) {
-//       routeCache.isRefreshing = true;
-      
-//       try {
-//         await initializeDynamicRoutes(app);
-//         // updateRoutes();
-
-        
-//         // Update cache
-//         routeCache.lastFetch = now;
-//         routeCache.categories = await fetchCategories();
-//       } finally {
-//         routeCache.isRefreshing = false;
-//       }
-//     }
-    
-//     next();
-//   } catch (error) {
-//     console.error('Error in route refresh middleware:', error);
-//     // Continue to next middleware even if refresh fails
-//     next();
-//   }
-// });
 
 const OPENAI_API_KEY = "open_ai_key_here";
 const apiUrl = "https://api.openai.com/v1/chat/completions";
@@ -226,33 +183,6 @@ async function fetchCategories() {
   }
 }
 
-// Initialize dynamic routes based on categories
-async function initializeDynamicRoutes(app) {
-  try {
-    const categories = await fetchCategories();
-    
-    // Create a route for each category using its slug
-    categories.forEach(category => {
-      if (category.slug && category.isActive) {
-        console.log(`Creating route for category: /${category.slug}`);
-        
-        app.get(`/${category.slug}`, (req, res) => {
-          // Pass the category data to the template
-          res.render('3d-image', { 
-            category: category,
-            categoryId: category._id,
-          });
-        });
-      }
-    });
-
-    // Add catch-all route for unmatched URLs
-    
-    console.log('Dynamic routes initialized successfully');
-  } catch (error) {
-    console.error('Failed to initialize dynamic routes:', error);
-  }
-}
 
 MongoClient.connect(connectionString, {
   useNewUrlParser: true,
@@ -275,8 +205,6 @@ MongoClient.connect(connectionString, {
   const imageModelsCollection = db.collection("image-models");
   const apiFeatureCollection = db.collection("api-feature-collection");
 
-  // Initialize dynamic routes after database connection
-  await initializeDynamicRoutes(app);
 
   app.post("/generate-response", async (req, res) => {
     const conversation = req.body.messages;
@@ -663,39 +591,39 @@ app.get('/images-gallery', (req, res) => {
     }
   });
 
-  app.get("/:slug", async (req, res) => {
-    const { slug } = req.params;
+  // app.get("/:slug", async (req, res) => {
+  //   const { slug } = req.params;
 
-    try {
-      const blogArticle = await blogCollection.findOne({ url: slug });
-      if (blogArticle) {
-        // Redirect to the new blog URL
-        return res.redirect(301, `/blog/${slug}`);
-      }
+  //   try {
+  //     const blogArticle = await blogCollection.findOne({ url: slug });
+  //     if (blogArticle) {
+  //       // Redirect to the new blog URL
+  //       return res.redirect(301, `/blog/${slug}`);
+  //     }
 
-      // Check in pages collection
-      const generatorPage = await generatorCollection.findOne({ url: slug });
-      if (generatorPage) {
-        // Redirect to the new page URL
-        return res.redirect(301, `/pages/${slug}`);
-      }
+  //     // Check in pages collection
+  //     const generatorPage = await generatorCollection.findOne({ url: slug });
+  //     if (generatorPage) {
+  //       // Redirect to the new page URL
+  //       return res.redirect(301, `/pages/${slug}`);
+  //     }
 
-      const filePath = path.join(
-        __dirname,
-        "views",
-        "generated-pages",
-        `${slug}.hbs`
-      );
-      if (fs.existsSync(filePath)) {
-        return res.render(path.join("generated-pages", slug));
-      }
+  //     const filePath = path.join(
+  //       __dirname,
+  //       "views",
+  //       "generated-pages",
+  //       `${slug}.hbs`
+  //     );
+  //     if (fs.existsSync(filePath)) {
+  //       return res.render(path.join("generated-pages", slug));
+  //     }
 
-      res.redirect("/404");
-    } catch (error) {
-      console.error("Error handling request:", error);
-      res.status(500).send("Internal server error.");
-    }
-  });
+  //     res.redirect("/404");
+  //   } catch (error) {
+  //     console.error("Error handling request:", error);
+  //     res.status(500).send("Internal server error.");
+  //   }
+  // });
 
   function updateSitemap(fileName) {
     const generatedPagesPath = path.join(__dirname, "views", "generated-pages");
@@ -776,6 +704,7 @@ app.get('/images-gallery', (req, res) => {
       // Check if the slug matches any category
       const categories = await fetchCategories();
       const matchedCategory = categories.find(cat => cat.slug === slug && cat.isActive);
+      console.log(matchedCategory, 'matchedCategory');
       
       if (matchedCategory) {
         // If category exists and is active, render the template
