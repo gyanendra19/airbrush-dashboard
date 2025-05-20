@@ -16,16 +16,6 @@ const pm2 = require('pm2');
 app.set("view engine", "hbs");
 app.set("views", path.join(__dirname, "views"));
 
-// Add request logging middleware before static file handling
-app.use((req, res, next) => {
-  console.log('\nIncoming request:');
-  console.log('URL:', req.url);
-  console.log('Path:', req.path);
-  console.log('Method:', req.method);
-  console.log('Headers:', req.headers);
-  next();
-});
-
 // Explicitly set MIME types for common static files
 express.static.mime.define({'text/css': ['css']});
 express.static.mime.define({'application/javascript': ['js']});
@@ -128,48 +118,48 @@ const routeCache = {
 };
 
 // Middleware to refresh dynamic routes with caching and rate limiting
-app.use(async (req, res, next) => {
-  try {
-    const now = Date.now();
+// app.use(async (req, res, next) => {
+//   try {
+//     const now = Date.now();
     
-    // Skip refresh if:
-    // 1. Cache is valid (within timeout)
-    // 2. Another refresh is in progress
-    // 3. Last refresh was too recent (rate limiting)
-    if (
-      routeCache.categories && 
-      routeCache.lastFetch && 
-      (now - routeCache.lastFetch < routeCache.cacheTimeout) &&
-      !routeCache.isRefreshing &&
-      (now - routeCache.lastFetch < routeCache.minRefreshInterval)
-    ) {
-      return next();
-    }
+//     // Skip refresh if:
+//     // 1. Cache is valid (within timeout)
+//     // 2. Another refresh is in progress
+//     // 3. Last refresh was too recent (rate limiting)
+//     if (
+//       routeCache.categories && 
+//       routeCache.lastFetch && 
+//       (now - routeCache.lastFetch < routeCache.cacheTimeout) &&
+//       !routeCache.isRefreshing &&
+//       (now - routeCache.lastFetch < routeCache.minRefreshInterval)
+//     ) {
+//       return next();
+//     }
 
-    // Prevent concurrent refreshes
-    if (!routeCache.isRefreshing) {
-      routeCache.isRefreshing = true;
+//     // Prevent concurrent refreshes
+//     if (!routeCache.isRefreshing) {
+//       routeCache.isRefreshing = true;
       
-      try {
-        await initializeDynamicRoutes(app);
-        // updateRoutes();
+//       try {
+//         await initializeDynamicRoutes(app);
+//         // updateRoutes();
 
         
-        // Update cache
-        routeCache.lastFetch = now;
-        routeCache.categories = await fetchCategories();
-      } finally {
-        routeCache.isRefreshing = false;
-      }
-    }
+//         // Update cache
+//         routeCache.lastFetch = now;
+//         routeCache.categories = await fetchCategories();
+//       } finally {
+//         routeCache.isRefreshing = false;
+//       }
+//     }
     
-    next();
-  } catch (error) {
-    console.error('Error in route refresh middleware:', error);
-    // Continue to next middleware even if refresh fails
-    next();
-  }
-});
+//     next();
+//   } catch (error) {
+//     console.error('Error in route refresh middleware:', error);
+//     // Continue to next middleware even if refresh fails
+//     next();
+//   }
+// });
 
 const OPENAI_API_KEY = "open_ai_key_here";
 const apiUrl = "https://api.openai.com/v1/chat/completions";
@@ -246,12 +236,6 @@ async function initializeDynamicRoutes(app) {
       if (category.slug && category.isActive) {
         console.log(`Creating route for category: /${category.slug}`);
         
-        // Convert slug to camelCase for the window object key
-        // Example: "3d-image" -> "3dImage", "ghibli-style" -> "ghibliStyle"
-        const camelCaseKey = category.slug.replace(/-([a-z])/g, (match, letter) => {
-          return letter.toUpperCase();
-        });
-        
         app.get(`/${category.slug}`, (req, res) => {
           // Pass the category data to the template
           res.render('3d-image', { 
@@ -261,6 +245,8 @@ async function initializeDynamicRoutes(app) {
         });
       }
     });
+
+    // Add catch-all route for unmatched URLs
     
     console.log('Dynamic routes initialized successfully');
   } catch (error) {
@@ -782,6 +768,31 @@ app.get('/images-gallery', (req, res) => {
     }
   });
 
+  app.get('/:slug', async (req, res) => {
+    const { slug } = req.params;
+    console.log(slug, 'slug');
+    
+    try {
+      // Check if the slug matches any category
+      const categories = await fetchCategories();
+      const matchedCategory = categories.find(cat => cat.slug === slug && cat.isActive);
+      
+      if (matchedCategory) {
+        // If category exists and is active, render the template
+        res.render('3d-image', {
+          category: matchedCategory,
+          categoryId: matchedCategory._id,
+        });
+      } else {
+        // If no matching category found, redirect to 404
+        res.redirect('/404');
+      }
+    } catch (error) {
+      console.error('Error handling dynamic route:', error);
+      res.redirect('/404');
+    }
+  }); 
+
   app.all("*", (req, res) => {
     res.redirect("/404");
   });
@@ -842,110 +853,13 @@ app.get("/api/image/generate", async (req, res) => {
 let server;
 // add comment
 function startServer() {
-  const PORT = process.env.PORT || 6000;
+  const PORT = process.env.PORT || 8000;
   server = app.listen(PORT, '0.0.0.0', function () {
     console.log(`Server listening on port ${PORT}...`);
   }).on('error', function(err) {
     console.error('Server failed to start:', err);
   });
 }
-
-// Function to restart the server using PM2
-// async function restartServer() {
-//   console.log('Restarting server');
-  
-//   // Check if running in PM2 environment
-//   if (process.env.PM2_HOME || process.env.PM2_JSON_PROCESSING) {
-//     return new Promise((resolve, reject) => {
-//       pm2.connect((err) => {
-//         if (err) {
-//           console.error('PM2 connection error:', err);
-//           // Fall back to manual restart if PM2 connection fails
-//           manualRestart().then(resolve).catch(reject);
-//           return;
-//         }
-
-//         // First list processes to find the correct name/id
-//         pm2.list((err, list) => {
-//           if (err) {
-//             console.error('PM2 list error:', err);
-//             pm2.disconnect();
-//             manualRestart().then(resolve).catch(reject);
-//             return;
-//           }
-          
-//           // Find current process
-//           const currentProcess = list.find(p => 
-//             p.pm2_env.pm_exec_path === process.argv[1] || 
-//             p.name === 'server' || 
-//             p.pm_id === process.env.pm_id
-//           );
-          
-//           if (!currentProcess) {
-//             console.warn('Current process not found in PM2, using manual restart');
-//             pm2.disconnect();
-//             manualRestart().then(resolve).catch(reject);
-//             return;
-//           }
-          
-//           // Use the found process id or name
-//           const processId = currentProcess.pm_id || 'server';
-//           console.log(`Restarting PM2 process: ${processId}`);
-          
-//           pm2.restart(processId, (err) => {
-//             pm2.disconnect();
-//             if (err) {
-//               console.error('PM2 restart error:', err);
-//               manualRestart().then(resolve).catch(reject);
-//             } else {
-//               console.log('Server restarted successfully via PM2');
-//               resolve();
-//             }
-//           });
-//         });
-//       });
-//     });
-//   } else {
-//     // Not running under PM2, use manual restart
-//     console.log('Not running under PM2, using manual restart');
-//     return manualRestart();
-//   }
-// }
-
-// Manual restart function (fallback)
-// async function manualRestart() {
-//   return new Promise((resolve) => {
-//     console.log('Performing manual server restart');
-//     if (server) {
-//       server.close(() => {
-//         console.log('Server closed, restarting...');
-//         startServer();
-//         console.log('Server restarted manually');
-//         resolve();
-//       });
-//     } else {
-//       console.log('No server instance to close, starting new server');
-//       startServer();
-//       resolve();
-//     }
-//   });
-// }
-
-// Modify your route update function
-// async function updateRoutes() {
-//   try {
-//     await initializeDynamicRoutes(app);
-//     console.log('Routes initialized, restarting server...');
-//     await restartServer();
-//     return { success: true, message: 'Routes updated and server restarted' };
-//   } catch (error) {
-//     console.error('Error updating routes:', error);
-//     return { success: false, message: error.message };
-//   }
-// }
-
-// Export the updateRoutes function
-// module.exports = { updateRoutes };
 
 startServer();
 
