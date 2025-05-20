@@ -5,9 +5,12 @@
 <head>
     {{#if category.metaTags}}
     <script>
-        // Parse the meta tags string and create meta tags
-        const metaTagsString = document.getElementById('metaTagsData').dataset.metaTags;
-        const metaTags = metaTagsString.split(',').map(tag => tag.trim());
+        // Parse the meta tags from HTML string format
+        const metaTagsString = `{{category.metaTags}}`;
+        const metaTags = metaTagsString
+            .replace(/<meta[^>]*content="([^"]*)"[^>]*>/g, '$1')
+            .split(',')
+            .map(tag => tag.trim());
         metaTags.forEach(tag => {
             const meta = document.createElement('meta');
             meta.setAttribute('name', 'keywords');
