@@ -916,10 +916,9 @@
           }
         ];
 
-        // Process each section
-        const contentDataArray = [];
-        for (let sectionIndex = 0; sectionIndex < sections.length; sectionIndex++) {
-          const section = sections[sectionIndex];
+        // Process all sections in parallel
+        let contentDataArray = [];
+        const sectionPromises = sections.map(async (section, sectionIndex) => {
           try {
             console.log(`Processing ${section.name}...`);
             loaderStatus.textContent = `Generating content for ${section.name}...`;
@@ -929,13 +928,13 @@
               loaderStatus.textContent = `Generating gallery images (this may take a few minutes)...`;
 
               // Generate all prompts in parallel
-              const promptPromises = Array(2).fill().map(() => 
+              const promptPromises = Array(20).fill().map(() => 
                 fetch('https://airbrush-admin-backend.onrender.com/api/images/generate-prompt', {
-              method: 'POST',
-              headers: {
+                  method: 'POST',
+                  headers: {
                     'Content-Type': 'application/json'
-              },
-              body: JSON.stringify({
+                  },
+                  body: JSON.stringify({
                     categoryName: categoryName,
                     type: 'prompt'
                   })
@@ -966,7 +965,7 @@
                   },
                   body: JSON.stringify({
                     prompt: promptText
-              })
+                  })
                 }).then(res => {
                   if (!res.ok) throw new Error('Image generation failed');
                   return res.json();
@@ -980,15 +979,15 @@
               // Process all images
               const processedImages = await Promise.all(imageResults.map(async (data, index) => {
                 const base64Data = data.imageData;
-              const byteCharacters = atob(base64Data);
-              const byteArrays = [];
-              
-              for (let i = 0; i < byteCharacters.length; i++) {
-                byteArrays.push(byteCharacters.charCodeAt(i));
-              }
-              
-              const byteArray = new Uint8Array(byteArrays);
-              const blob = new Blob([byteArray], { type: 'image/png' });
+                const byteCharacters = atob(base64Data);
+                const byteArrays = [];
+                
+                for (let i = 0; i < byteCharacters.length; i++) {
+                  byteArrays.push(byteCharacters.charCodeAt(i));
+                }
+                
+                const byteArray = new Uint8Array(byteArrays);
+                const blob = new Blob([byteArray], { type: 'image/png' });
                 const file = new File([blob], `ai-generated-image-${index + 1}.png`, { type: 'image/png' });
                 
                 const formData = new FormData();
@@ -1141,13 +1140,13 @@
             let mainImageUrl = '';
             if(section.name === 'Hero Section' || section.name === 'Text to Anything' || section.name === 'Why Use tool') {
               const imageResponse = await fetch('https://airbrush-admin-backend.onrender.com/api/images/generate-image', {
-                  method: 'POST',
-                  headers: {
-                    'Content-Type': 'application/json'
-                  },
-                  body: JSON.stringify({
-                    prompt: section.promptTemplate
-                  })
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                  prompt: section.promptTemplate
+                })
               });
 
               if (!imageResponse.ok) {
@@ -1178,39 +1177,39 @@
             
             // All sections get description generation (no title generation)
             if(section.name === 'Hero Section' || section.name === 'Text to Anything' || section.name === 'Why Use tool') {
-            console.log(`Generating description for ${section.name}...`);
-            const promptResponse = await fetch('https://airbrush-admin-backend.onrender.com/api/images/generate-prompt', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json'
-              },
-              body: JSON.stringify({
-                categoryName: categoryName,
-                type: 'description',
-                prompt: `Generate a concise description (10-15 words) for the "${section.name}" section of a ${categoryName} category. 
-                Context: ${categoryDescription}.
-                The description should be engaging and highlight the key value of this section.`
-              })
-            });
+              console.log(`Generating description for ${section.name}...`);
+              const promptResponse = await fetch('https://airbrush-admin-backend.onrender.com/api/images/generate-prompt', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                  categoryName: categoryName,
+                  type: 'description',
+                  prompt: `Generate a concise description (10-15 words) for the "${section.name}" section of a ${categoryName} category. 
+                  Context: ${categoryDescription}.
+                  The description should be engaging and highlight the key value of this section.`
+                })
+              });
 
-            if (!promptResponse.ok) {
-              throw new Error(`Failed to generate description for ${section.name}`);
-            }
-
-            const promptData = await promptResponse.json();
-            console.log(`Description generated for ${section.name}:`, promptData);
-            
-            try {
-              const textContent = promptData.prompt.candidates[0].content.parts[0].text;
-              // Clean up the text (remove quotes, etc)
-              generatedDescription = textContent.replace(/^["']|["']$/g, '').trim();
-              
-              // Ensure description is not too long (10-15 words)
-              const words = generatedDescription.split(/\s+/);
-              if (words.length > 15) {
-                generatedDescription = words.slice(0, 15).join(' ');
+              if (!promptResponse.ok) {
+                throw new Error(`Failed to generate description for ${section.name}`);
               }
-            } catch (error) {
+
+              const promptData = await promptResponse.json();
+              console.log(`Description generated for ${section.name}:`, promptData);
+              
+              try {
+                const textContent = promptData.prompt.candidates[0].content.parts[0].text;
+                // Clean up the text (remove quotes, etc)
+                generatedDescription = textContent.replace(/^["']|["']$/g, '').trim();
+                
+                // Ensure description is not too long (10-15 words)
+                const words = generatedDescription.split(/\s+/);
+                if (words.length > 15) {
+                  generatedDescription = words.slice(0, 15).join(' ');
+                }
+              } catch (error) {
                 console.error(`Error parsing description: ${error.message}`);
               }
             }
@@ -1288,23 +1287,22 @@
                 isActive: true
               }
             } else {
-            // Create content with the generated image
-            contentData = {
-              section: sectionResult._id,
-              slug: section.slug,
-              title: section.name === 'Hero Section' ? 'Hero Section' : section.name === 'Text to Anything' ? `Text to ${categoryName}` : `Why Use ${categoryName}`,
-              subtitle: (generatedDescription || 'No description').replace(/[\*\#]/g, ''),
-              images: [{
-                url: mainImageUrl || '',
-                alt: generatedTitle,
-                width: 1024,
-                height: 1024
-              }],
-              fields: [],
-              isActive: true
-            };
+              // Create content with the generated image
+              contentData = {
+                section: sectionResult._id,
+                slug: section.slug,
+                title: section.name === 'Hero Section' ? 'Hero Section' : section.name === 'Text to Anything' ? `Text to ${categoryName}` : `Why Use ${categoryName}`,
+                subtitle: (generatedDescription || 'No description').replace(/[\*\#]/g, ''),
+                images: [{
+                  url: mainImageUrl || '',
+                  alt: generatedTitle,
+                  width: 1024,
+                  height: 1024
+                }],
+                fields: [],
+                isActive: true
+              };
             }
-
 
             const contentResponse = await fetch('https://airbrush-admin-backend.onrender.com/api/content', {
               method: 'POST',
@@ -1326,8 +1324,12 @@
           } catch (error) {
             console.error(`Error processing ${section.name}:`, error);
             showAlert(`Failed to process ${section.name}. ${error.message}`, 'danger');
+            throw error;
           }
-        }
+        });
+
+        // Wait for all sections to complete
+        await Promise.all(sectionPromises);
       } catch (error) {
         console.error('Error in generateImageAndContent:', error);
         showAlert('Failed to generate AI images. Please try again.', 'danger');

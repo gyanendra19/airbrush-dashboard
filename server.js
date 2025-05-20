@@ -698,13 +698,11 @@ app.get('/images-gallery', (req, res) => {
 
   app.get('/:slug', async (req, res) => {
     const { slug } = req.params;
-    console.log(slug, 'slug');
     
     try {
       // Check if the slug matches any category
       const categories = await fetchCategories();
       const matchedCategory = categories.find(cat => cat.slug === slug && cat.isActive);
-      console.log(matchedCategory, 'matchedCategory');
       
       if (matchedCategory) {
         // If category exists and is active, render the template
