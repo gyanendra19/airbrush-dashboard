@@ -722,13 +722,15 @@
     generateButton.disabled = true;
 
     try {
+      // Call the new Replicate-based endpoint
       const response = await fetch('https://airbrush-admin-backend.onrender.com/api/images/generate-image', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          prompt: prompt
+          prompt: prompt,
+          aspect_ratio: "1:1"  // Fixed aspect ratio for consistent results
         })
       });
 
@@ -738,42 +740,50 @@
 
       const data = await response.json();
       
-      // Convert base64 to blob
-      const base64Data = data.imageData;
-      const byteCharacters = atob(base64Data);
-      const byteArrays = [];
-      
-      for (let i = 0; i < byteCharacters.length; i++) {
-        byteArrays.push(byteCharacters.charCodeAt(i));
-      }
-      
-      const byteArray = new Uint8Array(byteArrays);
-      const blob = new Blob([byteArray], { type: 'image/png' });
-      
-      // Create a file from the blob
-      const file = new File([blob], 'ai-generated-image.png', { type: 'image/png' });
-      
-      // Upload the generated image to your server
-      const uploadResponse = await uploadMediaToServer(file, contentId);
-      
-      if (uploadResponse) {
-        // Create media object for database update
-        const mediaObject = {
-          type: 'image',
-          url: uploadResponse.url,
-          alt: "AI Generated Image",
-          width: 1200,
-          height: 800,
-          order: 1
-        };
+      if (data.imageData) {
+        // Extract the base64 data - remove the prefix if it exists
+        const base64Data = data.imageData.replace(/^data:image\/\w+;base64,/, '');
+        
+        // Convert base64 to blob
+        const byteCharacters = atob(base64Data);
+        const byteArrays = [];
+        
+        for (let i = 0; i < byteCharacters.length; i++) {
+          byteArrays.push(byteCharacters.charCodeAt(i));
+        }
+        
+        const byteArray = new Uint8Array(byteArrays);
+        const blob = new Blob([byteArray], { type: 'image/png' });
+        
+        // Create a File object from the blob
+        const file = new File([blob], 'ai-generated-image.png', { type: 'image/png' });
+        
+        // Upload to Cloudinary using existing function
+        const uploadResponse = await uploadMediaToServer(file, contentId);
+        
+        if (uploadResponse) {
+          // Create media object using Cloudinary URL
+          const mediaObject = {
+            type: 'image',
+            url: uploadResponse.url,
+            alt: "AI Generated Image",
+            width: 1024,
+            height: 1024,
+            order: 1
+          };
 
-        // Update the gallery with the new image
-        updateGallery(mediaObject);
-        
-        // Update the content in the database with the new image
-        updateContent(contentId, mediaObject);
-        
-        showAlert('AI image generated and saved successfully!', 'success');
+          // Update the gallery with the new image
+          updateGallery(mediaObject);
+          
+          // Update the content in the database with the new image
+          updateContent(contentId, mediaObject);
+          
+          showAlert('AI image generated and saved successfully!', 'success');
+        } else {
+          throw new Error('Failed to upload image to Cloudinary');
+        }
+      } else {
+        throw new Error('No image data in response');
       }
     } catch (error) {
       console.error('Error generating AI image:', error);

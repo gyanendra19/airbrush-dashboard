@@ -171,6 +171,12 @@
         justify-content: flex-start;
         display: flex;
         flex-direction: column; 
+        opacity: 0;
+        transform: scale(0.8) translateY(20px);
+    }
+
+    .feature-card.animate {
+        animation: fadeInScale 0.6s ease forwards;
     }
 
     .feature-card .image-container {
@@ -608,6 +614,18 @@
             gap: 0.7rem;
         }
     }
+
+    /* Add these animation styles */
+    @keyframes fadeInScale {
+        from {
+            opacity: 0;
+            transform: scale(0.8) translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+        }
+    }
 </style>
 
 <div class="hero-container">
@@ -953,7 +971,7 @@
         };
         
         // Create HTML for each category
-        sortedCategories.forEach(category => {
+        sortedCategories.forEach((category, index) => {
             // Determine which tag to use (if any)
             let tagHTML = '';
             if (category.trending) {
@@ -966,9 +984,9 @@
                 tagHTML = `<div class="tag recent">Recent</div>`;
             }
             
-            // Create card HTML
+            // Create card HTML with data-index for animation
             const categoryCard = `
-                <div class="feature-card">
+                <div class="feature-card" data-index="${index}">
                     <div class="image-container">
                         <img src="${category.image || '/images/default-category.png'}" alt="${category.name}">
                         <a href="/${category.slug}" class="arrow-btn"></a>
@@ -984,8 +1002,30 @@
             // Add to container
             container.innerHTML += categoryCard;
         });
-        
-        // Event listeners for new cards
+
+        // Set up the Intersection Observer for animations
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const card = entry.target;
+                    const delay = parseInt(card.dataset.index) * 100; // 100ms delay between each card
+                    setTimeout(() => {
+                        card.classList.add('animate');
+                    }, delay);
+                    observer.unobserve(card);
+                }
+            });
+        }, {
+            threshold: 0.1,
+            rootMargin: '50px'
+        });
+
+        // Observe all feature cards
+        document.querySelectorAll('.feature-card').forEach(card => {
+            observer.observe(card);
+        });
+
+        // Event listeners for cards
         document.querySelectorAll('.feature-card').forEach((card, index) => {
             card.addEventListener('click', () => {
                 const category = sortedCategories[index];

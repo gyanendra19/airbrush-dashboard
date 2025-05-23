@@ -918,6 +918,7 @@
 
         // Process all sections in parallel
         let contentDataArray = [];
+        let blogDataArray = [];
         const sectionPromises = sections.map(async (section, sectionIndex) => {
           try {
             console.log(`Processing ${section.name}...`);
@@ -978,7 +979,8 @@
 
               // Process all images
               const processedImages = await Promise.all(imageResults.map(async (data, index) => {
-                const base64Data = data.imageData;
+                // Extract the base64 data - remove the prefix if it exists
+                const base64Data = data.imageData.replace(/^data:image\/\w+;base64,/, '');
                 const byteCharacters = atob(base64Data);
                 const byteArrays = [];
                 
@@ -1099,7 +1101,8 @@
 
               // Process all images in parallel
               const processedImages = await Promise.all(imageResults.map(async (imageData, index) => {
-                const base64Data = imageData.imageData;
+                // Extract the base64 data - remove the prefix if it exists
+                const base64Data = imageData.imageData.replace(/^data:image\/\w+;base64,/, '');
                 const byteCharacters = atob(base64Data);
                 const byteArrays = [];
 
@@ -1118,7 +1121,7 @@
               updateProgress(sectionIndex, 0.8);
 
               // Create the content object with all blog posts
-              contentDataArray.push({
+              blogDataArray.push({
                 section: 'Blogs',
                 slug: `${section.slug}`,
                 title: 'Blog Section', // Extract first line as title
@@ -1154,7 +1157,8 @@
               }
 
               const imageData = await imageResponse.json();
-              const base64Data = imageData.imageData;
+              // Extract the base64 data - remove the prefix if it exists
+              const base64Data = imageData.imageData.replace(/^data:image\/\w+;base64,/, '');
               const byteCharacters = atob(base64Data);
               const byteArrays = [];
 
@@ -1252,7 +1256,7 @@
                 isActive: true
               }
             } else if(section.name === 'Blogs') {
-              const blogImages = contentDataArray[contentDataArray.length - 1]?.images || [];
+              const blogImages = blogDataArray[blogDataArray.length - 1]?.images || [];
               
               // Configure marked to allow HTML
               marked.setOptions({
@@ -1266,7 +1270,6 @@
                 // Parse the blog content from markdown to HTML
                 const parsedContent = marked.parse(image.content || '');
                 console.log('Original content:', image.content);
-                console.log('Parsed content:', parsedContent);
                 
                 return {
                   value: {

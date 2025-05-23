@@ -1,6 +1,6 @@
 <style>
     .img-container img:hover {
-        transform: scale(1.05);
+        transform: scale(1.1);
     }
 
     @media (max-width: 768px) {
@@ -197,13 +197,13 @@
     ">Inspirations</span>
                 </div>
 
-                <h2 class="get-started-heading" style="font-size: 5rem; font-weight: 600; color: white; margin: 0; margin-bottom: 20px; margin-top: 54px;">
+                <h2 class="get-started-heading animate-up" style="font-size: 5rem; font-weight: 600; color: white; margin: 0; margin-bottom: 20px; margin-top: 54px; opacity: 0; transform: translateY(50px);">
                     Find your inspiration in a sea<br> of creativity
                 </h2>
-                <p class="get-started-description" style="margin: 0; font-size: 2rem; color: white; line-height: 1.5;">Explore Unlimited inspiration alongside other Dreamina users. Let creativity be inspired<br class="d-none d-md-block">
+                <p class="get-started-description animate-up" style="margin: 0; font-size: 2rem; color: white; line-height: 1.5; opacity: 0; transform: translateY(50px);">Explore Unlimited inspiration alongside other Dreamina users. Let creativity be inspired<br class="d-none d-md-block">
                 by shared excitement and collaborative genius.</p>
                 
-                <div class="button-container" style="margin: 0; padding: 20px 0;">
+                <div class="button-container animate-up" style="margin: 0; padding: 20px 0; opacity: 0; transform: translateY(50px);">
                    <a href="https://app.airbrush.ai/signup" class="get-started-btn" style="
                        background-color: #000000;
                        color: white;
@@ -217,6 +217,28 @@
                        display: inline-block;
                        transition: background-color 0.3s ease;">Get Started</a>
                 </div>
+
+                <script>
+                    // Initialize GSAP ScrollTrigger
+                    gsap.registerPlugin(ScrollTrigger);
+
+                    // Animate elements when they come into view
+                    const animateElements = gsap.utils.toArray('.animate-up');
+                    animateElements.forEach((element, index) => {
+                        gsap.to(element, {
+                            scrollTrigger: {
+                                trigger: element,
+                                start: "top 80%",
+                                toggleActions: "play none none reverse"
+                            },
+                            opacity: 1,
+                            y: 0,
+                            duration: 1,
+                            ease: "power3.out",
+                            delay: index * 0.2
+                        });
+                    });
+                </script>
 
             </div>
             <div class="col-12" style="margin: 0; padding: 0; overflow-x: auto; width: 100vw; margin-top: 40px;">

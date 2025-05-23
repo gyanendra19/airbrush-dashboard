@@ -1,4 +1,36 @@
 <!-- rts faq area stat -->
+<style>
+    @keyframes slideFromLeft {
+        from {
+            opacity: 0;
+            transform: translateX(-100px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+    @keyframes slideFromRight {
+        from {
+            opacity: 0;
+            transform: translateX(100px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+    .animate-left {
+        animation: slideFromLeft 1s ease forwards;
+    }
+
+    .animate-right {
+        animation: slideFromRight 1s ease forwards;
+    }
+</style>
+
 <div class="rts-faq-area rts-section-gap bg_faq">
 <div class="container">
    <div class="row">
@@ -30,10 +62,10 @@
       </div>
    </div>
    <div class="row mt--60">
-      <div class="col-lg-4">
+      <div class="col-lg-4" id="faqLeft" style="opacity: 0;">
          <img src="/images/faq/faq.png" alt="FAQ" style="width: 100%; height: auto; border-radius: 20px; margin-left: 30px; object-fit: cover;" />
       </div>
-      <div class="col-lg-8" style="padding-left: 40px;">
+      <div class="col-lg-8" id="faqRight" style="padding-left: 40px; opacity: 0;">
          <div class="accordion-area-one" style="width: 120%;">
             <div class="accordion" id="accordionExample">
                <div class="accordion-item">
@@ -90,4 +122,29 @@
    </div>
 </div>
 </div>
+
+<script>
+    function checkScroll() {
+        const leftSection = document.getElementById('faqLeft');
+        const rightSection = document.getElementById('faqRight');
+        
+        const triggerPosition = window.innerHeight * 0.8;
+        
+        const leftRect = leftSection.getBoundingClientRect();
+        const rightRect = rightSection.getBoundingClientRect();
+        
+        if (leftRect.top < triggerPosition && !leftSection.classList.contains('animate-left')) {
+            leftSection.classList.add('animate-left');
+        }
+        
+        if (rightRect.top < triggerPosition && !rightSection.classList.contains('animate-right')) {
+            rightSection.classList.add('animate-right');
+        }
+    }
+
+    // Check on scroll
+    window.addEventListener('scroll', checkScroll);
+    // Check on page load
+    document.addEventListener('DOMContentLoaded', checkScroll);
+</script>
 <!-- rts faq area end -->

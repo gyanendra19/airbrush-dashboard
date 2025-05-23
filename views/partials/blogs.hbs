@@ -685,72 +685,78 @@
 
           const data = await response.json();
           
-          // Convert base64 to blob
-          const base64Data = data.imageData;
-          const byteCharacters = atob(base64Data);
-          const byteArrays = [];
-          
-          for (let i = 0; i < byteCharacters.length; i++) {
-            byteArrays.push(byteCharacters.charCodeAt(i));
-          }
-          
-          const byteArray = new Uint8Array(byteArrays);
-          const blob = new Blob([byteArray], { type: 'image/png' });
-          
-          // Create a file from the blob
-          const file = new File([blob], 'ai-generated-image.png', { type: 'image/png' });
-          
-          // Get the card and image element
-          const card = document.querySelector(`.blog-card[data-index="${cardIndex}"]`);
-          const imageElement = card.querySelector('.blog-image');
-          const loadingIndicator = document.createElement('div');
-          loadingIndicator.className = 'loading-indicator';
-          loadingIndicator.innerHTML = '<div class="spinner-border text-light" role="status"></div>';
-          
-          try {
-            // Show loading indicator
-            card.querySelector('.position-relative').appendChild(loadingIndicator);
+          if (data.imageData) {
+            // Extract the base64 data - remove the prefix if it exists
+            const base64Data = data.imageData.replace(/^data:image\/\w+;base64,/, '');
             
-            // Create form data
-            const formData = new FormData();
-            formData.append('images', file);
+            // Convert base64 to blob
+            const byteCharacters = atob(base64Data);
+            const byteArrays = [];
             
-            // Upload to backend API
-            const uploadResponse = await fetch('https://airbrush-admin-backend.onrender.com/api/images', {
-              method: 'POST',
-              body: formData
-            });
-            
-            if (!uploadResponse.ok) {
-              throw new Error('Upload failed');
+            for (let i = 0; i < byteCharacters.length; i++) {
+              byteArrays.push(byteCharacters.charCodeAt(i));
             }
             
-            const uploadData = await uploadResponse.json();
-            console.log('Upload response:', uploadData);
+            const byteArray = new Uint8Array(byteArrays);
+            const blob = new Blob([byteArray], { type: 'image/png' });
             
-            if (uploadData.files && uploadData.files.length > 0) {
-              // Update the image source with the first uploaded file's URL
-              imageElement.src = uploadData.files[0].url;
+            // Create a file from the blob
+            const file = new File([blob], 'ai-generated-image.png', { type: 'image/png' });
+            
+            // Get the card and image element
+            const card = document.querySelector(`.blog-card[data-index="${cardIndex}"]`);
+            const imageElement = card.querySelector('.blog-image');
+            const loadingIndicator = document.createElement('div');
+            loadingIndicator.className = 'loading-indicator';
+            loadingIndicator.innerHTML = '<div class="spinner-border text-light" role="status"></div>';
+            
+            try {
+              // Show loading indicator
+              card.querySelector('.position-relative').appendChild(loadingIndicator);
               
-              // Update the blog data
-              blogData[cardIndex].image.url = uploadData.files[0].url;
+              // Create form data
+              const formData = new FormData();
+              formData.append('images', file);
+              
+              // Upload to backend API
+              const uploadResponse = await fetch('https://airbrush-admin-backend.onrender.com/api/images', {
+                method: 'POST',
+                body: formData
+              });
+              
+              if (!uploadResponse.ok) {
+                throw new Error('Upload failed');
+              }
+              
+              const uploadData = await uploadResponse.json();
+              console.log('Upload response:', uploadData);
+              
+              if (uploadData.files && uploadData.files.length > 0) {
+                // Update the image source with the first uploaded file's URL
+                imageElement.src = uploadData.files[0].url;
+                
+                // Update the blog data
+                blogData[cardIndex].image.url = uploadData.files[0].url;
 
-              // Save changes to database immediately
-              await saveChangesToDatabase();
-              
-              showAlert('AI image generated and uploaded successfully!', 'success');
-              // Close the modal
-              const modal = bootstrap.Modal.getInstance(document.getElementById('aiPromptModal'));
-              modal.hide();
-            } else {
-              throw new Error('No files were uploaded');
+                // Save changes to database immediately
+                await saveChangesToDatabase();
+                
+                showAlert('AI image generated and uploaded successfully!', 'success');
+                // Close the modal
+                const modal = bootstrap.Modal.getInstance(document.getElementById('aiPromptModal'));
+                modal.hide();
+              } else {
+                throw new Error('No files were uploaded');
+              }
+            } catch (error) {
+              console.error('Error uploading image:', error);
+              showAlert('Failed to upload image. Please try again.', 'danger');
+            } finally {
+              // Remove loading indicator
+              loadingIndicator.remove();
             }
-          } catch (error) {
-            console.error('Error uploading image:', error);
-            showAlert('Failed to upload image. Please try again.', 'danger');
-          } finally {
-            // Remove loading indicator
-            loadingIndicator.remove();
+          } else {
+            throw new Error('No image data in response');
           }
         } catch (error) {
           console.error('Error generating AI image:', error);

@@ -61,7 +61,7 @@
                         background: transparent;
                     ">
                         <!-- Step 1 -->
-                        <div class="step-box" style="
+                        <div class="step-box" data-position="left" style="
                             background: rgba(255, 240, 245, 0.95);
                             border-radius: 16px;
                             padding: 24px;
@@ -98,7 +98,7 @@
                         </div>
 
                         <!-- Step 2 -->
-                        <div class="step-box" style="
+                        <div class="step-box" data-position="right" style="
                             background: rgba(255, 240, 245, 0.95);
                             border-radius: 16px;
                             padding: 24px;
@@ -137,7 +137,7 @@
                         </div>
 
                         <!-- Step 3 -->
-                        <div class="step-box" style="
+                        <div class="step-box" data-position="left" style="
                             background: rgba(255, 240, 245, 0.95);
                             border-radius: 16px;
                             padding: 24px;
@@ -176,7 +176,7 @@
                         </div>
 
                         <!-- Step 4 -->
-                        <div class="step-box" style="
+                        <div class="step-box" data-position="right" style="
                             background: rgba(255, 240, 245, 0.95);
                             border-radius: 16px;
                             padding: 24px;
@@ -349,6 +349,19 @@
         stroke-dashoffset: -20;
     }
 }
+
+/* Initial states for animations */
+.step-box[data-position="left"] {
+    opacity: 0;
+    transform: translateX(-100px);
+    visibility: hidden;
+}
+
+.step-box[data-position="right"] {
+    opacity: 0;
+    transform: translateX(100px);
+    visibility: hidden;
+}
 </style>
 
 <script>
@@ -439,5 +452,44 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Also run when screen size changes (in case of rotation)
     window.addEventListener('resize', handleScroll);
+
+    // Initialize GSAP animations
+    gsap.registerPlugin(ScrollTrigger);
+
+    // Animate step boxes
+    const leftBoxes = document.querySelectorAll('.step-box[data-position="left"]');
+    const rightBoxes = document.querySelectorAll('.step-box[data-position="right"]');
+
+    // Animate left boxes
+    leftBoxes.forEach((box) => {
+        gsap.to(box, {
+            scrollTrigger: {
+                trigger: box,
+                start: "top 80%",
+                toggleActions: "play none none reverse"
+            },
+            x: 0,
+            opacity: 1,
+            visibility: "visible",
+            duration: 1,
+            ease: "power2.out"
+        });
+    });
+
+    // Animate right boxes
+    rightBoxes.forEach((box) => {
+        gsap.to(box, {
+            scrollTrigger: {
+                trigger: box,
+                start: "top 80%",
+                toggleActions: "play none none reverse"
+            },
+            x: 0,
+            opacity: 1,
+            visibility: "visible",
+            duration: 1,
+            ease: "power2.out"
+        });
+    });
 });
 </script> 

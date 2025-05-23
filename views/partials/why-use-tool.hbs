@@ -801,86 +801,94 @@
 
           const data = await response.json();
           
-          // Convert base64 to blob
-          const base64Data = data.imageData;
-          const byteCharacters = atob(base64Data);
-          const byteArrays = [];
-          
-          for (let i = 0; i < byteCharacters.length; i++) {
-            byteArrays.push(byteCharacters.charCodeAt(i));
-          }
-          
-          const byteArray = new Uint8Array(byteArrays);
-          const blob = new Blob([byteArray], { type: 'image/png' });
-          
-          // Create a file from the blob
-          const file = new File([blob], 'ai-generated-image.png', { type: 'image/png' });
-          
-          // Upload the generated image to your server
-          const uploadResponse = await uploadMediaToServer(file);
-          
-          if (uploadResponse) {
-            // Update currentMedia with the new image
-            currentMedia = {
-              type: 'image',
-              url: uploadResponse.url,
-              serverUrl: uploadResponse.url,
-              alt: prompt,
-              width: 1200,
-              height: 800,
-              order: 1
-            };
-
-            // Update the gallery with the new image
-            updateGallery(currentMedia);
-
-            // If we have a contentId, update the content with the new image
-            if (contentId) {
-              // Get current content data
-              const contentResponse = await fetch(`https://airbrush-admin-backend.onrender.com/api/content/id/${contentId}`, {
-                method: 'GET',
-                headers: {
-                  'Content-Type': 'application/json'
-                }
-              });
-
-              if (!contentResponse.ok) {
-                throw new Error('Failed to fetch current content');
-              }
-
-              const currentContent = await contentResponse.json();
-
-              // Prepare update data
-              const updateData = {
-                ...currentContent,
-                images: [{
-                  url: uploadResponse.url,
-                  alt: prompt,
-                  width: 1200,
-                  height: 800,
-                  order: 1,
-                  type: 'image'
-                }]
+          if (data.imageData) {
+            // Extract the base64 data - remove the prefix if it exists
+            const base64Data = data.imageData.replace(/^data:image\/\w+;base64,/, '');
+            
+            // Convert base64 to blob
+            const byteCharacters = atob(base64Data);
+            const byteArrays = [];
+            
+            for (let i = 0; i < byteCharacters.length; i++) {
+              byteArrays.push(byteCharacters.charCodeAt(i));
+            }
+            
+            const byteArray = new Uint8Array(byteArrays);
+            const blob = new Blob([byteArray], { type: 'image/png' });
+            
+            // Create a file from the blob
+            const file = new File([blob], 'ai-generated-image.png', { type: 'image/png' });
+            
+            // Upload the generated image to your server
+            const uploadResponse = await uploadMediaToServer(file);
+            
+            if (uploadResponse) {
+              // Update currentMedia with the new image
+              currentMedia = {
+                type: 'image',
+                url: uploadResponse.url,
+                serverUrl: uploadResponse.url,
+                alt: prompt,
+                width: 1200,
+                height: 800,
+                order: 1
               };
 
-              // Update the content with the new image
-              const updateResponse = await fetch(`https://airbrush-admin-backend.onrender.com/api/content/${contentId}`, {
-                method: 'PUT',
-                headers: {
-                  'Content-Type': 'application/json',
-                  'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4MDQ5MWRmMzljZmYwNTljMDY1NWZkMSIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc0NTIyNTEyMSwiZXhwIjoxNzQ1MzExNTIxfQ.O1xfunWURBxt7tqcgXH_yWEyq-7VOA61LX6qrmEHXoA`
-                },
-                body: JSON.stringify(updateData)
-              });
+              // Update the gallery with the new image
+              updateGallery(currentMedia);
 
-              if (!updateResponse.ok) {
-                throw new Error('Failed to update content with new image');
+              // If we have a contentId, update the content with the new image
+              if (contentId) {
+                // Get current content data
+                const contentResponse = await fetch(`https://airbrush-admin-backend.onrender.com/api/content/id/${contentId}`, {
+                  method: 'GET',
+                  headers: {
+                    'Content-Type': 'application/json'
+                  }
+                });
+
+                if (!contentResponse.ok) {
+                  throw new Error('Failed to fetch current content');
+                }
+
+                const currentContent = await contentResponse.json();
+
+                // Prepare update data
+                const updateData = {
+                  ...currentContent,
+                  images: [{
+                    url: uploadResponse.url,
+                    alt: prompt,
+                    width: 1200,
+                    height: 800,
+                    order: 1,
+                    type: 'image'
+                  }]
+                };
+
+                // Update the content with the new image
+                const updateResponse = await fetch(`https://airbrush-admin-backend.onrender.com/api/content/${contentId}`, {
+                  method: 'PUT',
+                  headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4MDQ5MWRmMzljZmYwNTljMDY1NWZkMSIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc0NTIyNTEyMSwiZXhwIjoxNzQ1MzExNTIxfQ.O1xfunWURBxt7tqcgXH_yWEyq-7VOA61LX6qrmEHXoA`
+                  },
+                  body: JSON.stringify(updateData)
+                });
+
+                if (!updateResponse.ok) {
+                  throw new Error('Failed to update content with new image');
+                }
+
+                showAlert('AI image generated and saved successfully!', 'success');
+              } else {
+                showAlert('AI image generated successfully!', 'success');
               }
-
-              showAlert('AI image generated and saved successfully!', 'success');
             } else {
-              showAlert('AI image generated successfully!', 'success');
+              throw new Error('Failed to upload image to server');
             }
+          } else {
+            throw new Error('No image data in response');
           }
         } catch (error) {
           console.error('Error generating AI image:', error);

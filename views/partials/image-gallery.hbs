@@ -490,9 +490,11 @@
         }
 
         const data = await response.json();
-        const base64Data = data.imageData;
         
-        if (base64Data) {
+        if (data.imageData) {
+          // Extract the base64 data - remove the prefix if it exists
+          const base64Data = data.imageData.replace(/^data:image\/\w+;base64,/, '');
+          
           // Convert base64 to blob
           const byteCharacters = atob(base64Data);
           const byteArrays = [];
@@ -526,7 +528,11 @@
             addImageToGallery(newImage.url, newImage);
             
             showAlert('AI image generated and added to gallery!', 'success');
+          } else {
+            throw new Error('Failed to upload generated image');
           }
+        } else {
+          throw new Error('No image data in response');
         }
       } catch (error) {
         console.error('Error generating AI image:', error);
