@@ -246,6 +246,10 @@
                     sectionSlug = 'why-use-tool';
                   } else if (section.name.includes('Blog')) {
                     sectionSlug = 'blogs';
+                  } else if (section.name.includes('Transform-Grid')) {
+                    sectionSlug = 'transform-grid';
+                  }else if (section.name.includes('Video')) {
+                    sectionSlug = 'category-video';
                   }
                   
                   // Add the content ID as a query parameter
@@ -259,14 +263,17 @@
                 ${!category.sections.some(section => section.name.includes('Images Gallery')) ? 
                   `<li><a href="/images-gallery?categoryId=${category.id}" class="d-block px-3 py-1 rounded-3 text-decoration-none">Images Gallery</a></li>` 
                   : ''}
-                ${!category.sections.some(section => section.name.includes('Blog')) ? 
-                  `<li><a href="/blogs?categoryId=${category.id}" class="d-block px-3 py-1 rounded-3 text-decoration-none">Blogs</a></li>` 
-                  : ''}
                 ${!category.sections.some(section => section.name.includes('Text to')) ? 
                   `<li><a href="/text-to-anything?categoryId=${category.id}" class="d-block px-3 py-1 rounded-3 text-decoration-none">Text to anything</a></li>` 
                   : ''}
                 ${!category.sections.some(section => section.name.includes('Why Use')) ? 
                   `<li><a href="/why-use-tool?categoryId=${category.id}" class="d-block px-3 py-1 rounded-3 text-decoration-none">Why use tool</a></li>` 
+                  : ''}
+                ${!category.sections.some(section => section.name.includes('Blog')) ? 
+                  `<li><a href="/blogs?categoryId=${category.id}" class="d-block px-3 py-1 rounded-3 text-decoration-none">Blogs</a></li>` 
+                  : ''}
+                ${!category.sections.some(section => section.name.includes('Video')) ? 
+                  `<li><a href="/category-video?categoryId=${category.id}" class="d-block px-3 py-1 rounded-3 text-decoration-none">Category Video</a></li>` 
                   : ''}
                 <li><a href="/edit-category?id=${category.id}" class="d-block px-3 py-1 rounded-3 text-decoration-none">Edit Category</a></li>
               </ul>

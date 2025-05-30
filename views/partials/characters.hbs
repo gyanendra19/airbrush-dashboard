@@ -810,6 +810,22 @@
             console.warn('Grid container not found');
             return;
         }
+
+        // Add click handler function
+        function redirectToCharacter(prompt) {
+            // Store the prompt in the textarea
+            const textarea = document.getElementById('character-prompt-textarea');
+            if (textarea) {
+                textarea.value = prompt;
+                
+                // Scroll to the textarea section smoothly
+                const characterSection = document.getElementById('character-section');
+                console.log('Character section:', characterSection);
+                if (characterSection) {
+                    characterSection.scrollIntoView({ behavior: 'smooth' });
+                }
+            }
+        }
         
         // Extract image URLs from the content
         const imageUrls = [];
@@ -842,7 +858,8 @@
                                 url: image.url,
                                 alt: image.alt || item.title || '',
                                 title: item.title || '',
-                                subtitle: item.subtitle || ''
+                                subtitle: item.subtitle || '',
+                                prompt: image.prompt || ''
                             });
                         }
                     });
@@ -865,12 +882,47 @@
             if (imageData && imageData.url) {
                 console.log(`Updating grid item ${index} with image ${imageIndex}:`, imageData);
                 
-                // Update image source
+                // Update image source and add click handler
                 const imgElement = gridItem.querySelector('img');
                 if (imgElement) {
                     console.log(`Setting src for grid item ${index} to:`, imageData.url);
                     imgElement.src = imageData.url;
                     imgElement.alt = imageData.alt || `Character ${index + 1}`;
+                    
+                    // Add click handler to the grid item itself
+                    gridItem.style.cursor = 'pointer';
+                    gridItem.onclick = function(e) {
+                        console.log('Grid item clicked');
+                        // Only redirect if not clicking on buttons
+                        if (!e.target.closest('.hover-buttons')) {
+                            console.log('Redirecting with prompt:', imageData.prompt);
+                            redirectToCharacter(imageData.prompt || '');
+                        }
+                    };
+
+                    // Prevent buttons from triggering the redirect
+                    const buttons = gridItem.querySelectorAll('.hover-buttons button');
+                    buttons.forEach(button => {
+                        button.onclick = function(e) {
+                            console.log('Button clicked:', button.className);
+                            e.stopPropagation();
+                            // Handle button functionality here
+                        };
+                    });
+
+                    // Debug the hover overlay
+                    const hoverOverlay = gridItem.querySelector('.hover-overlay');
+                    if (hoverOverlay) {
+                        hoverOverlay.style.pointerEvents = 'none';
+                        const textContent = gridItem.querySelector('.text-content');
+                        if (textContent) {
+                            textContent.style.pointerEvents = 'auto';
+                        }
+                        const hoverButtons = gridItem.querySelector('.hover-buttons');
+                        if (hoverButtons) {
+                            hoverButtons.style.pointerEvents = 'auto';
+                        }
+                    }
                     
                     // Add onload handler to debug image loading
                     imgElement.onload = function() {
@@ -883,12 +935,6 @@
                 } else {
                     console.warn(`Image element not found for grid item ${index}`);
                 }   
-                
-                {{!-- // Update title if we have one
-                const titleElement = gridItem.querySelector('.text-content h3');
-                if (titleElement && imageData.title) {
-                    titleElement.textContent = imageData.title;
-                } --}}
                 
                 // Update prompt if we have one
                 const descElement = gridItem.querySelector('.text-content p');
@@ -909,4 +955,33 @@
     
     // Call the function when the page loads
     document.addEventListener('DOMContentLoaded', fetchCharactersContentBySlug);
+
+    // Add this to handle loading saved prompts when the page loads
+    document.addEventListener('DOMContentLoaded', function() {
+        const textarea = document.getElementById('character-prompt-textarea');
+        const savedPrompt = localStorage.getItem('selectedPrompt');
+        
+        if (savedPrompt && textarea) {
+            textarea.value = savedPrompt;
+            // Clear the localStorage after setting the value
+            localStorage.removeItem('selectedPrompt');
+        }
+    });
+
+    function handleGenerate() {
+        const textarea = document.getElementById('character-prompt-textarea');
+        if (textarea.value.trim() !== '') {
+            // Show the generating container
+            document.querySelector('.character-main').classList.add('show');
+
+            // Hide the thumbnails initially
+            document.querySelector('.character-thumbnails').classList.remove('show');
+
+            // Simulate generation time (you can replace this with your actual generation logic)
+            setTimeout(() => {
+                // After generation is complete, show the thumbnails
+                document.querySelector('.character-thumbnails').classList.add('show');
+            }, 3000); // Adjust this time based on your actual generation time
+        }
+    }
 </script>

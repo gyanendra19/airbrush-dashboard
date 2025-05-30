@@ -907,10 +907,18 @@
               Context: ${categoryDescription}`
           },
           {
+            name: `Transform Grid`,
+            slug: 'transform-grid',
+            description: 'Transform grid section',
+            order: 5,
+            promptTemplate: `Create an image demonstrating text-to-${categoryName.toLowerCase()} transformation.
+              Context: ${categoryDescription}`
+          },
+          {
             name: 'Blogs',
             slug: 'blogs',
             description: 'Blog posts and articles section',
-            order: 5,
+            order: 6,
             promptTemplate: `Create a blog section image for ${categoryName}.
               Context: ${categoryDescription}`
           }
@@ -919,6 +927,7 @@
         // Process all sections in parallel
         let contentDataArray = [];
         let blogDataArray = [];
+        let transformGridDataArray = [];
         const sectionPromises = sections.map(async (section, sectionIndex) => {
           try {
             console.log(`Processing ${section.name}...`);
@@ -1140,6 +1149,155 @@
               updateProgress(sectionIndex, 1);
             }
 
+            if(section.name === 'Transform Grid') {
+              loaderStatus.textContent = `Generating transform grid content...`;
+              updateProgress(sectionIndex, 0.2);
+
+              // Generate content for 6 items (2 rows of 3 items each)
+              const gridPromises = Array(3).fill().map(() => 
+                Promise.all([
+                  // Generate image prompt
+                  fetch('https://airbrush-admin-backend.onrender.com/api/images/generate-prompt', {
+                    method: 'POST',
+                    headers: {
+                      'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                      categoryName: categoryName,
+                      type: 'prompt'
+                    })
+                  }).then(res => {
+                    if (!res.ok) throw new Error('Prompt generation failed');
+                    return res.json();
+                  }),
+                  // Generate content (70-100 words)
+                  fetch('https://airbrush-admin-backend.onrender.com/api/images/generate-prompt', {
+                    method: 'POST',
+                    headers: {
+                      'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                      categoryName: categoryName,
+                      type: 'short_content',
+                    })
+                  }).then(res => {
+                    if (!res.ok) throw new Error('Content generation failed');
+                    return res.json();
+                  })
+                ]).catch(error => {
+                  console.error('Error in grid item generation:', error);
+                  return [
+                    { prompt: { candidates: [{ content: { parts: [{ text: 'Default prompt' }] } }] } },
+                    { prompt: { candidates: [{ content: { parts: [{ text: 'Default content' }] } }] } }
+                  ];
+                })  
+              );
+
+              const gridResults = await Promise.all(gridPromises);
+              loaderStatus.textContent = 'Generating transform grid images...';
+              updateProgress(sectionIndex, 0.4);
+
+              // Extract prompts and content
+              const gridItems = gridResults.map(([promptData, contentData]) => {
+                try {
+                  return {
+                    prompt: promptData.prompt.candidates[0].content.parts[0].text,
+                    title: 'Transform Grid Test Title',
+                    content: contentData.prompt.candidates[0].content.parts[0].text
+                  };
+                } catch (error) {
+                  console.error('Error extracting prompt/content:', error);
+                  return {
+                    prompt: 'Default prompt',
+                    title: 'Transform Grid Test Title',
+                    content: 'Default content'
+                  };
+                }
+              });
+
+              // Generate all images in parallel
+              const imagePromises = gridItems.map(({ prompt }) =>
+                fetch('https://airbrush-admin-backend.onrender.com/api/images/generate-image', {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json'
+                  },
+                  body: JSON.stringify({
+                    prompt: prompt
+                  })
+                }).then(res => {
+                  if (!res.ok) throw new Error('Image generation failed');
+                  return res.json();
+                }).catch(error => {
+                  console.error('Error generating image:', error);
+                  return { imageData: null };
+                })
+              );
+
+              const imageResults = await Promise.all(imagePromises);
+              loaderStatus.textContent = 'Processing transform grid images...';
+              updateProgress(sectionIndex, 0.6);
+
+              // Process all images in parallel
+              const processedImages = await Promise.all(imageResults.map(async (imageData, index) => {
+                try {
+                  if (!imageData || !imageData.imageData) {
+                    console.error(`No image data for index ${index}`);
+                    return '/images/placeholder.png';
+                  }
+
+                  // Extract the base64 data - remove the prefix if it exists
+                  const base64Data = imageData.imageData.replace(/^data:image\/\w+;base64,/, '');
+                  const byteCharacters = atob(base64Data);
+                  const byteArrays = [];
+
+                  for (let j = 0; j < byteCharacters.length; j++) {
+                    byteArrays.push(byteCharacters.charCodeAt(j));
+                  }
+
+                  const byteArray = new Uint8Array(byteArrays);
+                  const blob = new Blob([byteArray], { type: 'image/png' });
+                  const file = new File([blob], `transform-grid-${index + 1}.png`, { type: 'image/png' });
+                  
+                  return uploadImage(file, token);
+                } catch (error) {
+                  console.error(`Error processing image ${index}:`, error);
+                  return '/images/placeholder.png';
+                }
+              }));
+
+              loaderStatus.textContent = 'Finalizing transform grid content...';
+              updateProgress(sectionIndex, 0.8);
+
+              console.log(processedImages, 'processedImages');
+              
+              // Create grid fields array with processed data
+              const gridFields = processedImages.map((url, index) => ({
+                id: `grid-${index + 1}`,
+                url: url,
+                title: gridItems[index].title || 'Transform Grid Test Title',
+                content: gridItems[index].content
+              }));
+ 
+              // Push the new grid fields to transformGridDataArray
+              transformGridDataArray.push({
+                section: 'Transform Grid',
+                slug: section.slug,
+                title: section.name,
+                subtitle: `Transform ${categoryName} grid`,
+                images: [],
+                fields: gridFields.map(field => ({
+                  value: {
+                    type: 'grid',
+                    key: field.id,
+                    url: field.url,
+                    title: field.title,
+                    content: field.content
+                  }
+                }))
+              });
+            }
+
             let mainImageUrl = '';
             if(section.name === 'Hero Section' || section.name === 'Text to Anything' || section.name === 'Why Use tool') {
               const imageResponse = await fetch('https://airbrush-admin-backend.onrender.com/api/images/generate-image', {
@@ -1285,8 +1443,27 @@
                 slug: section.slug,
                 title: section.name,
                 subtitle: generatedDescription || 'No description',
-                images: blogImages,
+                images: [],
                 fields: fields,
+                isActive: true
+              }
+            } else if(section.name === 'Transform Grid') {
+              const gridFields = transformGridDataArray[transformGridDataArray.length - 1]?.fields || [];
+              const wrappedGridFields = gridFields.map(field => ({
+                value: {
+                  key: field.value.key,
+                  url: field.value.url,
+                  title: field.value.title,
+                  content: field.value.content
+                }
+              }));
+              contentData = {
+                section: sectionResult._id,
+                slug: section.slug,
+                title: section.name,
+                subtitle: `Transform ${categoryName} grid`,
+                images: [],
+                fields: wrappedGridFields,
                 isActive: true
               }
             } else {

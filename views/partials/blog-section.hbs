@@ -129,7 +129,7 @@
 
     .blog-post {
         position: relative;
-        height: 360px;
+        height: 330px;
         border-radius: 12px;
         padding: 1rem;
         background-color: white;
@@ -152,7 +152,6 @@
 
     .blog-post-content {
         position: absolute;
-        bottom: 0;
         left: 0;
         padding: 1.5rem;
         width: 100%;
@@ -419,8 +418,8 @@
         if (featuredTitle && featuredBlog.title) {
             console.log('Updating featured blog title to:', featuredBlog.title);
             let displayTitle = featuredBlog.title;
-            if (displayTitle.length > 60) {
-                displayTitle = displayTitle.substring(0, 60) + '...';
+            if (displayTitle.length > 40) {
+                displayTitle = displayTitle.substring(0, 40) + '...';
             }
             featuredTitle.textContent = displayTitle.replace(/[\*\#]/g, '');
         }
@@ -445,7 +444,6 @@
         // Clear existing blog posts
         blogGrid.innerHTML = '';
         
-        console.log(blogs, 'blogsskks');
         // Create new blog posts
         blogs.forEach((blog, index) => {
             const blogPost = document.createElement('div');
@@ -455,8 +453,8 @@
             blogPost.onclick = () => navigateToBlog(blog._id || blog.id, content._id);
             
             let displayTitle = blog.title.replace(/[\*\#\:\-]/g, ' ').replace(/\s+/g, ' ').trim();
-            if (displayTitle.length > 40) {
-                displayTitle = displayTitle.substring(0, 40) + '...';
+            if (displayTitle.length > 30) {
+                displayTitle = displayTitle.substring(0, 30) + '...';
             }
 
             blogPost.innerHTML = `

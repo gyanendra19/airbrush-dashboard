@@ -53,42 +53,85 @@
         height: 337px;
     }
     
+    .slider-image-container {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+    
     .slider-image {
         position: absolute;
         top: 0;
         left: 0;
         width: 100%;
         height: 100%;
-        opacity: 0;
         object-fit: cover;
         border-radius: 10px;
-        transition: opacity 0.3s ease;
+        opacity: 0;
+        transform: translateY(20px);
     }
     
-    .top-image-1 { animation: fadeIn 16s 0s infinite; }
-    .top-image-2 { animation: fadeIn 16s 2s infinite; }
-    .top-image-3 { animation: fadeIn 16s 4s infinite; }
-    .top-image-4 { animation: fadeIn 16s 6s infinite; }
-    .top-image-5 { animation: fadeIn 16s 8s infinite; }
-    .top-image-6 { animation: fadeIn 16s 10s infinite; }
-    .top-image-7 { animation: fadeIn 16s 12s infinite; }
-    .top-image-8 { animation: fadeIn 16s 14s infinite; }
+    .image-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        border-radius: 10px;
+        z-index: 2;
+        gap: 8px;
+    }
+
+    .slider-image-container:hover .image-overlay {
+        opacity: 1;
+    }
+
+    /* Animation classes for top images */
+    .top-image-1 { animation: slideUp 36s 0s infinite; }
+    .top-image-2 { animation: slideUp 36s 4.5s infinite; }
+    .top-image-3 { animation: slideUp 36s 9s infinite; }
+    .top-image-4 { animation: slideUp 36s 13.5s infinite; }
+    .top-image-5 { animation: slideUp 36s 18s infinite; }
+    .top-image-6 { animation: slideUp 36s 22.5s infinite; }
+    .top-image-7 { animation: slideUp 36s 27s infinite; }
+    .top-image-8 { animation: slideUp 36s 31.5s infinite; }
     
-    .bottom-image-1 { animation: fadeIn 16s 1s infinite; }
-    .bottom-image-2 { animation: fadeIn 16s 3s infinite; }
-    .bottom-image-3 { animation: fadeIn 16s 5s infinite; }
-    .bottom-image-4 { animation: fadeIn 16s 7s infinite; }
-    .bottom-image-5 { animation: fadeIn 16s 9s infinite; }
-    .bottom-image-6 { animation: fadeIn 16s 11s infinite; }
-    .bottom-image-7 { animation: fadeIn 16s 13s infinite; }
-    .bottom-image-8 { animation: fadeIn 16s 15s infinite; }
-    
-    @keyframes fadeIn {
-        0%, 87.5% {
+    /* Animation classes for bottom images */
+    .bottom-image-1 { animation: slideUp 36s 2.25s infinite; }
+    .bottom-image-2 { animation: slideUp 36s 6.75s infinite; }
+    .bottom-image-3 { animation: slideUp 36s 11.25s infinite; }
+    .bottom-image-4 { animation: slideUp 36s 15.75s infinite; }
+    .bottom-image-5 { animation: slideUp 36s 20.25s infinite; }
+    .bottom-image-6 { animation: slideUp 36s 24.75s infinite; }
+    .bottom-image-7 { animation: slideUp 36s 29.25s infinite; }
+    .bottom-image-8 { animation: slideUp 36s 33.75s infinite; }
+
+    @keyframes slideUp {
+        0%, 85% {
             opacity: 0;
+            transform: translateY(20px);
+            visibility: hidden;
         }
-        12.5%, 25% {
+        3%, 35% {
             opacity: 1;
+            transform: translateY(0);
+            visibility: visible;
+        }
+        38%, 100% {
+            opacity: 0;
+            transform: translateY(-20px);
+            visibility: hidden;
         }
     }
     
@@ -154,6 +197,35 @@
             width: 200px !important;
             font-size: 18px !important;
         }
+    }
+
+    .use-prompt-btn {
+        background: none;
+        border: none;
+        color: white;
+        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+        padding: 0;
+        font-size: 14px;
+        font-weight: 500;
+    }
+
+    .icon-circle {
+        width: 40px;
+        height: 40px;
+        background: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: transform 0.2s ease;
+    }
+
+    .use-prompt-btn:hover .icon-circle {
+        transform: scale(1.1);
     }
 </style>
 
@@ -247,26 +319,26 @@
                     <div class="inspiration-box" style="width: 187px; height: 580px; padding: 0; display: flex; flex-direction: column; justify-content: flex-end; background: transparent;">
                         <!-- Top image container -->
                         <div class="top-slider-container" style="width: 187px; height: 241px; margin-bottom: 10px;">
-                            <img src="/images/get-started/teddy.png" alt="AI Image" class="slider-image top-image-1">
-                            <img src="/images/get-started/happy dragon.png" alt="AI Image" class="slider-image top-image-2">
-                            <img src="/images/get-started/chef.png" alt="AI Image" class="slider-image top-image-3">
-                            <img src="/images/get-started/ai tiger.png" alt="AI Image" class="slider-image top-image-4">
-                            <img src="/images/get-started/man and woman.png" alt="AI Image" class="slider-image top-image-5">
-                            <img src="/images/get-started/women with flowers.png" alt="AI Image" class="slider-image top-image-6">
-                            <img src="/images/get-started/ai couple.png" alt="AI Image" class="slider-image top-image-7">
-                            <img src="/images/get-started/tiger meditating.png" alt="AI Image" class="slider-image top-image-8">
+                            <img src="/images/get-started/generated_1748519215615.png" alt="AI Image" class="slider-image top-image-1">
+                            <img src="/images/get-started/generated_1748519067092.png" alt="AI Image" class="slider-image top-image-2">
+                            <img src="/images/get-started/generated_1748518857006.png" alt="AI Image" class="slider-image top-image-3">
+                            <img src="/images/get-started/generated_1748518727133.png" alt="AI Image" class="slider-image top-image-4">
+                            <img src="/images/get-started/generated_1748518697592.png" alt="AI Image" class="slider-image top-image-5">
+                            <img src="/images/get-started/generated_1748518667803.png" alt="AI Image" class="slider-image top-image-6">
+                            <img src="/images/get-started/generated_1748518603691.png" alt="AI Image" class="slider-image top-image-7">
+                            <img src="/images/get-started/generated_1748518552018.png" alt="AI Image" class="slider-image top-image-8">
                         </div>
                         
                         <!-- Bottom image container -->
                         <div class="bottom-slider-container" style="width: 187px; height: 337px;">
-                            <img src="/images/get-started/women with spex.png" alt="AI Image" class="slider-image bottom-image-1">
-                            <img src="/images/get-started/women and dawn.png" alt="AI Image" class="slider-image bottom-image-2">
-                            <img src="/images/get-started/blue man.png" alt="AI Image" class="slider-image bottom-image-3">
-                            <img src="/images/get-started/man and drops.png" alt="AI Image" class="slider-image bottom-image-4">
-                            <img src="/images/get-started/women on mountain.png" alt="AI Image" class="slider-image bottom-image-5">
-                            <img src="/images/get-started/women on boat.png" alt="AI Image" class="slider-image bottom-image-6">
-                            <img src="/images/get-started/fish.png" alt="AI Image" class="slider-image bottom-image-7">
-                            <img src="/images/get-started/ai couple.png" alt="AI Image" class="slider-image bottom-image-8">
+                            <img src="/images/get-started/generated_1748518432545.png" alt="AI Image" class="slider-image bottom-image-1">
+                            <img src="/images/get-started/generated_1748518299330.png" alt="AI Image" class="slider-image bottom-image-2">
+                            <img src="/images/get-started/generated_1748518173596.png" alt="AI Image" class="slider-image bottom-image-3">
+                            <img src="/images/get-started/generated_1748517844205.png" alt="AI Image" class="slider-image bottom-image-4">
+                            <img src="/images/get-started/generated_1748517503262.png" alt="AI Image" class="slider-image bottom-image-5">
+                            <img src="/images/get-started/generated_1748517171639.png" alt="AI Image" class="slider-image bottom-image-6">
+                            <img src="/images/get-started/generated_1748517119932.png" alt="AI Image" class="slider-image bottom-image-7">
+                            <img src="/images/get-started/generated_1748516525500.png" alt="AI Image" class="slider-image bottom-image-8">
                         </div>
                     </div>
                     
@@ -274,26 +346,26 @@
                     <div class="inspiration-box" style="width: 196px; height: 600px; padding: 0; display: flex; flex-direction: column; justify-content: flex-end; background: transparent;">
                         <!-- Top image container -->
                         <div class="top-slider-container" style="width: 196px; height: 312px; margin-bottom: 10px;">
-                            <img src="/images/get-started/ai tiger.png" alt="AI Image" class="slider-image top-image-1">
-                            <img src="/images/get-started/women with flowers.png" alt="AI Image" class="slider-image top-image-2">
-                            <img src="/images/get-started/man and woman.png" alt="AI Image" class="slider-image top-image-3">
-                            <img src="/images/get-started/chef.png" alt="AI Image" class="slider-image top-image-4">
-                            <img src="/images/get-started/teddy.png" alt="AI Image" class="slider-image top-image-5">
-                            <img src="/images/get-started/tiger meditating.png" alt="AI Image" class="slider-image top-image-6">
-                            <img src="/images/get-started/happy dragon.png" alt="AI Image" class="slider-image top-image-7">
-                            <img src="/images/get-started/ai couple.png" alt="AI Image" class="slider-image top-image-8">
+                            <img src="/images/get-started/generated_1748516301678.png" alt="AI Image" class="slider-image top-image-1">
+                            <img src="/images/get-started/generated_1748516114633.png" alt="AI Image" class="slider-image top-image-2">
+                            <img src="/images/get-started/generated_1748515963163.png" alt="AI Image" class="slider-image top-image-3">
+                            <img src="/images/get-started/generated_1748515845500.png" alt="AI Image" class="slider-image top-image-4">
+                            <img src="/images/get-started/generated_1748515741801.png" alt="AI Image" class="slider-image top-image-5">
+                            <img src="/images/get-started/generated_1748515539972.png" alt="AI Image" class="slider-image top-image-6">
+                            <img src="/images/get-started/generated_1748515443979.png" alt="AI Image" class="slider-image top-image-7">
+                            <img src="/images/get-started/generated_1748515361598.png" alt="AI Image" class="slider-image top-image-8">
                         </div>
                         
                         <!-- Bottom image container -->
                         <div class="bottom-slider-container" style="width: 196px; height: 200px;">
-                            <img src="/images/get-started/blue man.png" alt="AI Image" class="slider-image bottom-image-1">
-                            <img src="/images/get-started/fish.png" alt="AI Image" class="slider-image bottom-image-2">
-                            <img src="/images/get-started/women with spex.png" alt="AI Image" class="slider-image bottom-image-3">
-                            <img src="/images/get-started/women and dawn.png" alt="AI Image" class="slider-image bottom-image-4">
-                            <img src="/images/get-started/women on boat.png" alt="AI Image" class="slider-image bottom-image-5">
-                            <img src="/images/get-started/man and drops.png" alt="AI Image" class="slider-image bottom-image-6">
-                            <img src="/images/get-started/women on mountain.png" alt="AI Image" class="slider-image bottom-image-7">
-                            <img src="/images/get-started/ai couple.png" alt="AI Image" class="slider-image bottom-image-8">
+                            <img src="/images/get-started/generated_1748515289587.png" alt="AI Image" class="slider-image bottom-image-1">
+                            <img src="/images/get-started/generated_1748515212161.png" alt="AI Image" class="slider-image bottom-image-2">
+                            <img src="/images/get-started/generated_1748515102820.png" alt="AI Image" class="slider-image bottom-image-3">
+                            <img src="/images/get-started/generated_1748514939989.png" alt="AI Image" class="slider-image bottom-image-4">
+                            <img src="/images/get-started/generated_1748519091285_6.png" alt="AI Image" class="slider-image bottom-image-5">
+                            <img src="/images/get-started/generated_1748519090674_10.png" alt="AI Image" class="slider-image bottom-image-6">
+                            <img src="/images/get-started/generated_1748519091240_2.png" alt="AI Image" class="slider-image bottom-image-7">
+                            <img src="/images/get-started/generated_1748519090870_4.png" alt="AI Image" class="slider-image bottom-image-8">
                         </div>
                     </div>
                     
@@ -301,26 +373,26 @@
                     <div class="inspiration-box" style="width: 196px; height: 500px; padding: 0; display: flex; flex-direction: column; justify-content: flex-end; background: transparent;">
                         <!-- Top image container -->
                         <div class="top-slider-container" style="width: 196px; height: 118px; margin-bottom: 10px;">
-                            <img src="/images/get-started/chef.png" alt="AI Image" class="slider-image top-image-1">
-                            <img src="/images/get-started/ai couple.png" alt="AI Image" class="slider-image top-image-2">
-                            <img src="/images/get-started/tiger meditating.png" alt="AI Image" class="slider-image top-image-3">
-                            <img src="/images/get-started/women with flowers.png" alt="AI Image" class="slider-image top-image-4">
-                            <img src="/images/get-started/ai tiger.png" alt="AI Image" class="slider-image top-image-5">
-                            <img src="/images/get-started/happy dragon.png" alt="AI Image" class="slider-image top-image-6">
-                            <img src="/images/get-started/man and woman.png" alt="AI Image" class="slider-image top-image-7">
-                            <img src="/images/get-started/teddy.png" alt="AI Image" class="slider-image top-image-8">
+                            <img src="/images/get-started/generated_1748519091782_5.png" alt="AI Image" class="slider-image top-image-1">
+                            <img src="/images/get-started/generated_1748519091600_7.png" alt="AI Image" class="slider-image top-image-2">
+                            <img src="/images/get-started/generated_1748519090937_0.png" alt="AI Image" class="slider-image top-image-3">
+                            <img src="/images/get-started/generated_1748519092281_11.png" alt="AI Image" class="slider-image top-image-4">
+                            <img src="/images/get-started/generated_1748519091434_9.png" alt="AI Image" class="slider-image top-image-5">
+                            <img src="/images/get-started/generated_1748519091354_8.png" alt="AI Image" class="slider-image top-image-6">
+                            <img src="/images/get-started/generated_1748519092787_3.png" alt="AI Image" class="slider-image top-image-7">
+                            <img src="/images/get-started/generated_1748519091541_1.png" alt="AI Image" class="slider-image top-image-8">
                         </div>
                         
                         <!-- Bottom image container -->
                         <div class="bottom-slider-container" style="width: 196px; height: 312px;">
-                            <img src="/images/get-started/man and drops.png" alt="AI Image" class="slider-image bottom-image-1">
-                            <img src="/images/get-started/fish.png" alt="AI Image" class="slider-image bottom-image-2">
-                            <img src="/images/get-started/women on mountain.png" alt="AI Image" class="slider-image bottom-image-3">
-                            <img src="/images/get-started/blue man.png" alt="AI Image" class="slider-image bottom-image-4">
-                            <img src="/images/get-started/women on boat.png" alt="AI Image" class="slider-image bottom-image-5">
-                            <img src="/images/get-started/ai couple.png" alt="AI Image" class="slider-image bottom-image-6">
-                            <img src="/images/get-started/women with spex.png" alt="AI Image" class="slider-image bottom-image-7">
-                            <img src="/images/get-started/women and dawn.png" alt="AI Image" class="slider-image bottom-image-8">
+                            <img src="/images/get-started/generated_1748518945561_2.png" alt="AI Image" class="slider-image bottom-image-1">
+                            <img src="/images/get-started/generated_1748518946168_10.png" alt="AI Image" class="slider-image bottom-image-2">
+                            <img src="/images/get-started/generated_1748518945919_11.png" alt="AI Image" class="slider-image bottom-image-3">
+                            <img src="/images/get-started/generated_1748518945609_6.png" alt="AI Image" class="slider-image bottom-image-4">
+                            <img src="/images/get-started/generated_1748518945778_8.png" alt="AI Image" class="slider-image bottom-image-5">
+                            <img src="/images/get-started/generated_1748518946407_1.png" alt="AI Image" class="slider-image bottom-image-6">
+                            <img src="/images/get-started/generated_1748518946029_7.png" alt="AI Image" class="slider-image bottom-image-7">
+                            <img src="/images/get-started/generated_1748518946428_0.png" alt="AI Image" class="slider-image bottom-image-8">
                         </div>
                     </div>
                     
@@ -328,41 +400,41 @@
                     <div class="inspiration-box" style="width: 196px; height: 450px; padding: 0; display: flex; flex-direction: column; justify-content: flex-end; background: transparent;">
                         <!-- Top image container -->
                         <div class="top-slider-container" style="width: 196px; height: 150px; margin-bottom: 10px;">
-                            <img src="/images/get-started/women with flowers.png" alt="AI Image" class="slider-image top-image-1">
-                            <img src="/images/get-started/tiger meditating.png" alt="AI Image" class="slider-image top-image-2">
-                            <img src="/images/get-started/ai couple.png" alt="AI Image" class="slider-image top-image-3">
-                            <img src="/images/get-started/happy dragon.png" alt="AI Image" class="slider-image top-image-4">
-                            <img src="/images/get-started/teddy.png" alt="AI Image" class="slider-image top-image-5">
-                            <img src="/images/get-started/ai tiger.png" alt="AI Image" class="slider-image top-image-6">
-                            <img src="/images/get-started/chef.png" alt="AI Image" class="slider-image top-image-7">
-                            <img src="/images/get-started/man and woman.png" alt="AI Image" class="slider-image top-image-8">
+                            <img src="/images/get-started/generated_1748518769072_2.png" alt="AI Image" class="slider-image top-image-1">
+                            <img src="/images/get-started/generated_1748518769271_3.png" alt="AI Image" class="slider-image top-image-2">
+                            <img src="/images/get-started/generated_1748518768802_0.png" alt="AI Image" class="slider-image top-image-3">
+                            <img src="/images/get-started/generated_1748518522776.png" alt="AI Image" class="slider-image top-image-4">
+                            <img src="/images/get-started/generated_1748518260507.png" alt="AI Image" class="slider-image top-image-5">
+                            <img src="/images/get-started/generated_1748518191623.png" alt="AI Image" class="slider-image top-image-6">
+                            <img src="/images/get-started/generated_1748518171687.png" alt="AI Image" class="slider-image top-image-7">
+                            <img src="/images/get-started/generated_1748518084212.png" alt="AI Image" class="slider-image top-image-8">
                         </div>
                         
                         <!-- Bottom image container -->
                         <div class="bottom-slider-container" style="width: 196px; height: 256px;">
-                            <img src="/images/get-started/women and dawn.png" alt="AI Image" class="slider-image bottom-image-1">
-                            <img src="/images/get-started/women with spex.png" alt="AI Image" class="slider-image bottom-image-2">
-                            <img src="/images/get-started/ai couple.png" alt="AI Image" class="slider-image bottom-image-3">
-                            <img src="/images/get-started/women on boat.png" alt="AI Image" class="slider-image bottom-image-4">
-                            <img src="/images/get-started/fish.png" alt="AI Image" class="slider-image bottom-image-5">
-                            <img src="/images/get-started/blue man.png" alt="AI Image" class="slider-image bottom-image-6">
-                            <img src="/images/get-started/women on mountain.png" alt="AI Image" class="slider-image bottom-image-7">
-                            <img src="/images/get-started/man and drops.png" alt="AI Image" class="slider-image bottom-image-8">
+                            <img src="/images/get-started/generated_1748517859869.png" alt="AI Image" class="slider-image bottom-image-1">
+                            <img src="/images/get-started/generated_1748517699646.png" alt="AI Image" class="slider-image bottom-image-2">
+                            <img src="/images/get-started/generated_1748517539409.png" alt="AI Image" class="slider-image bottom-image-3">
+                            <img src="/images/get-started/generated_1748517251943.png" alt="AI Image" class="slider-image bottom-image-4">
+                            <img src="/images/get-started/generated_1748516837463.png" alt="AI Image" class="slider-image bottom-image-5">
+                            <img src="/images/get-started/generated_1748515049053.png" alt="AI Image" class="slider-image bottom-image-6">
+                            <img src="/images/get-started/generated_1748514965062.png" alt="AI Image" class="slider-image bottom-image-7">
+                            <img src="/images/get-started/generated_1748514753758.png" alt="AI Image" class="slider-image bottom-image-8">
                         </div>
                     </div>
                     
                     <!-- Fifth box -->
                     <div class="inspiration-box" style="width: 186.63px; height: 450px; padding: 0; display: flex; flex-direction: column; justify-content: flex-end; background: transparent;">
                         <!-- Single image container -->
-                        <div class="slider-container" style="width: 187px; height: 337px;">
-                            <img src="/images/get-started/women on mountain.png" alt="AI Image" class="slider-image top-image-1">
-                            <img src="/images/get-started/ai couple.png" alt="AI Image" class="slider-image top-image-2">
-                            <img src="/images/get-started/man and drops.png" alt="AI Image" class="slider-image top-image-3">
-                            <img src="/images/get-started/fish.png" alt="AI Image" class="slider-image top-image-4">
-                            <img src="/images/get-started/women with spex.png" alt="AI Image" class="slider-image top-image-5">
-                            <img src="/images/get-started/blue man.png" alt="AI Image" class="slider-image top-image-6">
-                            <img src="/images/get-started/women and dawn.png" alt="AI Image" class="slider-image top-image-7">
-                            <img src="/images/get-started/women on boat.png" alt="AI Image" class="slider-image top-image-8">
+                        <div class="bottom-slider-container" style="width: 187px; height: 337px;">
+                            <img src="/images/get-started/generated_1748514548826.png" alt="AI Image" class="slider-image top-image-1">
+                            <img src="/images/get-started/generated_1748514413505.png" alt="AI Image" class="slider-image top-image-2">
+                            <img src="/images/get-started/generated_1748514272650.png" alt="AI Image" class="slider-image top-image-3">
+                            <img src="/images/get-started/generated_1748513957111.png" alt="AI Image" class="slider-image top-image-4">
+                            <img src="/images/get-started/generated_1748513354618.png" alt="AI Image" class="slider-image top-image-5">
+                            <img src="/images/get-started/generated_1748513279843.png" alt="AI Image" class="slider-image top-image-6">
+                            <img src="/images/get-started/generated_1748512875083.png" alt="AI Image" class="slider-image top-image-7">
+                            <img src="/images/get-started/women with spex.png" alt="AI Image" class="slider-image top-image-8">
                         </div>
                     </div>
                     
@@ -370,26 +442,26 @@
                     <div class="inspiration-box" style="width: 196px; height: 600px; padding: 0; display: flex; flex-direction: column; justify-content: flex-end; background: transparent;">
                         <!-- Top image container -->
                         <div class="top-slider-container" style="width: 196px; height: 256px; margin-bottom: 10px;">
-                            <img src="/images/get-started/man and woman.png" alt="AI Image" class="slider-image top-image-1">
-                            <img src="/images/get-started/teddy.png" alt="AI Image" class="slider-image top-image-2">
-                            <img src="/images/get-started/ai tiger.png" alt="AI Image" class="slider-image top-image-3">
-                            <img src="/images/get-started/ai couple.png" alt="AI Image" class="slider-image top-image-4">
-                            <img src="/images/get-started/chef.png" alt="AI Image" class="slider-image top-image-5">
-                            <img src="/images/get-started/women with flowers.png" alt="AI Image" class="slider-image top-image-6">
-                            <img src="/images/get-started/happy dragon.png" alt="AI Image" class="slider-image top-image-7">
-                            <img src="/images/get-started/tiger meditating.png" alt="AI Image" class="slider-image top-image-8">
+                            <img src="/images/get-started/women with flowers.png" alt="AI Image" class="slider-image top-image-1">
+                            <img src="/images/get-started/women on mountain.png" alt="AI Image" class="slider-image top-image-2">
+                            <img src="/images/get-started/women on boat.png" alt="AI Image" class="slider-image top-image-3">
+                            <img src="/images/get-started/women and dawn.png" alt="AI Image" class="slider-image top-image-4">
+                            <img src="/images/get-started/tiger meditating.png" alt="AI Image" class="slider-image top-image-5">
+                            <img src="/images/get-started/teddy.png" alt="AI Image" class="slider-image top-image-6">
+                            <img src="/images/get-started/man and woman.png" alt="AI Image" class="slider-image top-image-7">
+                            <img src="/images/get-started/man and drops.png" alt="AI Image" class="slider-image top-image-8">
                         </div>
                         
                         <!-- Bottom image container -->
                         <div class="bottom-slider-container" style="width: 196px; height: 118px;">
-                            <img src="/images/get-started/women on mountain.png" alt="AI Image" class="slider-image bottom-image-1">
-                            <img src="/images/get-started/man and drops.png" alt="AI Image" class="slider-image bottom-image-2">
-                            <img src="/images/get-started/women with spex.png" alt="AI Image" class="slider-image bottom-image-3">
-                            <img src="/images/get-started/ai couple.png" alt="AI Image" class="slider-image bottom-image-4">
-                            <img src="/images/get-started/fish.png" alt="AI Image" class="slider-image bottom-image-5">
-                            <img src="/images/get-started/women and dawn.png" alt="AI Image" class="slider-image bottom-image-6">
-                            <img src="/images/get-started/blue man.png" alt="AI Image" class="slider-image bottom-image-7">
-                            <img src="/images/get-started/women on boat.png" alt="AI Image" class="slider-image bottom-image-8">
+                            <img src="/images/get-started/happy dragon.png" alt="AI Image" class="slider-image bottom-image-1">
+                            <img src="/images/get-started/fish.png" alt="AI Image" class="slider-image bottom-image-2">
+                            <img src="/images/get-started/chef.png" alt="AI Image" class="slider-image bottom-image-3">
+                            <img src="/images/get-started/blue man.png" alt="AI Image" class="slider-image bottom-image-4">
+                            <img src="/images/get-started/ai tiger.png" alt="AI Image" class="slider-image bottom-image-5">
+                            <img src="/images/get-started/ai couple.png" alt="AI Image" class="slider-image bottom-image-6">
+                            <img src="/images/get-started/generated_1748519215615.png" alt="AI Image" class="slider-image bottom-image-7">
+                            <img src="/images/get-started/generated_1748519067092.png" alt="AI Image" class="slider-image bottom-image-8">
                         </div>
                     </div>
                     
@@ -397,26 +469,26 @@
                     <div class="inspiration-box" style="width: 187px; height: 600px; padding: 0; display: flex; flex-direction: column; justify-content: flex-end; background: transparent;">
                         <!-- Top image container -->
                         <div class="top-slider-container" style="width: 187px; height: 337px; margin-bottom: 10px;">
-                            <img src="/images/get-started/tiger meditating.png" alt="AI Image" class="slider-image top-image-1">
-                            <img src="/images/get-started/chef.png" alt="AI Image" class="slider-image top-image-2">
-                            <img src="/images/get-started/teddy.png" alt="AI Image" class="slider-image top-image-3">
-                            <img src="/images/get-started/women with flowers.png" alt="AI Image" class="slider-image top-image-4">
-                            <img src="/images/get-started/happy dragon.png" alt="AI Image" class="slider-image top-image-5">
-                            <img src="/images/get-started/ai couple.png" alt="AI Image" class="slider-image top-image-6">
-                            <img src="/images/get-started/man and woman.png" alt="AI Image" class="slider-image top-image-7">
-                            <img src="/images/get-started/ai tiger.png" alt="AI Image" class="slider-image top-image-8">
+                            <img src="/images/get-started/generated_1748518857006.png" alt="AI Image" class="slider-image top-image-1">
+                            <img src="/images/get-started/generated_1748518727133.png" alt="AI Image" class="slider-image top-image-2">
+                            <img src="/images/get-started/generated_1748518697592.png" alt="AI Image" class="slider-image top-image-3">
+                            <img src="/images/get-started/generated_1748518667803.png" alt="AI Image" class="slider-image top-image-4">
+                            <img src="/images/get-started/generated_1748518603691.png" alt="AI Image" class="slider-image top-image-5">
+                            <img src="/images/get-started/generated_1748518552018.png" alt="AI Image" class="slider-image top-image-6">
+                            <img src="/images/get-started/generated_1748518432545.png" alt="AI Image" class="slider-image top-image-7">
+                            <img src="/images/get-started/generated_1748518299330.png" alt="AI Image" class="slider-image top-image-8">
                         </div>
                         
                         <!-- Bottom image container -->
                         <div class="bottom-slider-container" style="width: 187px; height: 241px;">
-                            <img src="/images/get-started/fish.png" alt="AI Image" class="slider-image bottom-image-1">
-                            <img src="/images/get-started/women on boat.png" alt="AI Image" class="slider-image bottom-image-2">
-                            <img src="/images/get-started/man and drops.png" alt="AI Image" class="slider-image bottom-image-3">
-                            <img src="/images/get-started/blue man.png" alt="AI Image" class="slider-image bottom-image-4">
-                            <img src="/images/get-started/women with spex.png" alt="AI Image" class="slider-image bottom-image-5">
-                            <img src="/images/get-started/women and dawn.png" alt="AI Image" class="slider-image bottom-image-6">
-                            <img src="/images/get-started/ai couple.png" alt="AI Image" class="slider-image bottom-image-7">
-                            <img src="/images/get-started/women on mountain.png" alt="AI Image" class="slider-image bottom-image-8">
+                            <img src="/images/get-started/generated_1748518173596.png" alt="AI Image" class="slider-image bottom-image-1">
+                            <img src="/images/get-started/generated_1748517844205.png" alt="AI Image" class="slider-image bottom-image-2">
+                            <img src="/images/get-started/generated_1748517503262.png" alt="AI Image" class="slider-image bottom-image-3">
+                            <img src="/images/get-started/generated_1748517171639.png" alt="AI Image" class="slider-image bottom-image-4">
+                            <img src="/images/get-started/generated_1748517119932.png" alt="AI Image" class="slider-image bottom-image-5">
+                            <img src="/images/get-started/generated_1748516525500.png" alt="AI Image" class="slider-image bottom-image-6">
+                            <img src="/images/get-started/generated_1748516301678.png" alt="AI Image" class="slider-image bottom-image-7">
+                            <img src="/images/get-started/generated_1748516114633.png" alt="AI Image" class="slider-image bottom-image-8">
                         </div>
                     </div>
                 </div>
@@ -424,3 +496,103 @@
         </div>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Get all slider containers
+        const sliderContainers = document.querySelectorAll('.top-slider-container, .bottom-slider-container');
+        
+        sliderContainers.forEach(container => {
+            const images = container.querySelectorAll('.slider-image');
+            
+            images.forEach(img => {
+                // Skip if already wrapped
+                if (img.parentElement.classList.contains('slider-image-container')) return;
+                
+                // Get the animation class from the image
+                const animationClass = Array.from(img.classList)
+                    .find(className => className.includes('-image-'));
+                
+                const wrapper = document.createElement('div');
+                wrapper.className = 'slider-image-container';
+                
+                const overlay = document.createElement('div');
+                overlay.className = 'image-overlay';
+                overlay.innerHTML = `
+                    <button class="use-prompt-btn" onclick="handleUsePrompt(event)">
+                        <div class="icon-circle">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M18 13V19C18 19.5304 17.7893 20.0391 17.4142 20.4142C17.0391 20.7893 16.5304 21 16 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V8C3 7.46957 3.21071 6.96086 3.58579 6.58579C3.96086 6.21071 4.46957 6 5 6H11" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M15 3H21V9" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M10 14L21 3" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </div>
+                        Use Prompt
+                    </button>
+                `;
+                
+                // Insert wrapper before the image
+                container.insertBefore(wrapper, img);
+                // Move the image into the wrapper
+                wrapper.appendChild(img);
+                // Add the overlay
+                wrapper.appendChild(overlay);
+            });
+        });
+    });
+
+    // Function to handle Use Prompt button click
+    function handleUsePrompt(event) {
+        // Object mapping image filenames to their prompts
+        const imagePrompts = {
+            // Generated images prompts
+            'generated_1748519215615.png': "Create a stunning digital portrait of a young woman with flowing hair, incorporating vibrant neon colors and abstract geometric patterns in the background. Use a cyberpunk aesthetic with glowing elements.",
+            'generated_1748519067092.png': "Design a serene landscape at twilight featuring a mystical forest with bioluminescent plants and floating orbs of light. Include a small clearing with a magical pond reflecting the stars.",
+            'generated_1748518857006.png': "Generate a futuristic cityscape at sunset with flying vehicles, holographic advertisements, and towering skyscrapers. Add dramatic lighting and reflective surfaces.",
+            'generated_1748518727133.png': "Create an ethereal underwater scene with a mermaid swimming among coral reefs, with rays of sunlight penetrating the water surface. Include schools of colorful fish and floating jellyfish.",
+            'generated_1748518697592.png': "Design a whimsical treehouse village connected by rope bridges, with lanterns glowing at dusk. Include small details like tiny windows and climbing vines.",
+            'generated_1748518667803.png': "Generate an epic fantasy battle scene with a dragon soaring through storm clouds, breathing fire against a backdrop of lightning. Include dramatic lighting and smoke effects.",
+            'generated_1748518603691.png': "Create a cozy coffee shop interior with warm lighting, vintage furniture, and steam rising from coffee cups. Add small details like books, plants, and pastries.",
+            'generated_1748518552018.png': "Design a magical library with floating books, spiral staircases, and enchanted artifacts. Include dust motes dancing in beams of colored light.",
+
+            // Original images prompts
+            'teddy.png': "Create a cute and cuddly teddy bear character with soft fur texture, sitting in a cozy room with warm lighting and playful toys scattered around.",
+            'happy dragon.png': "Design a friendly cartoon dragon with a big smile, vibrant scales, and playful pose. Add magical sparkles and floating elements around it.",
+            'chef.png': "Generate a professional chef character in a modern kitchen, preparing gourmet dishes with artistic plating and steam effects.",
+            'ai tiger.png': "Create a majestic tiger with glowing patterns, combining realistic features with magical elements. Add ethereal particles and nature elements.",
+            'man and woman.png': "Design a romantic scene with a couple in an enchanted garden, surrounded by floating lights and magical flowers.",
+            'women with flowers.png': "Generate a portrait of a woman surrounded by blooming flowers, with soft lighting and ethereal effects. Add butterfly elements and flowing fabric.",
+            'tiger meditating.png': "Create a zen-like scene with a tiger in meditation pose, surrounded by cherry blossoms and floating lanterns. Add spiritual symbols and calm atmosphere.",
+            'women with spex.png': "Design a modern portrait of a woman wearing stylish glasses, with abstract geometric patterns and technology elements in the background.",
+            'women and dawn.png': "Create a serene scene of a woman watching the sunrise, with golden light and morning mist. Add floating particles and gentle wind effects.",
+            'blue man.png': "Generate an artistic portrait using cool blue tones, with abstract elements and flowing energy patterns. Add geometric shapes and light effects.",
+            'man and drops.png': "Design a dramatic portrait with water droplet effects, incorporating motion blur and reflective surfaces. Add dynamic lighting and splash elements.",
+            'women on mountain.png': "Create an epic scene of a woman standing on a mountain peak at sunrise, with dramatic clouds and flying birds. Add atmospheric effects.",
+            'women on boat.png': "Generate a peaceful scene of a woman in a wooden boat on a misty lake, surrounded by lotus flowers and gentle ripples.",
+            'fish.png': "Design a colorful underwater scene with exotic fish, coral reefs, and bubbles. Add bioluminescent elements and caustic light effects.",
+            'ai couple.png': "Create a futuristic portrait of a couple with cyberpunk elements, neon lighting, and holographic details. Add tech-inspired patterns."
+        };
+
+        // Get the filename from the src attribute
+        const imageSrc = event.target.closest('.slider-image-container').querySelector('img').src;
+        const filename = imageSrc.split('/').pop();
+        
+        // Get the corresponding prompt
+        const prompt = imagePrompts[filename] || "Create a stunning and creative image that captures the essence of modern design, incorporating vibrant colors and dynamic elements. The composition should be balanced and visually engaging, with attention to detail and artistic flair.";
+        
+        // Store the prompt in localStorage
+        localStorage.setItem('selectedPrompt', prompt);
+        
+        // Find the text-to-image section and scroll to it
+        const textToImageSection = document.getElementById('text-to-image');
+        if (textToImageSection) {
+            textToImageSection.scrollIntoView({ behavior: 'smooth' });
+            
+            // Set the textarea value
+            const textarea = textToImageSection.querySelector('.prompt-input textarea');
+            if (textarea) {
+                textarea.value = prompt;
+            }
+        }
+    }
+</script>

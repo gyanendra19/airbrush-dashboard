@@ -13,8 +13,8 @@
     .frog-video-container {
         position: absolute;
         top: 10%;
-        width: 90%;
-        height: 90%;
+        width: 75%;
+        height: 70%;
         z-index: 1;
     }
 
@@ -117,3 +117,29 @@
         <button class="frog-start-button">Start</button>
     </div>
 </section>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const startButton = document.querySelector('.frog-start-button');
+    
+    if (startButton) {
+        startButton.addEventListener('click', function() {
+            // Store a default prompt
+            const defaultPrompt = "Create a stunning and creative image that captures the essence of modern design, incorporating vibrant colors and dynamic elements. The composition should be balanced and visually engaging, with attention to detail and artistic flair.";
+            localStorage.setItem('selectedPrompt', defaultPrompt);
+            
+            // Find and scroll to the text-to-image section
+            const textToImageSection = document.getElementById('text-to-image');
+            if (textToImageSection) {
+                textToImageSection.scrollIntoView({ behavior: 'smooth' });
+                
+                // Set the textarea value if it exists
+                const textarea = textToImageSection.querySelector('.prompt-input textarea');
+                if (textarea) {
+                    textarea.value = defaultPrompt;
+                }
+            }
+        });
+    }
+});
+</script>

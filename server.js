@@ -462,6 +462,15 @@ app.get('/blogs', (req, res) => {
   });
 });
 
+app.get('/transform-grid', (req, res) => {
+  res.render('adminIndex', {
+    layout: 'adminMain',
+    partialName: 'transform-grid',
+    title: 'Transform Grid',
+    section: { title: 'Transform Grid', description: 'Transform Grid' }
+  });
+});
+
 app.get('/new-category', (req, res) => {
   res.render('adminIndex', {
     layout: 'adminMain',
@@ -484,6 +493,14 @@ app.get('/images-gallery', (req, res) => {
     layout: 'adminMain',
     partialName: 'image-gallery',
     section: { title: 'Image Gallery', description: 'Gallery of images' }
+  });
+});
+
+app.get('/category-video', (req, res) => {
+  res.render('adminIndex', {
+    layout: 'adminMain',
+    partialName: 'category-video',
+    section: { title: 'Category Video', description: 'Category Video' }
   });
 });
 

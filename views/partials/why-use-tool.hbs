@@ -313,15 +313,14 @@
           
           // Populate form fields with data
           if (data.title) sectionTitleInput.value = data.title;
-          if (data.subtitle) subtitleInput.value = data.subtitle;
           
           // Check if fields array exists
           if (data.fields && Array.isArray(data.fields) && data.fields.length >= 4) {
             // Populate the four text fields from the fields array
-            titleInput.value = data.fields[0].value || '';
-            subtitleInput.value = data.fields[1].value || '';
-            primaryTextInput.value = data.fields[2].value || '';
-            secondaryTextInput.value = data.fields[3].value || '';
+            titleInput.value = data.fields[0].value.title || '';
+            subtitleInput.value = data.fields[1].value.title || '';
+            primaryTextInput.value = data.fields[2].value.title || '';
+            secondaryTextInput.value = data.fields[3].value.title || '';
             
             // If there's a fifth field, use it for additional notes
             if (data.fields.length >= 5) {
@@ -373,17 +372,12 @@
         // Prepare data for API
         const updateData = {
           title: sectionTitle,
-          subtitle,
-          primaryText,
-          secondaryText,
-          additionalNotes,
-          // Create fields array for the API with proper object format
           fields: [
-            { value: title },
-            { value: subtitle },
-            { value: primaryText },
-            { value: secondaryText },
-            { value: additionalNotes }
+            { value: { key: 'title', title: titleInput.value.trim() } },
+            { value: { key: 'subtitle', title: subtitleInput.value.trim() } },
+            { value: { key: 'primary', title: primaryTextInput.value.trim() } },
+            { value: { key: 'secondary', title: secondaryTextInput.value.trim() } },
+            { value: { key: 'additional', title: additionalNotesInput.value.trim() } }
           ],
           images: []
         };
@@ -709,16 +703,12 @@
             section: sectionResult._id,
             slug: 'why-use-tool',
             title: sectionTitleInput.value.trim(),
-            subtitle: subtitleInput.value.trim(),
-            primaryText: primaryTextInput.value.trim(),
-            secondaryText: secondaryTextInput.value.trim(),
-            additionalNotes: additionalNotesInput.value.trim(),
             fields: [
-              { value: titleInput.value.trim() },
-              { value: subtitleInput.value.trim() },
-              { value: primaryTextInput.value.trim() },
-              { value: secondaryTextInput.value.trim() },
-              { value: additionalNotesInput.value.trim() }
+              { value: { key: 'title', value: titleInput.value.trim() } },
+              { value: { key: 'subtitle', value: subtitleInput.value.trim() } },
+              { value: { key: 'primary', value: primaryTextInput.value.trim() } },
+              { value: { key: 'secondary', value: secondaryTextInput.value.trim() } },
+              { value: { key: 'additional', value: additionalNotesInput.value.trim() } }
             ],
             images: currentMedia ? [currentMedia] : [],
             isActive: true
@@ -856,6 +846,14 @@
                 // Prepare update data
                 const updateData = {
                   ...currentContent,
+                  title: sectionTitleInput.value.trim(),
+                  fields: [
+                    { value: { key: 'title', value: titleInput.value.trim() } },
+                    { value: { key: 'subtitle', value: subtitleInput.value.trim() } },
+                    { value: { key: 'primary', value: primaryTextInput.value.trim() } },
+                    { value: { key: 'secondary', value: secondaryTextInput.value.trim() } },
+                    { value: { key: 'additional', value: additionalNotesInput.value.trim() } }
+                  ],
                   images: [{
                     url: uploadResponse.url,
                     alt: prompt,
