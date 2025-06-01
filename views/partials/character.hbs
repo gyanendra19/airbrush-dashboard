@@ -32,8 +32,8 @@
         justify-content: space-between;
         flex-direction: column;
         align-items: center;
-        margin-bottom: 1rem;
         padding: 1.2rem 1.5rem;
+        margin-left: 2rem;
         border-radius: 1.5rem;
     }
 
@@ -102,8 +102,10 @@
         left: 0;
         width: 100%;
         height: 100%;
+        background: rgba(0, 0, 0, 0.5);
         opacity: 0;
         transition: opacity 0.3s ease;
+        border-radius: 8px;
     }
 
     .grid-item:hover .hover-overlay {
@@ -121,8 +123,7 @@
         display: flex;
         flex-direction: column;
         justify-content: space-between;
-        opacity: 0;
-        transition: opacity 0.3s ease;
+        padding: 1rem;
     }
 
     .grid-item:hover .hover-content {
@@ -132,33 +133,41 @@
     .text-content {
         margin-top: auto;
         background-color: rgba(0, 0, 0, 0.3);
-        padding: 1.5rem;
+        padding: 1rem;
+        border-radius: 0 0 8px 8px;
+        margin: 0 -1rem -1rem -1rem;
     }
 
-    .hover-content h3 {
-        font-size: 2rem;
-        font-weight: bold;
-        height: 30px;
-        margin-bottom: 1.2rem;
-    }
-
-    .hover-content p {
+    .text-content h3 {
         font-size: 1.4rem;
+        font-weight: bold;
+        margin-bottom: 0.5rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .text-content p {
+        font-size: 1rem;
         line-height: 1.3;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        margin: 0;
     }
 
     .hover-buttons {
         display: flex;
         gap: 0.75rem;
-        padding: 1rem;
         align-self: flex-end;
     }
 
     .hover-buttons button {
         background-color: rgba(0, 0, 0, 0.4);
         border: none;
-        width: 3.5rem;
-        height: 3.5rem;
+        width: 2.5rem;
+        height: 2.5rem;
         border-radius: 50%;
         display: flex;
         align-items: center;
@@ -208,11 +217,119 @@
     }
 
     .character-thumbnails {
-        display: none;
+        background: linear-gradient(180deg, #6248E2 22.26%, #FF6154 100%);
+        border-radius: 12px;
+        padding: 1rem;
+        width: 90%;
+        margin-inline: auto;
+        margin-top: 2rem;
+        margin-bottom: 4rem;
     }
 
-    .filterSectionContainer {
-        display: none;
+    .character-model-preview {
+        display: flex;
+        border-radius: 12px;
+        padding: 2rem;
+        gap: 1.8rem;
+    }
+
+    .thumbnail-wrapper {
+        position: relative;
+        aspect-ratio: 1;
+        height: 200px;
+    }
+
+    .thumbnail {
+        height: 100%;
+        width: 100%;
+        border-radius: 8px;
+        object-fit: cover;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .hover-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        border-radius: 8px;
+    }
+
+    .grid-item:hover .hover-overlay {
+        opacity: 1;
+    }
+
+    .hover-content {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        color: white;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        padding: 1rem;
+    }
+
+    .hover-buttons {
+        display: flex;
+        gap: 0.75rem;
+        align-self: flex-end;
+    }
+
+    .hover-buttons button {
+        background-color: rgba(0, 0, 0, 0.4);
+        border: none;
+        width: 2.5rem;
+        height: 2.5rem;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: background 0.3s ease;
+    }
+
+    .hover-buttons button:hover {
+        background: rgba(255, 255, 255, 0.3);
+    }
+
+    .hover-buttons img {
+        width: 1.2rem;
+        height: 1.2rem;
+    }
+
+    .text-content {
+        margin-top: auto;
+        background-color: rgba(0, 0, 0, 0.3);
+        padding: 1rem;
+        border-radius: 0 0 8px 8px;
+        margin: 0 -1rem -1rem -1rem;
+    }
+
+    .text-content h3 {
+        font-size: 1.4rem;
+        font-weight: bold;
+        margin-bottom: 0.5rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .text-content p {
+        font-size: 1rem;
+        line-height: 1.3;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        margin: 0;
     }
 
     .prompt-and-subscription {
@@ -652,6 +769,39 @@
             width: 20px;
             height: 20px;
         }
+
+        .character-model-preview {
+            grid-template-columns: 1fr;
+            padding: 1rem;
+            gap: 1rem;
+        }
+
+        .thumbnail-wrapper {
+            height: 180px;
+        }
+
+        .hover-buttons button {
+            width: 2rem;
+            height: 2rem;
+        }
+
+        .hover-buttons img {
+            width: 1rem;
+            height: 1rem;
+        }
+
+        .text-content {
+            padding: 0.75rem;
+        }
+
+        .text-content h3 {
+            font-size: 1.2rem;
+        }
+
+        .text-content p {
+            font-size: 0.9rem;
+            -webkit-line-clamp: 2;
+        }
     }
 
     .white-icon {
@@ -1062,9 +1212,111 @@
         }
     });
 
+    // Function to save image to history
+    function saveImageToHistory(imageUrl, prompt) {
+        let history = JSON.parse(localStorage.getItem('generatedImages') || '[]');
+        const newImage = {
+            url: imageUrl,
+            prompt: prompt,
+            timestamp: new Date().toISOString()
+        };
+        history.unshift(newImage); // Add new image to the start
+        if (history.length > 6) { // Keep only last 6 images
+            history = history.slice(0, 6);
+        }
+        localStorage.setItem('generatedImages', JSON.stringify(history));
+        updateHistoryDisplay();
+    }
+
+    // Function to update history display
+    function updateHistoryDisplay() {
+        const history = JSON.parse(localStorage.getItem('generatedImages') || '[]');
+        const previewContainer = document.querySelector('.character-model-preview');
+        if (!previewContainer) return;
+
+        // Create the history UI structure
+        previewContainer.innerHTML = history.map(image => {
+            
+            return `
+            <div class="thumbnail-wrapper grid-item">
+                <img src="${image.url}" alt="Generated Image" class="thumbnail">
+                <div class="hover-overlay">
+                    <div class="hover-content">
+                        <div class="hover-buttons">
+                            <button class="upsacle-btn">
+                                <img src="/images/expand.svg" alt="Download">
+                            </button>
+                            <button class="download-btn">
+                                <img src="/images/download.svg" alt="Download">
+                            </button>
+                            <button class="expand-btn">
+                                <img src="/images/delete.svg" alt="Expand">
+                            </button>
+                        </div>
+                        <div class="text-content">
+                            <p>${image.prompt}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `}).join('');
+
+        // Show thumbnails container if we have history
+        const thumbnailsContainer = document.querySelector('.character-thumbnails');
+        if (thumbnailsContainer) {
+            thumbnailsContainer.classList.toggle('show', history.length > 0);
+        }
+
+        // Add event listeners for history actions
+        addHistoryEventListeners();
+    }
+
+    // Function to handle history actions
+    function addHistoryEventListeners() {
+        // Download button handler
+        document.querySelectorAll('.download-btn').forEach(btn => {
+            btn.addEventListener('click', async function(e) {
+                e.stopPropagation();
+                const imageUrl = this.closest('.thumbnail-wrapper').querySelector('.thumbnail').src;
+                if (imageUrl) {
+                    await downloadImage(imageUrl);
+                }
+            });
+        });
+
+        // Delete button handler
+        document.querySelectorAll('.expand-btn').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const imageUrl = this.closest('.thumbnail-wrapper').querySelector('.thumbnail').src;
+                if (imageUrl) {
+                    let history = JSON.parse(localStorage.getItem('generatedImages') || '[]');
+                    history = history.filter(img => img.url !== imageUrl);
+                    localStorage.setItem('generatedImages', JSON.stringify(history));
+                    updateHistoryDisplay();
+                }
+            });
+        });
+
+        // Clear history button handler
+        const clearHistoryBtn = document.querySelector('.filter-dropdown-delete');
+        if (clearHistoryBtn) {
+            clearHistoryBtn.addEventListener('click', function() {
+                localStorage.removeItem('generatedImages');
+                updateHistoryDisplay();
+            });
+        }
+    }
+
+    // Initialize history display on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        updateHistoryDisplay();
+        // ... rest of existing DOMContentLoaded code ...
+    });
+
+    // Modify handleGenerateImage to save generated images
     async function handleGenerateImage() {
         try {
-            console.log('Starting handleGenerateImage function...');
             const textarea = document.querySelector('#character-prompt-textarea');
             if (!textarea) {
                 throw new Error('Textarea not found');
@@ -1095,13 +1347,12 @@
                 }
 
                 try {
-                    // Show the generating container and loading state
                     const mainContainer = document.querySelector('.character-main');
                     if (!mainContainer) {
                         throw new Error('Main container not found');
                     }
-                    
-                    // Reset the container to loading state
+
+                    // Show loading state
                     mainContainer.innerHTML = `
                         <div class="loading-container">
                             <img src="/images/ai-images-generator/generating.gif" alt="Generating" class="character-image" id="mainPreviewImage">
@@ -1168,28 +1419,38 @@
                         const imageUrl = uploadResult.files[0].url;
                         console.log('Generated image URL:', imageUrl);
                         
-                        // Update the container with the generated image and download button
+                        // Save to history
+                        saveImageToHistory(imageUrl, prompt);
+                        
+                        // Update the container with the generated image
                         mainContainer.innerHTML = `
-                            <div class="preview-image-generate">
+                            <div class="preview-container-history">
                                 <img src="${imageUrl}" alt="Generated Image" class="preview-image-generate" id="mainPreviewImage">
                                 <button class="download-button" data-image-url="${imageUrl}">
                                     <img src="/images/download.svg" alt="Download">
                                 </button>
                             </div>
                         `;
-                    }
 
+                        // Show the history section
+                        const thumbnailsContainer = document.querySelector('.character-thumbnails');
+                        if (thumbnailsContainer) {
+                            thumbnailsContainer.classList.add('show');
+                        }
+                    }
                 } catch (error) {
                     console.error('Error generating image:', error);
-                    // Show error message in the preview container
-                    mainContainer.innerHTML = `
-                        <div class="loading-container">
-                            <div class="loading-text">
-                                <p class="generating-text">Oops! Something went wrong</p>
-                                <p class="wait-text">Please try again</p>
+                    const mainContainer = document.querySelector('.character-main');
+                    if (mainContainer) {
+                        mainContainer.innerHTML = `
+                            <div class="loading-container">
+                                <div class="loading-text">
+                                    <p class="generating-text">Oops! Something went wrong</p>
+                                    <p class="wait-text">Please try again</p>
+                                </div>
                             </div>
-                        </div>
-                    `;
+                        `;
+                    }
                 }
             }
         } catch (error) {
