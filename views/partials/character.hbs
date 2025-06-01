@@ -313,7 +313,7 @@
         inset: calc(var(--border-width) * -1);
         z-index: -1;
         border-radius: inherit;
-        background: linear-gradient(var(--angle), #381D6A 80%, #E0D1FF 88%, #E0D1FF 92%, #381D6A 100%);
+        background: linear-gradient(var(--angle), #381D6A 80%, #E0D1FF 88%, #E0D1FF 92%, #381D6A 100%); !important
         animation: rotate-gradient 3s linear infinite;
     }
 
@@ -335,10 +335,6 @@
     @supports not (background: paint(something)) {
         .character-prompt-container {
             border: var(--border-width) solid #381D6A;
-        }
-        
-        .character-prompt-container::before {
-            display: none;
         }
     }
 
