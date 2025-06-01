@@ -389,18 +389,16 @@ MongoClient.connect(connectionString, {
 
   // Authentication middleware
 const checkAuth = (req, res, next) => {
-  // Skip auth check for login/signup routes
-  if (req.path === '/admin/login/secret' || req.path === '/auth') {
-    return next();
+  // Check if path is a protected route
+  if (req.path === '/dashboard' || req.path === '/new-category') {
+    // Check for token in cookies
+    const token = req.cookies.authToken;
+    if (!token) {
+      return res.redirect('/');
+    }
   }
   
-  // Check for token in cookies
-  const token = req.cookies.authToken;
-  if (!token) {
-    return res.redirect('/');
-  }
-  
-  next();
+  return next();
 };
 
 // Apply auth middleware to all routes except auth routes
