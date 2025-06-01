@@ -293,10 +293,11 @@
     .character-prompt-container {
         --border-width: 3px;
         --radius: 24px;
-        --angle: 0deg;
+        --angle: 0turn;
         
         position: relative;
         border-radius: var(--radius);
+        border: var(--border-width) solid transparent;
         background: rgba(255, 255, 255, 0.05);
         backdrop-filter: blur(20px);
         padding: 2.5rem;
@@ -308,33 +309,49 @@
     }
 
     .character-prompt-container::before {
-        content: "";
+        content: " ";
         position: absolute;
+        overflow: hidden;
         inset: calc(var(--border-width) * -1);
         z-index: -1;
+        border: inherit;
         border-radius: inherit;
-        background: linear-gradient(var(--angle), #381D6A 80%, #E0D1FF 88%, #E0D1FF 92%, #381D6A 100%); !important
-        animation: rotate-gradient 3s linear infinite;
+        background-image: conic-gradient(from var(--angle), #381D6A 80%, #E0D1FF 88%, #E0D1FF 92%, #381D6A 100%);
+        background-origin: border-box;
+        -webkit-mask: linear-gradient(black, black) content-box,
+                     linear-gradient(black, black);
+        mask: linear-gradient(black, black),
+              linear-gradient(black, black);
+        -webkit-mask-clip: content-box, border-box;
+        mask-clip: content-box, border-box;
+        -webkit-mask-composite: xor;
+        mask-composite: exclude;
+        animation: spin 3s linear infinite;
     }
 
-    @keyframes rotate-gradient {
-        0% {
-            --angle: 0deg;
-        }
-        100% {
-            --angle: 360deg;
-        }
+    .character-prompt-container:hover::before {
+        animation-play-state: paused;
     }
 
     @property --angle {
-        syntax: '<angle>';
-        initial-value: 0deg;
-        inherits: false;
+        syntax: "<angle>";
+        inherits: true;
+        initial-value: 0turn;
+    }
+
+    @keyframes spin {
+        to {
+            --angle: 1turn;
+        }
     }
 
     @supports not (background: paint(something)) {
         .character-prompt-container {
             border: var(--border-width) solid #381D6A;
+        }
+        
+        .character-prompt-container::before {
+            display: none;
         }
     }
 
