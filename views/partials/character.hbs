@@ -1514,6 +1514,7 @@
         const categoryBtn = document.getElementById('categoryBtn');
         const dropdownContent = document.getElementById('categoryDropdownContent');
         const categoryText = categoryBtn.querySelector('.category-text');
+        const textarea = document.querySelector('#character-prompt-textarea');
         
         // Get current category ID from the data attribute
         const currentCategoryId = categoryText.getAttribute('data-current-category-id');
@@ -1543,18 +1544,25 @@
                     e.preventDefault();
                     e.stopPropagation();
                     
-                    // Update button text
-                    categoryText.textContent = category.name;
+                    // Get the current prompt text if any
+                    const promptText = textarea ? textarea.value.trim() : '';
                     
-                    // Update active state
-                    dropdownContent.querySelectorAll('.category-item').forEach(item => {
-                        item.classList.remove('active');
-                    });
-                    this.classList.add('active');
-                    
-                    // Close dropdown
-                    dropdownContent.classList.remove('show');
-                    categoryBtn.classList.remove('active');
+                    // If this is a different category than current
+                    if (category._id !== currentCategoryId) {
+                        // Store the prompt in localStorage if it exists
+                        if (promptText) {
+                            localStorage.setItem('selectedPrompt', promptText);
+                        }
+                        
+                        // Redirect to the new category
+                        const categorySlug = this.getAttribute('data-category-slug');
+                        window.location.href = `/${categorySlug}`;
+                    } else {
+                        // If same category, just update UI
+                        categoryText.textContent = category.name;
+                        dropdownContent.classList.remove('show');
+                        categoryBtn.classList.remove('active');
+                    }
                 });
                 dropdownContent.appendChild(item);
             });
