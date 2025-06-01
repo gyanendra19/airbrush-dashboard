@@ -382,13 +382,56 @@
         font-size: 1rem;
     }
 }
+
+/* Skeleton Loading Styles */
+@keyframes shimmer {
+    0% {
+        background-position: -1000px 0;
+    }
+    100% {
+        background-position: 1000px 0;
+    }
+}
+
+.skeleton {
+    background: linear-gradient(90deg, #2a1c4f 25%, #3a2a5f 50%, #2a1c4f 75%);
+    background-size: 1000px 100%;
+    animation: shimmer 2s infinite linear;
+    border-radius: 8px;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.grid-item img {
+    transition: opacity 0.3s ease;
+}
+
+.grid-item img.loaded {
+    opacity: 1;
+}
+
+.grid-item .hover-overlay {
+    display: none;
+}
+
+.grid-item.loaded .hover-overlay {
+    display: block;
+}
+
+.grid-item.loaded .skeleton {
+    display: none;
+}
 </style>
 
 <section class="characters-section">
     <div class="characters-container">
         <div class="grid-container">
             <div class="grid-item item1">
-                <img src="/gallery/monster3.png" alt="Red Monster">
+                <div class="skeleton"></div>
+                <img src="" alt="Character" loading="lazy">
                 <div class="hover-overlay">
                     <div class="hover-content">
                         <div class="hover-buttons">
@@ -400,14 +443,14 @@
                             </button>
                         </div>
                         <div class="text-content">
-                            <p>Lorem ipsum dolor sit amet consectetur. Morbi urna id cursus enim placerat est ultrices
-                                ornare duis. Molestie eget maecenas gravida aliquam nunc nibh suscipit risus nisi.</p>
+                            <p></p>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="grid-item item2">
-                <img src="/gallery/three.png" alt="White Monster">
+                <div class="skeleton"></div>
+                <img src="" alt="Character" loading="lazy">
                 <div class="hover-overlay">
                     <div class="hover-content">
                         <div class="hover-buttons">
@@ -419,14 +462,14 @@
                             </button>
                         </div>
                         <div class="text-content">
-                            <p>Lorem ipsum dolor sit amet consectetur. Morbi urna id cursus enim placerat est ultrices
-                                ornare duis.</p>
+                            <p></p>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="grid-item item3">
-                <img src="/gallery/monster2.png" alt="Red Devil">
+                <div class="skeleton"></div>
+                <img src="" alt="Character" loading="lazy">
                 <div class="hover-overlay">
                     <div class="hover-content">
                         <div class="hover-buttons">
@@ -438,14 +481,14 @@
                             </button>
                         </div>
                         <div class="text-content">
-                            <p>Lorem ipsum dolor sit amet consectetur. Morbi urna id cursus enim placerat est ultrices
-                                ornare duis.</p>
+                            <p></p>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="grid-item item4">
-                <img src="/gallery/plant1.png" alt="Plant Character">
+                <div class="skeleton"></div>
+                <img src="" alt="Character" loading="lazy">
                 <div class="hover-overlay">
                     <div class="hover-content">
                         <div class="hover-buttons">
@@ -457,14 +500,14 @@
                             </button>
                         </div>
                         <div class="text-content">
-                            <p>Lorem ipsum dolor sit amet consectetur. Morbi urna id cursus enim placerat est ultrices
-                                ornare duis.</p>
+                            <p></p>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="grid-item item5">
-                <img src="/gallery/bird1.png" alt="Bird Character">
+                <div class="skeleton"></div>
+                <img src="" alt="Character" loading="lazy">
                 <div class="hover-overlay">
                     <div class="hover-content">
                         <div class="hover-buttons">
@@ -476,14 +519,14 @@
                             </button>
                         </div>
                         <div class="text-content">
-                            <p>Lorem ipsum dolor sit amet consectetur. Morbi urna id cursus enim placerat est ultrices
-                                ornare duis.</p>
+                            <p></p>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="grid-item item6">
-                <img src="/gallery/bird1.png" alt="Snake Character">
+                <div class="skeleton"></div>
+                <img src="" alt="Character" loading="lazy">
                 <div class="hover-overlay">
                     <div class="hover-content">
                         <div class="hover-buttons">
@@ -495,14 +538,14 @@
                             </button>
                         </div>
                         <div class="text-content">
-                            <p>Lorem ipsum dolor sit amet consectetur. Morbi urna id cursus enim placerat est ultrices
-                                ornare duis.</p>
+                            <p></p>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="grid-item item7">
-                <img src="/gallery/monster1.png" alt="Plant in Pot">
+                <div class="skeleton"></div>
+                <img src="" alt="Character" loading="lazy">
                 <div class="hover-overlay">
                     <div class="hover-content">
                         <div class="hover-buttons">
@@ -514,14 +557,14 @@
                             </button>
                         </div>
                         <div class="text-content">
-                            <p>Lorem ipsum dolor sit amet consectetur. Morbi urna id cursus enim placerat est ultrices
-                                ornare duis.</p>
+                            <p></p>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="grid-item item8">
-                <img src="/gallery/eye.png" alt="Yellow Character">
+                <div class="skeleton"></div>
+                <img src="" alt="Character" loading="lazy">
                 <div class="hover-overlay">
                     <div class="hover-content">
                         <div class="hover-buttons">
@@ -533,14 +576,14 @@
                             </button>
                         </div>
                         <div class="text-content">
-                            <p>Lorem ipsum dolor sit amet consectetur. Morbi urna id cursus enim placerat est ultrices
-                                ornare duis.</p>
+                            <p></p>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="grid-item item9">
-                <img src="/gallery/plant1.png" alt="Snake Character">
+                <div class="skeleton"></div>
+                <img src="" alt="Character" loading="lazy">
                 <div class="hover-overlay">
                     <div class="hover-content">
                         <div class="hover-buttons">
@@ -552,14 +595,14 @@
                             </button>
                         </div>
                         <div class="text-content">
-                            <p>Lorem ipsum dolor sit amet consectetur. Morbi urna id cursus enim placerat est ultrices
-                                ornare duis.</p>
+                            <p></p>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="grid-item item10">
-                <img src="/gallery/monster2.png" alt="Snake Character">
+                <div class="skeleton"></div>
+                <img src="" alt="Character" loading="lazy">
                 <div class="hover-overlay">
                     <div class="hover-content">
                         <div class="hover-buttons">
@@ -571,14 +614,14 @@
                             </button>
                         </div>
                         <div class="text-content">
-                            <p>Lorem ipsum dolor sit amet consectetur. Morbi urna id cursus enim placerat est ultrices
-                                ornare duis.</p>
+                            <p></p>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="grid-item item11">
-                <img src="/gallery/pot1.png" alt="Plant in Pot">
+                <div class="skeleton"></div>
+                <img src="" alt="Character" loading="lazy">
                 <div class="hover-overlay">
                     <div class="hover-content">
                         <div class="hover-buttons">
@@ -590,14 +633,14 @@
                             </button>
                         </div>
                         <div class="text-content">
-                            <p>Lorem ipsum dolor sit amet consectetur. Morbi urna id cursus enim placerat est ultrices
-                                ornare duis.</p>
+                            <p></p>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="grid-item item12">
-                <img src="/gallery/eye.png" alt="Snake Character">
+                <div class="skeleton"></div>
+                <img src="" alt="Character" loading="lazy">
                 <div class="hover-overlay">
                     <div class="hover-content">
                         <div class="hover-buttons">
@@ -609,14 +652,14 @@
                             </button>
                         </div>
                         <div class="text-content">
-                            <p>Lorem ipsum dolor sit amet consectetur. Morbi urna id cursus enim placerat est ultrices
-                                ornare duis.</p>
+                            <p></p>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="grid-item item13">
-                <img src="/gallery/bird1.png" alt="Red Devil">
+                <div class="skeleton"></div>
+                <img src="" alt="Character" loading="lazy">
                 <div class="hover-overlay">
                     <div class="hover-content">
                         <div class="hover-buttons">
@@ -628,14 +671,14 @@
                             </button>
                         </div>
                         <div class="text-content">
-                            <p>Lorem ipsum dolor sit amet consectetur. Morbi urna id cursus enim placerat est ultrices
-                                ornare duis.</p>
+                            <p></p>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="grid-item item14">
-                <img src="/gallery/plant1.png" alt="Plant Character">
+                <div class="skeleton"></div>
+                <img src="" alt="Character" loading="lazy">
                 <div class="hover-overlay">
                     <div class="hover-content">
                         <div class="hover-buttons">
@@ -647,14 +690,14 @@
                             </button>
                         </div>
                         <div class="text-content">
-                            <p>Lorem ipsum dolor sit amet consectetur. Morbi urna id cursus enim placerat est ultrices
-                                ornare duis.</p>
+                            <p></p>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="grid-item item15">
-                <img src="/gallery/pot1.png" alt="Plant in Pot">
+                <div class="skeleton"></div>
+                <img src="" alt="Character" loading="lazy">
                 <div class="hover-overlay">
                     <div class="hover-content">
                         <div class="hover-buttons">
@@ -666,14 +709,14 @@
                             </button>
                         </div>
                         <div class="text-content">
-                            <p>Lorem ipsum dolor sit amet consectetur. Morbi urna id cursus enim placerat est ultrices
-                                ornare duis.</p>
+                            <p></p>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="grid-item item16">
-                <img src="/gallery/plant1.png" alt="Plant in Pot">
+                <div class="skeleton"></div>
+                <img src="" alt="Character" loading="lazy">
                 <div class="hover-overlay">
                     <div class="hover-content">
                         <div class="hover-buttons">
@@ -685,14 +728,14 @@
                             </button>
                         </div>
                         <div class="text-content">
-                            <p>Lorem ipsum dolor sit amet consectetur. Morbi urna id cursus enim placerat est ultrices
-                                ornare duis.</p>
+                            <p></p>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="grid-item item17">
-                <img src="/gallery/monster2.png" alt="Plant in Pot">
+                <div class="skeleton"></div>
+                <img src="" alt="Character" loading="lazy">
                 <div class="hover-overlay">
                     <div class="hover-content">
                         <div class="hover-buttons">
@@ -704,14 +747,14 @@
                             </button>
                         </div>
                         <div class="text-content">
-                            <p>Lorem ipsum dolor sit amet consectetur. Morbi urna id cursus enim placerat est ultrices
-                                ornare duis.</p>
+                            <p></p>
                         </div>
                     </div>
                 </div>
             </div>
-             <div class="grid-item item18">
-                <img src="/gallery/three.png" alt="Plant in Pot">
+            <div class="grid-item item18">
+                <div class="skeleton"></div>
+                <img src="" alt="Character" loading="lazy">
                 <div class="hover-overlay">
                     <div class="hover-content">
                         <div class="hover-buttons">
@@ -723,8 +766,7 @@
                             </button>
                         </div>
                         <div class="text-content">
-                            <p>Lorem ipsum dolor sit amet consectetur. Morbi urna id cursus enim placerat est ultrices
-                                ornare duis.</p>
+                            <p></p>
                         </div>
                     </div>
                 </div>
@@ -813,14 +855,10 @@
 
         // Add click handler function
         function redirectToCharacter(prompt) {
-            // Store the prompt in the textarea
             const textarea = document.getElementById('character-prompt-textarea');
             if (textarea) {
                 textarea.value = prompt;
-                
-                // Scroll to the textarea section smoothly
                 const characterSection = document.getElementById('character-section');
-                console.log('Character section:', characterSection);
                 if (characterSection) {
                     characterSection.scrollIntoView({ behavior: 'smooth' });
                 }
@@ -830,9 +868,7 @@
         // Extract image URLs from the content
         const imageUrls = [];
         
-        // Check if characters have a direct url property or if they contain images array
         if (characters[0] && characters[0].url) {
-            // Response is directly an array of image objects
             console.log('Processing direct URL format');
             characters.forEach((image, idx) => {
                 console.log(`Processing direct image ${idx}:`, image);
@@ -846,7 +882,6 @@
                 }
             });
         } else {
-            // Standard format with items containing images array
             console.log('Processing standard format with nested images');
             characters.forEach((item, idx) => {
                 console.log(`Processing item ${idx}:`, item);
@@ -869,48 +904,47 @@
         
         console.log(`Found ${imageUrls.length} images to use in characters grid:`, imageUrls);
         
-        // Get all grid items
         const gridItems = gridContainer.querySelectorAll('.grid-item');
         console.log(`Found ${gridItems.length} grid items to update`);
         
-        // Loop through each grid item and update its content
         gridItems.forEach((gridItem, index) => {
-            // Calculate which image to use, repeating if we run out
             const imageIndex = index % imageUrls.length;
             const imageData = imageUrls[imageIndex];
             
             if (imageData && imageData.url) {
                 console.log(`Updating grid item ${index} with image ${imageIndex}:`, imageData);
                 
-                // Update image source and add click handler
                 const imgElement = gridItem.querySelector('img');
                 if (imgElement) {
-                    console.log(`Setting src for grid item ${index} to:`, imageData.url);
                     imgElement.src = imageData.url;
                     imgElement.alt = imageData.alt || `Character ${index + 1}`;
                     
-                    // Add click handler to the grid item itself
                     gridItem.style.cursor = 'pointer';
                     gridItem.onclick = function(e) {
-                        console.log('Grid item clicked');
-                        // Only redirect if not clicking on buttons
                         if (!e.target.closest('.hover-buttons')) {
-                            console.log('Redirecting with prompt:', imageData.prompt);
                             redirectToCharacter(imageData.prompt || '');
                         }
                     };
 
-                    // Prevent buttons from triggering the redirect
+                    // Handle image loading
+                    imgElement.onload = function() {
+                        console.log(`Image for grid item ${index} loaded successfully:`, imageData.url);
+                        imgElement.classList.add('loaded');
+                        gridItem.classList.add('loaded');
+                    };
+                    
+                    imgElement.onerror = function() {
+                        console.error(`Failed to load image for grid item ${index}:`, imageData.url);
+                        gridItem.querySelector('.skeleton').style.display = 'block';
+                    };
+
                     const buttons = gridItem.querySelectorAll('.hover-buttons button');
                     buttons.forEach(button => {
                         button.onclick = function(e) {
-                            console.log('Button clicked:', button.className);
                             e.stopPropagation();
-                            // Handle button functionality here
                         };
                     });
 
-                    // Debug the hover overlay
                     const hoverOverlay = gridItem.querySelector('.hover-overlay');
                     if (hoverOverlay) {
                         hoverOverlay.style.pointerEvents = 'none';
@@ -923,34 +957,14 @@
                             hoverButtons.style.pointerEvents = 'auto';
                         }
                     }
-                    
-                    // Add onload handler to debug image loading
-                    imgElement.onload = function() {
-                        console.log(`Image for grid item ${index} loaded successfully:`, imageData.url);
-                    };
-                    
-                    imgElement.onerror = function() {
-                        console.error(`Failed to load image for grid item ${index}:`, imageData.url);
-                    };
-                } else {
-                    console.warn(`Image element not found for grid item ${index}`);
-                }   
+                }
                 
-                // Update prompt if we have one
                 const descElement = gridItem.querySelector('.text-content p');
                 if (descElement && imageData.prompt) {
                     descElement.innerHTML = imageData.prompt;
                 }
             }
         });
-        
-        // Force a repaint to ensure images are updated
-        setTimeout(() => {
-            gridContainer.style.opacity = '0.99';
-            setTimeout(() => {
-                gridContainer.style.opacity = '1';
-            }, 50);
-        }, 100);
     }
     
     // Call the function when the page loads

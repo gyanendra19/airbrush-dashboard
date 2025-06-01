@@ -248,7 +248,7 @@
         transition: all 0.3s ease;
     }
 
-    .hover-overlay {
+    .thumbnail-wrapper .hover-overlay {
         position: absolute;
         top: 0;
         left: 0;
@@ -260,11 +260,11 @@
         border-radius: 8px;
     }
 
-    .grid-item:hover .hover-overlay {
+    .thumbnail-wrapper:hover .hover-overlay {
         opacity: 1;
     }
 
-    .hover-content {
+    .thumbnail-wrapper .hover-content {
         position: absolute;
         top: 0;
         left: 0;
@@ -277,59 +277,8 @@
         padding: 1rem;
     }
 
-    .hover-buttons {
-        display: flex;
-        gap: 0.75rem;
-        align-self: flex-end;
-    }
-
-    .hover-buttons button {
-        background-color: rgba(0, 0, 0, 0.4);
-        border: none;
-        width: 2.5rem;
-        height: 2.5rem;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        transition: background 0.3s ease;
-    }
-
-    .hover-buttons button:hover {
-        background: rgba(255, 255, 255, 0.3);
-    }
-
-    .hover-buttons img {
-        width: 1.2rem;
-        height: 1.2rem;
-    }
-
-    .text-content {
-        margin-top: auto;
-        background-color: rgba(0, 0, 0, 0.3);
-        padding: 1rem;
-        border-radius: 0 0 8px 8px;
-        margin: 0 -1rem -1rem -1rem;
-    }
-
-    .text-content h3 {
-        font-size: 1.4rem;
-        font-weight: bold;
-        margin-bottom: 0.5rem;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-
-    .text-content p {
-        font-size: 1rem;
-        line-height: 1.3;
-        display: -webkit-box;
-        -webkit-line-clamp: 3;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-        margin: 0;
+    .thumbnail-wrapper:hover .hover-content {
+        opacity: 1;
     }
 
     .prompt-and-subscription {
@@ -344,11 +293,10 @@
     .character-prompt-container {
         --border-width: 3px;
         --radius: 24px;
-        --angle: 0turn;
+        --angle: 0deg;
         
         position: relative;
         border-radius: var(--radius);
-        border: var(--border-width) solid transparent;
         background: rgba(255, 255, 255, 0.05);
         backdrop-filter: blur(20px);
         padding: 2.5rem;
@@ -360,23 +308,22 @@
     }
 
     .character-prompt-container::before {
-        content: " ";
+        content: "";
         position: absolute;
         inset: calc(var(--border-width) * -1);
         z-index: -1;
-        border: inherit;
         border-radius: inherit;
-        background-image: conic-gradient(from var(--angle), #381D6A 80%, #E0D1FF 88%, #E0D1FF 92%, #381D6A 100%);
-        background-origin: border-box;
-        -webkit-mask: linear-gradient(black, black) content-box,
-                     linear-gradient(black, black);
-        mask: linear-gradient(black, black),
-              linear-gradient(black, black);
-        -webkit-mask-clip: content-box, border-box;
-        mask-clip: content-box, border-box;
-        -webkit-mask-composite: xor;
-        mask-composite: exclude;
-        animation: spin 3s linear infinite;
+        background: linear-gradient(var(--angle), #381D6A 80%, #E0D1FF 88%, #E0D1FF 92%, #381D6A 100%);
+        animation: rotate-gradient 3s linear infinite;
+    }
+
+    @keyframes rotate-gradient {
+        0% {
+            --angle: 0deg;
+        }
+        100% {
+            --angle: 360deg;
+        }
     }
 
     @property --angle {
@@ -385,14 +332,14 @@
         inherits: false;
     }
 
-    @keyframes spin {
-        to {
-            --angle: 360deg;
+    @supports not (background: paint(something)) {
+        .character-prompt-container {
+            border: var(--border-width) solid #381D6A;
         }
-    }
-
-    .character-prompt-container:hover::before {
-        animation-play-state: paused;
+        
+        .character-prompt-container::before {
+            display: none;
+        }
     }
 
     .subscription-container {
@@ -975,6 +922,49 @@
             padding: 0.8rem 1.2rem;
         }
     }
+
+    /* Skeleton Loading Styles */
+    @keyframes shimmer {
+        0% {
+            background-position: -1000px 0;
+        }
+        100% {
+            background-position: 1000px 0;
+        }
+    }
+
+    .skeleton {
+        background: linear-gradient(90deg, #2a1c4f 25%, #3a2a5f 50%, #2a1c4f 75%);
+        background-size: 1000px 100%;
+        animation: shimmer 2s infinite linear;
+        border-radius: 8px;
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        top: 0;
+        left: 0;
+    }
+
+    .thumbnail {
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .thumbnail.loaded {
+        opacity: 1;
+    }
+
+    .thumbnail-wrapper .hover-overlay {
+        display: none;
+    }
+
+    .thumbnail-wrapper.loaded .hover-overlay {
+        display: block;
+    }
+
+    .thumbnail-wrapper.loaded .skeleton {
+        display: none;
+    }
 </style>
 
 <section id="character-section" class="character-section">
@@ -1252,19 +1242,24 @@
         // Create the history UI structure
         previewContainer.innerHTML = history.map(image => {
             return `
-            <div class="thumbnail-wrapper grid-item">
-                <img src="${image.url}" alt="Generated Image" class="thumbnail">
+            <div class="thumbnail-wrapper">
+                <div class="skeleton"></div>
+                <img src="${image.url}" 
+                     alt="Generated Image" 
+                     class="thumbnail"
+                     onload="this.classList.add('loaded'); this.parentElement.classList.add('loaded')"
+                     onerror="this.parentElement.querySelector('.skeleton').style.backgroundColor = '#ff6b6b'">
                 <div class="hover-overlay">
                     <div class="hover-content">
                         <div class="hover-buttons">
                             <button class="upsacle-btn">
-                                <img src="/images/expand.svg" alt="Download">
+                                <img src="/images/expand.svg" alt="Upscale">
                             </button>
                             <button class="download-btn">
                                 <img src="/images/download.svg" alt="Download">
                             </button>
                             <button class="expand-btn">
-                                <img src="/images/delete.svg" alt="Expand">
+                                <img src="/images/delete.svg" alt="Delete">
                             </button>
                         </div>
                         <div class="text-content">
