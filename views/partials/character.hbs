@@ -1231,12 +1231,26 @@
     // Function to update history display
     function updateHistoryDisplay() {
         const history = JSON.parse(localStorage.getItem('generatedImages') || '[]');
+        const thumbnailsContainer = document.querySelector('.character-thumbnails');
+        
+        // If no history, hide the entire section and return
+        if (!history.length) {
+            if (thumbnailsContainer) {
+                thumbnailsContainer.style.display = 'none';
+            }
+            return;
+        }
+
+        // Show the thumbnails container if we have history
+        if (thumbnailsContainer) {
+            thumbnailsContainer.style.display = 'block';
+        }
+
         const previewContainer = document.querySelector('.character-model-preview');
         if (!previewContainer) return;
 
         // Create the history UI structure
         previewContainer.innerHTML = history.map(image => {
-            
             return `
             <div class="thumbnail-wrapper grid-item">
                 <img src="${image.url}" alt="Generated Image" class="thumbnail">
@@ -1260,12 +1274,6 @@
                 </div>
             </div>
         `}).join('');
-
-        // Show thumbnails container if we have history
-        const thumbnailsContainer = document.querySelector('.character-thumbnails');
-        if (thumbnailsContainer) {
-            thumbnailsContainer.classList.toggle('show', history.length > 0);
-        }
 
         // Add event listeners for history actions
         addHistoryEventListeners();
@@ -1302,8 +1310,14 @@
         const clearHistoryBtn = document.querySelector('.filter-dropdown-delete');
         if (clearHistoryBtn) {
             clearHistoryBtn.addEventListener('click', function() {
+                // Clear the history from localStorage
                 localStorage.removeItem('generatedImages');
-                updateHistoryDisplay();
+                
+                // Hide the history section
+                const thumbnailsContainer = document.querySelector('.character-thumbnails');
+                if (thumbnailsContainer) {
+                    thumbnailsContainer.style.display = 'none';
+                }
             });
         }
     }
