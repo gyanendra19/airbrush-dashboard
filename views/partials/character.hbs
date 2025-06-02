@@ -28,7 +28,6 @@
 
     .filter-section {
         display: flex;
-        background-color: rgba(255, 255, 255, 0.2);
         justify-content: space-between;
         flex-direction: column;
         align-items: center;
@@ -231,12 +230,13 @@
         border-radius: 12px;
         padding: 2rem;
         gap: 1.8rem;
+        flex-wrap: wrap;
     }
 
     .thumbnail-wrapper {
         position: relative;
         aspect-ratio: 1;
-        height: 200px;
+        height: 235px;
     }
 
     .thumbnail {
@@ -327,10 +327,6 @@
         -webkit-mask-composite: xor;
         mask-composite: exclude;
         animation: spin 3s linear infinite;
-    }
-
-    .character-prompt-container:hover::before {
-        animation-play-state: paused;
     }
 
     @property --angle {
@@ -734,6 +730,7 @@
             grid-template-columns: 1fr;
             padding: 1rem;
             gap: 1rem;
+
         }
 
         .thumbnail-wrapper {
@@ -1011,7 +1008,7 @@
                     <span class="icon"><img src="/images/svg/threeDIconBlue.svg" alt="Category" class="svg-icon white-icon"></span>
                     <span class="category-text" data-current-category-id="{{category._id}}">{{category.name}}</span>
                     <span class="arrow">▼</span>
-                </button>
+            </button>
                 <div class="category-dropdown-content" id="categoryDropdownContent">
                     <!-- Categories will be populated here -->
                 </div>
@@ -1038,12 +1035,12 @@
                 <div class="filter-section">
                     <div class="filters">
                         <div style="display: flex; gap: 0.5rem;">
-                            <button class="filter-dropdown">
+                            {{!-- <button class="filter-dropdown">
                                 All Styles &nbsp;&nbsp;<span>▼</span>
-                            </button>
+                            </button> --}}
                             <button class="filter-dropdown filter-dropdown-delete">
                                 <p style="color: white; font-size: 1.4rem;">Clear History</p>&nbsp;
-                                <img style="width: 1.8rem; height: 1.8rem;" src="/images/download.svg" alt="Download">
+                                <img style="width: 1.8rem; height: 1.8rem;" src="/images/svg/delete.svg" alt="Download">
                             </button>
                         </div>
                     </div>
@@ -1216,10 +1213,14 @@
     });
 
     // Function to save image to history
-    function saveImageToHistory(imageUrl, prompt) {
+    async function saveImageToHistory(imageUrl, prompt) {
+        const currentCategoryId = document.querySelector('.category-text').getAttribute('data-current-category-id');
+        const categories = await fetchCategories()
+        const category = categories.find(cat => cat._id === currentCategoryId);
         let history = JSON.parse(localStorage.getItem('generatedImages') || '[]');
         const newImage = {
             url: imageUrl,
+            category: category,
             prompt: prompt,
             timestamp: new Date().toISOString()
         };
@@ -1265,9 +1266,6 @@
                 <div class="hover-overlay">
                     <div class="hover-content">
                         <div class="hover-buttons">
-                            <button class="upsacle-btn">
-                                <img src="/images/expand.svg" alt="Upscale">
-                            </button>
                             <button class="download-btn">
                                 <img src="/images/download.svg" alt="Download">
                             </button>
