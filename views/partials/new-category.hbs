@@ -580,28 +580,38 @@
           throw new Error('Category created but no ID returned');
         }
 
-        // Update routes after category creation
+        // Show initial success message
+        showAlert('Category created! Starting AI image generation...', 'success');
+
+        // Start AI image generation and wait for it to complete
+        await generateImageAndContent('', categoryName, categoryDescription, result._id);
+        
+        // Add a small delay to ensure all content is properly saved
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        
+        // Validate content count after generation is complete
+        const isValid = await validateCategoryContent(result._id);
+        
+        if (!isValid) {
+          // Category and its content were deleted, show appropriate message
+          showAlert('Category was removed due to invalid content/section count', 'warning');
+          return;
+        }
+
+        // If we get here, the category is valid
+        showAlert('Category created and validated successfully!', 'success');
+
+        // Update routes after successful category creation and validation
         try {
-          const result = await updateRoutes();
-          if (result.success) {
-            console.log('Routes updated successfully:', result.message);
+          const routeResult = await updateRoutes();
+          if (routeResult.success) {
+            console.log('Routes updated successfully:', routeResult.message);
           } else {
-            console.warn('Routes update warning:', result.message);
+            console.warn('Routes update warning:', routeResult.message);
           }
         } catch (error) {
           console.warn('Routes update warning:', error);
         }
-            
-        // Show initial success message
-        showAlert('Category created successfully! Starting AI image generation...', 'success');
-
-        // Start AI image generation in the background
-        Promise.resolve(generateImageAndContent('', categoryName, categoryDescription, result._id))
-          .catch(error => {
-            console.error('Error in generateImageAndContent:', error);
-            showAlert('Category created but there was an error generating AI content. Please try again later.', 'warning');
-          });
-      
             
         // Reset form
         this.reset();
@@ -626,153 +636,122 @@
       }
     });
 
-    {{!-- // Handle hero section form submission
-    heroForm.addEventListener('submit', async function(e) {
-      e.preventDefault();
-      
-      if (!this.checkValidity()) {
-        e.stopPropagation();
-        this.classList.add('was-validated');
-        return;
-      }
-      
-      const submitBtn = this.querySelector('button[type="submit"]');
-        const originalBtnText = submitBtn.innerHTML;
-      submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Saving...';
-        submitBtn.disabled = true;
+    // Add this function after the uploadImage function
+    async function validateCategoryContent(categoryId) {
+      try {
+        // Fetch all sections for this category
+        const sectionsResponse = await fetch(`https://airbrush-admin-backend.onrender.com/api/sections/category/${categoryId}`);
         
-        try {
-        const categoryId = document.getElementById('categoryId').value;
-        if (!categoryId) {
-          throw new Error('Category ID is missing. Please create a category first.');
+        if (!sectionsResponse.ok) {
+          throw new Error('Failed to fetch category sections');
         }
-
-        // Get hero image
-        const heroImage = document.getElementById('heroImage').files[0];
-        if (!heroImage) {
-          throw new Error('Please select a hero image');
+        
+        const data = await sectionsResponse.json();
+        console.log(data, 'sections data');
+        
+        // Fetch all content for this category
+        const contentResponse = await fetch(`https://airbrush-admin-backend.onrender.com/api/content/category/${categoryId}`);
+        
+        if (!contentResponse.ok) {
+          throw new Error('Failed to fetch category content');
         }
+        
+        const contents = await contentResponse.json();
 
-        // Validate hero image
-        if (!heroImage.type.startsWith('image/')) {
-          throw new Error('Please select a valid image file');
-        }
-
-        // Check file size (max 2MB)
-        const maxSize = 2 * 1024 * 1024; // 2MB in bytes
-        if (heroImage.size > maxSize) {
-          throw new Error('Image size should be less than 2MB');
-        }
-
-           // Create section first
-        console.log('Creating hero section...');
-            const sectionData = {
-              name: 'Hero Section',
-              slug: 'hero-section',
-              description: 'Hero section for the category',
-          category: categoryId,
-              isFolder: false,
-              order: 1,
-              isActive: true
-            };
-            
-            const sectionResponse = await fetch('https://airbrush-admin-backend.onrender.com/api/sections', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-              },
-              body: JSON.stringify(sectionData)
-            });
-            
-            if (!sectionResponse.ok) {
-          const errorText = await sectionResponse.text();
-          console.error('Section creation failed:', errorText);
-          throw new Error(`Failed to create section: ${errorText}`);
+        // Helper function to clean up category and its data
+        async function cleanupCategory(reason) {
+          console.log(`Cleaning up category ${categoryId}: ${reason}`);
+          
+          // Delete all sections first
+          for (const section of data.sections) {
+            try {
+              const deleteSectionResponse = await fetch(`https://airbrush-admin-backend.onrender.com/api/sections/${section._id}`, {
+                method: 'DELETE',
+                headers: {
+                  'Authorization': `Bearer ${token}`
+                }
+              });
+              
+              if (!deleteSectionResponse.ok) {
+                console.error(`Failed to delete section ${section._id}`);
+              } else {
+                console.log(`Deleted section ${section._id}`);
+              }
+            } catch (error) {
+              console.error(`Error deleting section ${section._id}:`, error);
             }
-            
-            const sectionResult = await sectionResponse.json();
-            console.log('Section created:', sectionResult);
-          
-          // Upload hero image
-        console.log('Uploading hero image...');
-          const imageUrl = await uploadImage(heroImage, token);
-          if (!imageUrl) {
-            throw new Error('Failed to upload hero image');
           }
-        console.log('Hero image uploaded:', imageUrl);
 
-        // Create content
-        console.log('Creating hero content...');
-          const contentData = {
-            section: sectionResult._id,
-          slug: 'hero-section',
-          title: document.getElementById('heroTitle').value,
-          subtitle: document.getElementById('heroDescription').value,
-            images: [{
-              url: imageUrl,
-            alt: document.getElementById('heroTitle').value,
-              width: 1920,
-              height: 1080
-            }],
-            fields: [],
-            isActive: true
-          };
+          // Then delete all content
+          for (const content of contents) {
+            try {
+              const deleteContentResponse = await fetch(`https://airbrush-admin-backend.onrender.com/api/content/${content._id}`, {
+                method: 'DELETE',
+                headers: {
+                  'Authorization': `Bearer ${token}`
+                }
+              });
+              
+              if (!deleteContentResponse.ok) {
+                console.error(`Failed to delete content ${content._id}`);
+              } else {
+                console.log(`Deleted content ${content._id}`);
+              }
+            } catch (error) {
+              console.error(`Error deleting content ${content._id}:`, error);
+            }
+          }
           
-        const contentResponse = await fetch('https://airbrush-admin-backend.onrender.com/api/content', {
-            method: 'POST',
+          // Finally delete the category
+          const deleteCategoryResponse = await fetch(`https://airbrush-admin-backend.onrender.com/api/categories/${categoryId}`, {
+            method: 'DELETE',
             headers: {
-              'Content-Type': 'application/json',
               'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify(contentData)
+            }
           });
           
-          if (!contentResponse.ok) {
-            const errorText = await contentResponse.text();
-            console.error('Content creation failed:', errorText);
-          throw new Error(`Failed to create content: ${errorText}`);
+          if (!deleteCategoryResponse.ok) {
+            throw new Error('Failed to delete category');
           }
           
-          const contentResult = await contentResponse.json();
-        console.log('Content created:', contentResult);
-          
-        // Show success message
-          const successAlert = document.createElement('div');
-          successAlert.className = 'alert alert-success d-flex align-items-center mb-0';
-          successAlert.innerHTML = `
-            <i class="bi bi-check-circle-fill me-2"></i>
-            <div>
-            <strong>Hero Section created successfully!</strong>
-            <p class="mb-0">You can now proceed to add more sections.</p>
-            </div>
-          `;
-          
-          const alertContainer = document.querySelector('.alert-container');
-          if (alertContainer) {
-            alertContainer.appendChild(successAlert);
-            setTimeout(() => {
-              successAlert.remove();
-            }, 3000);
-          }
-          
-          // Reset form
-        this.reset();
-        this.classList.remove('was-validated');
-            heroImagePreview.innerHTML = `
-              <div class="d-flex align-items-center justify-content-center text-muted h-100">
-                <i class="bi bi-image me-2"></i> No image selected
-              </div>
-            `;
-          
-        } catch (error) {
-        console.error('Error creating hero section:', error);
-          showErrorAlert(error);
-        } finally {
-        submitBtn.innerHTML = originalBtnText;
-        submitBtn.disabled = false;
+          showAlert(reason, 'warning');
+          return false;
+        }
+        
+        // Check if there are exactly 6 sections and 6 contents
+        if (data.sections.length !== 6 || contents.length !== 6) {
+          return await cleanupCategory(
+            `Category and all its content deleted because it didn't have all sections and contents (had ${data.sections.length} sections and ${contents.length} contents)`
+          );
+        }
+        
+        // Verify that all required section types exist
+        const requiredSections = [
+          'Hero Section',
+          'Images Gallery',
+          'Why Use tool',
+          'Text to Anything',
+          'Transform Grid',
+          'Blogs'
+        ];
+        
+        const missingSections = requiredSections.filter(required => 
+          !data.sections.some(section => section.name === required)
+        );
+        
+        if (missingSections.length > 0) {
+          return await cleanupCategory(
+            `Category and all its content deleted because it was missing required sections: ${missingSections.join(', ')}`
+          );
+        }
+        
+        return true;
+      } catch (error) {
+        console.error('Error validating category content:', error);
+        showAlert('Error validating category content: ' + error.message, 'danger');
+        return false;
       }
-    }); --}}
+    }
 
     // Helper function to upload images
     async function uploadImage(file, token) {

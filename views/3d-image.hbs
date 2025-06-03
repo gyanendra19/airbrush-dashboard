@@ -3,9 +3,11 @@
 
 
 <head>
+     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     {{#if category.metaTags}}
     <script>
         // Parse the meta tags from HTML string format
+        
         const metaTagsString = `{{category.metaTags}}`;
         const metaTags = metaTagsString
             .replace(/<meta[^>]*content="([^"]*)"[^>]*>/g, '$1')

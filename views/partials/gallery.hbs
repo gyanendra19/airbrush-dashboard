@@ -335,7 +335,7 @@
         .features-grid {
             grid-template-columns: repeat(2, 1fr);
             grid-template-rows: repeat(4, 1fr);
-            max-height: 900px;
+            padding: 10px;
         }
     }
 
@@ -361,7 +361,6 @@
         .features-grid {
             grid-template-columns: 1fr;
             grid-template-rows: repeat(8, 1fr);
-            max-height: 1800px;
         }
 
         .features-description {
@@ -914,7 +913,27 @@
             }
             
             const categories = await response.json();
-            renderCategories(categories);
+            
+            // Filter categories based on content count
+            const validCategories = [];
+            
+            for (const category of categories) {
+                try {
+                    const contentResponse = await fetch(`https://airbrush-admin-backend.onrender.com/api/content/category/${category._id}`);
+                    
+                    if (contentResponse.ok) {
+                        const contents = await contentResponse.json();
+                        if (contents.length === 6) {
+                            validCategories.push(category);
+                        }
+                    }
+                } catch (error) {
+                    console.error(`Error fetching contents for category ${category._id}:`, error);
+                }
+            }
+            
+            console.log(validCategories, 'validCategories');
+            renderCategories(validCategories);
         } catch (error) {
             console.error('Error fetching categories:', error);
             document.getElementById('dynamic-categories-grid').innerHTML = 

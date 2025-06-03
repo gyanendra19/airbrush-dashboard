@@ -143,6 +143,8 @@
 
     .hero-section-image{
         position: relative;
+        height: 315px;
+        width: 375px;
     }
 
     .imagination-model-preview video{
@@ -185,6 +187,13 @@
             right: 0%;
         }
 
+        .hero-section-image{
+                height: 250px;
+        }
+
+        .hero-section-image img{
+            right: 28%;
+        }
         .imagination-container {
             flex-direction: column;
             text-align: center;
@@ -201,7 +210,7 @@
         }
 
         .imagination-model-preview{
-            margin-bottom: 4rem;
+            margin-bottom: 2rem;
             margin-inline: auto;
         }
 
@@ -224,8 +233,9 @@
 
     .containers-wrapper {
         position: relative;
-        width: 100%;
+        width: 90%;
         height: 100%;
+        border-radius: 16px;
         overflow: hidden;
     }
 </style>
@@ -247,7 +257,7 @@
                 <video autoplay loop muted playsinline>
                     <source src="" type="video/mp4">
                 </video>
-                <div style="height: 315px; width: 375px" class="hero-section-image">
+                <div class="hero-section-image">
 
                 <!-- Image element will be added dynamically if needed -->
                 </div>
