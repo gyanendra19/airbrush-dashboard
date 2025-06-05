@@ -19,6 +19,12 @@
         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.25);
         margin-bottom: 2rem;
       }
+
+      .unlock-button-free {
+        width: 380px;
+        padding: 12px 48px;
+      }
+      
       .pricing-card .feature {
         display: flex;
         align-items: center;
@@ -61,6 +67,66 @@
       .feature.animate {
         opacity: 1;
         transform: translateY(0);
+      }
+
+      .pricing-container {
+        width: 838px !important;
+        margin: 20px auto !important;
+      }
+
+      #premium-plan-content, #free-plan-content {
+        display: flex !important;
+      }
+
+      #free-plan-content {
+        display: none !important;
+      }
+
+      #free-plan-content.active {
+        display: flex !important;
+      }
+
+      #premium-plan-content.hidden {
+        display: none !important;
+      }
+
+      @media (max-width: 768px) {
+        #premium-plan-content {
+          display: flex !important;
+          flex-direction: column;
+        }
+
+        #free-plan-content {
+          display: none;
+          flex-direction: column !important;
+        }
+
+        #free-plan-content.active {
+          display: flex !important;
+        }
+
+        #premium-plan-content.hidden {
+          display: none !important;
+        }
+
+        .pricing-card {
+          padding-inline: 10px !important;
+        }
+
+        .pricing-container {
+          width: 100% !important; 
+          padding-inline: 20px !important;
+        }
+
+        .unlock-button {
+          width: 100% !important;
+          padding: 12px 48px 12px 48px !important;
+        }
+
+        .unlock-button-free {
+          padding: 12px 20px 12px 20px !important;
+          width: 100% !important;
+        }
       }
     </style>
   
@@ -139,7 +205,7 @@
           ">Free Plan</button>
         </div>
 
-        <div style="
+        <div class="pricing-container" style="
           width: 838px;
           min-height: 520px;
           border-radius: 24px;
@@ -312,7 +378,7 @@
             </div>
             <div style="flex: 1; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 20px; margin-top: 80px;">
               <img src="/images/pricing/duck.png" alt="Duck" style="width: 380px; height: 316px; border-radius: 20px; object-fit: cover;"/>
-              <a href="https://app.airbrush.ai/signup" style="
+              <a class="unlock-button" href="https://app.airbrush.ai/signup" style="
                 width: 380px;
                 height: 48px;
                 border-radius: 40px;
@@ -488,9 +554,9 @@
                 </ul>
               </div>
             </div>
-            <div style="flex: 1; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 20px; margin-top: 80px;">
+            <div class="unlock-button-free" style="flex: 1; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 20px; margin-top: 80px;">
               <img src="/images/pricing/duck.png" alt="Duck" style="width: 380px; height: 316px; border-radius: 20px; object-fit: cover;"/>
-              <a href="https://app.airbrush.ai/signup" style="
+              <a class="unlock-button-free" href="https://app.airbrush.ai/signup" style="
                 width: 380px;
                 height: 48px;
                 border-radius: 40px;
@@ -526,8 +592,11 @@
         document.getElementById('yearlyBtn').style.color = 'white';
         
         // Show/hide content
-        document.getElementById('premium-plan-content').style.display = 'flex';
-        document.getElementById('free-plan-content').style.display = 'none';
+        const premiumContent = document.getElementById('premium-plan-content');
+        const freeContent = document.getElementById('free-plan-content');
+        
+        premiumContent.classList.remove('hidden');
+        freeContent.classList.remove('active');
         
         // Reset and setup animations after content is displayed
         setTimeout(() => {
@@ -548,8 +617,11 @@
         document.getElementById('monthlyBtn').style.color = 'white';
         
         // Show/hide content
-        document.getElementById('premium-plan-content').style.display = 'none';
-        document.getElementById('free-plan-content').style.display = 'flex';
+        const premiumContent = document.getElementById('premium-plan-content');
+        const freeContent = document.getElementById('free-plan-content');
+        
+        premiumContent.classList.add('hidden');
+        freeContent.classList.add('active');
         
         // Reset and setup animations after content is displayed
         setTimeout(() => {

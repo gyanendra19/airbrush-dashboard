@@ -107,6 +107,7 @@
         color: white;
         padding: 1rem 5rem;
         border-radius: 8px;
+        margin-bottom: 3rem;
         font-size: 2.2rem;
         width: fit-content;
         font-weight: bold;
@@ -120,7 +121,6 @@
     }
 
     .imagination-model-preview {
-        flex: 1;
         display: flex;
         top: 0%;
         right: 0%;
@@ -129,15 +129,6 @@
         align-items: center;
     }
 
-    .imagination-model-preview-white {
-        display: flex;
-        position: absolute;
-        top: 0%;
-        right: 0%;
-        margin-left: auto;
-        justify-content: center;
-        align-items: center;
-    }
 
     .hero-section-image{
         position: relative;
@@ -179,10 +170,8 @@
         }
 
         .hero-section-image img{
-            object-fit: cover;
-            position: absolute;
-            bottom: 0%;
-            right: 0%;
+            height: 26%;
+            position: static;
         }
 
         .hero-section-image{
@@ -191,16 +180,16 @@
         }
 
         .hero-section-image img{
-            right: 4%;
-            top: 14%;
-            height: 85%;
+            height: 100%;
+            position: static;
         }
         .imagination-container {
+            height: 60vh;
             flex-direction: column;
             text-align: center;
             gap: 2rem;
             padding-left: 0;
-            height: 100vh;
+        /* height: 100vh; */
             width: 100%;
             border-radius: 0;
         }
@@ -212,7 +201,7 @@
 
         .imagination-model-preview{
             margin-bottom: 2rem;
-                    width: 100%;
+            width: 60%;
             margin-inline: auto;
         }
 
@@ -236,7 +225,7 @@
     .containers-wrapper {
         position: relative;
         width: 90%;
-        height: 100%;
+        height: 60vh;
         border-radius: 16px;
         overflow: hidden;
     }
@@ -253,7 +242,7 @@
                 <p class="imagination-subtitle">
                   
                 </p>
-                <button class="imagination-start-button">Start</button>
+             <button class="imagination-start-button">Start</button>
             </div>
             <div class="imagination-model-preview">
                 <video autoplay loop muted playsinline>
@@ -264,6 +253,7 @@
                 <!-- Image element will be added dynamically if needed -->
                 </div>
             </div>
+            <button class="imagination-start-button">Start</button>
         </div>
 
         {{!-- <div class="imagination-container-white" id="container2">
@@ -289,6 +279,26 @@
 </section>
 
 <script>
+    // Add this at the beginning of your script
+    function handleButtonVisibility() {
+        const desktopButton = document.querySelector('.imagination-content .imagination-start-button');
+        const mobileButton = document.querySelector('.imagination-container > .imagination-start-button');
+        
+        if (window.innerWidth <= 768) { // Mobile breakpoint
+            if (desktopButton) desktopButton.style.display = 'none';
+            if (mobileButton) mobileButton.style.display = 'block';
+        } else { // Desktop/tablet
+            if (desktopButton) desktopButton.style.display = 'block';
+            if (mobileButton) mobileButton.style.display = 'none';
+        }
+    }
+
+    // Call on page load
+    document.addEventListener('DOMContentLoaded', handleButtonVisibility);
+    
+    // Call on window resize
+    window.addEventListener('resize', handleButtonVisibility);
+
     // Function to wait for categories to be initialized if needed
     function ensureCategoriesInitialized() {
         // If categories are already initialized, return resolved promise

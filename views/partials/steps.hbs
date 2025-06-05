@@ -52,7 +52,7 @@
                     </div>
 
                     <!-- Steps -->
-                    <div style="
+                    <div class="steps-container" style="
                         display: grid;
                         grid-template-columns: repeat(2, 1fr);
                         gap: 40px;
@@ -251,6 +251,14 @@
     animation: floatShapeReverse 20s ease-in-out infinite;
     pointer-events: none;
     z-index: 0;
+}
+
+@media (max-width: 768px) {
+    .steps-container{
+        display: flex !important;
+        flex-direction: column;
+        align-items: center;
+    }
 }
 
 @keyframes floatShape {

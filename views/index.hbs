@@ -96,7 +96,7 @@
     {{> desktop-menu}}
 
     <!-- rts breadcrumb area start-->
-    <div class="rts-banner-area-one bg_image--1 bg_image rts-section-gap" style="margin-bottom: 80px;">
+    <div class="rts-banner-area-one hero-top bg_image--1 bg_image rts-section-gap" style="margin-bottom: 80px;">
         <div class="mt--10 container">
             <div class="row">
                 <div class="col-lg-12">
@@ -115,13 +115,46 @@
                                         style="position: absolute; content: ''; top: -10px; left: 0; height: 5px; width: 36px; background-color: #fd562a;"></span>
                                     Airbrush AI – Free Instant Image Generator (One-Click Creation!)
                                 </h2>
-                                <p class="desc mb-20 aos-init aos-animate" data-aos="fade-up" 
+                                <p class="desc mb-20 hero-description aos-init aos-animate" data-aos="fade-up" 
                                    style="font-size: 20px; line-height: 1.4; width: 700px; max-width: 1300px;  word-spacing: -1px;">
                                     Generate AI art, photorealistic images, anime, 3D renders, game assets, logos, social media graphics, and more in seconds—no design skills needed! Try the best free AI image generator for Stable Diffusion, DALL-E style art, fantasy landscapes, cyberpunk characters, and product mockups. Unlimited creativity, zero cost!
                                 </p>
                             </div>
                             <div class="col-xl-7 col-md-7 col-12 animate-from-right" style="display: flex; justify-content: flex-end; align-items: flex-start; padding-right: 0; margin-top: -20px; opacity: 0; transform: translateX(100px);">
                                 <style>
+
+                                    @media (max-width: 768px) {
+                                        .title {
+                                            width: 100% !important;
+                                        }
+
+                                        .sub-title{
+                                            margin-top: 0px !important;
+                                        }
+
+                                        .hero-top{
+                                            padding: 60px 10px !important;
+                                            margin-bottom: 0px !important;
+
+                                        }
+
+                                        .hero-description{
+                                            width: 100% !important; 
+                                            font-size: 11px !important;
+                                        }
+
+                                        .image-grid{
+                                            display: grid !important;
+                                            grid-template-columns: repeat(2, 1fr) !important;
+                                            gap: 13px !important;
+                                            padding: 10px !important;
+                                            width: 100% !important;
+                                            margin-left: auto !important;
+                                            margin-right: 0px !important;
+                                            margin-top: 32px !important;
+                                        }
+                                    }
+
                                     .image-grid {
                                         display: grid;
                                         grid-template-columns: repeat(2, 1fr);
@@ -141,7 +174,7 @@
                                         backdrop-filter: blur(5px);
                                         border: 1px solid rgba(255, 255, 255, 0.1);
                                         position: relative;
-                                        min-height: 150px;
+                                        min-height: 140px;
                                     }
 
                                     .image-box img {

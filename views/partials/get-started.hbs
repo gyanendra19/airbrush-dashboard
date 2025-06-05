@@ -145,10 +145,59 @@
     @media (max-width: 768px) {
         .boxes-container {
             gap: 10px;
+            height: 500px !important;
+            margin-left: 10px !important;
+        }
+
+        .get-started-container{
+            min-height: 900px !important;
+        }
+
+        .inspiration-box:nth-child(1) .top-slider-container{
+            height: 200px !important;
+        }
+
+        .inspiration-box:nth-child(2) .top-slider-container{
+            height: 150px !important;
+        }
+        .inspiration-box:nth-child(3) .top-slider-container{
+            height: 200px !important;
+        }
+
+        .inspiration-box:nth-child(1) .bottom-slider-container{
+            height: 250px !important;
+        }
+        .inspiration-box:nth-child(2) .bottom-slider-container{
+            height: 200px !important;
+        }
+        .inspiration-box:nth-child(3) .bottom-slider-container{  
+            height: 250px !important;
+        }
+
+        .top-slider-container{
+            width: 120px !important;
+            margin-bottom: 10px !important;
+        }
+
+        .slider-image{
+            transform: translateY(0px) !important;
+        }
+
+        .slider-image{
+            
+        }
+
+        .bottom-slider-container{
+            width: 120px !important;
         }
         
         .inspiration-box {
-            transform: scale(0.9);
+            transform: scale(1);
+            width: 120px !important;
+        }
+        
+        .inspiration-box.hidden-mobile {
+            display: none !important;
         }
         
         h2.get-started-heading {
@@ -166,9 +215,6 @@
             padding: 0 10px;
         }
         
-        .inspiration-box {
-            transform: scale(0.8);
-        }
         
         .top-slider-container, .bottom-slider-container {
             width: 160px;
@@ -219,7 +265,7 @@
     }
 </style>
 
-<div class="rts-case-area bg-smooth-2" style="background-color: #000000; overflow: hidden; min-height: 1200px; padding-bottom: 40px;">
+<div class="rts-case-area bg-smooth-2 get-started-container" style="background-color: #000000; overflow: hidden; min-height: 1200px; padding-bottom: 40px;">
     <div class="container-fluid" style="margin: 0; padding: 0;">
         <div class="row justify-content-center">
             <div class="col-lg-12 text-center mb-4" style="background: transparent; margin: 0; padding: 0;">
@@ -593,6 +639,34 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        // Handle inspiration boxes on mobile
+        function handleMobileBoxes() {
+            const boxes = document.querySelectorAll('.inspiration-box');
+            if (window.innerWidth <= 768) {
+                boxes.forEach((box, index) => {
+                    if (index >= 3) {
+                        box.classList.add('hidden-mobile');
+                    } else {
+                        box.classList.remove('hidden-mobile');
+                    }
+                });
+            } else {
+                boxes.forEach(box => {
+                    box.classList.remove('hidden-mobile');
+                });
+            }
+        }
+
+        // Call on load
+        handleMobileBoxes();
+
+        // Call on resize
+        let resizeTimer;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(handleMobileBoxes, 250);
+        });
+
         // Get all slider containers
         const sliderContainers = document.querySelectorAll('.top-slider-container, .bottom-slider-container');
         

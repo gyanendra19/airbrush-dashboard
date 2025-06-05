@@ -29,6 +29,25 @@
     .animate-right {
         animation: slideFromRight 1s ease forwards;
     }
+
+    @media (max-width: 768px) {
+        .accordion-area-one {
+            width: 100% !important;
+        }
+
+        .animate-right{
+         padding-left: 0px !important;
+        }
+
+        .faq-img{
+         margin-left: 0px !important;
+         margin-bottom: 20px !important;
+        }
+
+        .description-faq{
+         font-size: 2rem !important;
+        }
+    }
 </style>
 
 <div class="rts-faq-area rts-section-gap bg_faq">
@@ -54,7 +73,7 @@
             <h2 class="title" style="text-align: left;">
                FAQs
             </h2>
-            <p style="font-size: 2.4rem; font-weight: 400; text-align: left; margin-top: 2rem; color: #808080;">
+            <p style="description-faq font-size: 2.4rem; font-weight: 400; text-align: left; margin-top: 2rem; color: #808080;">
                Get quick solutions to popular questions in our FAQ,<br>
                giving you essential info at a glance.
             </p>
@@ -63,7 +82,7 @@
    </div>
    <div class="row mt--60">
       <div class="col-lg-4" id="faqLeft" style="opacity: 0;">
-         <img src="/images/faq/faq.jpg" alt="FAQ" style="width: 100%; height: auto; border-radius: 20px; margin-left: 30px; object-fit: cover;" />
+         <img class="faq-img" src="/images/faq/faq.jpg" alt="FAQ" style="width: 100%; height: auto; border-radius: 20px; margin-left: 30px; object-fit: cover;" />
       </div>
       <div class="col-lg-8" id="faqRight" style="padding-left: 40px; opacity: 0;">
          <div class="accordion-area-one" style="width: 120%;">
