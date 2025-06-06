@@ -7,6 +7,8 @@
         background-color: #000000; 
         color: white; 
       } 
+
+
       .pricing-section .background-shape,
       .background-wrap { 
         display: none;
@@ -122,6 +124,10 @@
           padding-inline: 20px !important;
         }
 
+        .price-dollar{
+          left: 75px !important;
+        }
+
         .unlock-button {
           width: 100% !important;
           padding: 12px 48px 12px 48px !important;
@@ -130,6 +136,7 @@
         .unlock-button-free {
           padding: 12px 20px 12px 20px !important;
           width: 100% !important;
+          margin-top: 0px !important;
         }
       }
     </style>
@@ -250,10 +257,10 @@
                   margin: 24px 0;
                   box-shadow: 0px 4px 24px rgba(255, 255, 255, 0.25);
                 "></div>
-                <p class="price" style="margin-top: 30px; display: flex; align-items: flex-start; position: relative;">
-                  <span style="font-size: 24px; color: white; position: absolute; top: -10px; left: -15px;">$</span>
-                  <span style="font-size: 46px; color: white; margin-right: 18px; margin-left: 8px; font-weight: 700;">9</span>
-                  <span style="font-size: 46px; color: gray; margin-top: 5px; font-weight: 700;">USD</span>
+                <p class="price" style="margin-top: 30px; display: flex; align-items: flex-start; position: relative; justify-content: center;">
+                  <span class="price-dollar" style="font-size: 24px; color: white; position: absolute; top: -10px; left: -15px;">$</span>
+                  <span class="price-amount" style="font-size: 46px; color: white; margin-right: 18px; margin-left: 8px; font-weight: 700;">9</span>
+                  <span style="font-size: 46px; margin-top: 5px; font-weight: 700;">USD</span>
                 </p>
                 <p>The perfect plan if you're just getting started with our product.</p>
                 <ul>
@@ -430,7 +437,7 @@
                   margin: 24px 0;
                   box-shadow: 0px 4px 24px rgba(255, 255, 255, 0.25);
                 "></div>
-                <p class="price" style="margin-top: 30px; display: flex; align-items: flex-start; position: relative;">
+                <p class="price" style="margin-top: 30px; display: flex; align-items: flex-start; position: relative; justify-content: center;">
                   <span style="font-size: 46px; color: white; margin-right: 18px; font-weight: 700;">Free</span>
                 </p>
                 <p>Perfect for trying out our features.</p>
