@@ -659,11 +659,15 @@
         }
 
         .character-main {
-            aspect-ratio: 4/3;
+            height: 65%;
         }
 
         .thumbnail-wrapper {
             width: 100%;
+        }
+
+        .generating-text{
+            font-size: 1.4rem !important;
         }
 
         .prompt-and-subscription {
@@ -697,9 +701,10 @@
         text-align: center;
         color: white;
         background: rgba(0, 0, 0, 0.2);
-        padding: 1.5rem;
+        padding: 1.2rem;
         border-radius: 12px;
         width: 100%;
+        font-size: 1.2rem;
         max-width: 400px;
     }
 
@@ -780,6 +785,29 @@
         .character-image {
             width: 200px;
             height: 200px;
+        }
+
+        .options-left{
+            align-items: center;
+        }
+
+        .character-options{
+            margin-inline: 0 !important;
+            width: 100% !important;
+            margin-top: 0rem !important;
+        }
+
+        .subscription-container{
+            width: 40% !important;
+            padding: 0.8rem !important;
+        }
+
+        .subscription-container img{
+            height: 25px !important;
+        }
+
+        .subtitle{
+            font-size: 1.2rem !important;
         }
 
         .preview-image-generate{
@@ -922,12 +950,31 @@
         }
 
         .loading-container img{
-            height: 170px !important;
+            height: 150px !important;
         }
 
         .category-item {
             font-size: 1.2rem;
             padding: 0.8rem 1.2rem;
+        }
+    }
+
+    /* Add these new styles */
+    .subscription-container.web-only {
+        display: flex;
+    }
+
+    .subscription-container.mobile-only {
+        display: none;
+    }
+
+    @media (max-width: 768px) {
+        .subscription-container.web-only {
+            display: none;
+        }
+
+        .subscription-container.mobile-only {
+            display: flex;
         }
     }
 </style>
@@ -948,7 +995,7 @@
                 Generate
             </button>
         </div>
-        <div class="subscription-container">
+        <div class="subscription-container web-only">
             <img src="/images/generator-images/Subscription Get Pro.png" alt="Golden Crown">
             <div class="subscription-text">
                 <p class="title">Subscription</p>
@@ -959,6 +1006,13 @@
 
     <div class="character-options">
         <div class="options-left">
+            <div class="subscription-container mobile-only">
+            <img src="/images/generator-images/Subscription Get Pro.png" alt="Golden Crown">
+            <div class="subscription-text">
+                <p class="title">Subscription</p>
+                <p class="subtitle">Get Pro</p>
+            </div>
+            </div>
             <div class="category-dropdown" id="categoryDropdown">
                 <button class="category-btn" id="categoryBtn" type="button">
                     <span class="icon"><img src="/images/svg/threeDIconBlue.svg" alt="Category" class="svg-icon white-icon"></span>
