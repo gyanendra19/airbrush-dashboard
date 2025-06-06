@@ -349,9 +349,9 @@
         }
 
         .feature-tabs {
-
             align-items: center;
             gap: 1rem;
+            margin-left: 65px;
         }
 
         .features-title {
@@ -359,8 +359,53 @@
         }
 
         .features-grid {
-            grid-template-columns: 1fr;
-            grid-template-rows: repeat(8, 1fr);
+            grid-template-columns: repeat(2, 1fr);
+            grid-template-rows: auto;
+            gap: 10px;
+            padding: 10px;
+        }
+
+        .feature-card {
+            width: 100%;
+            height: auto;
+            min-height: 220px;
+        }
+
+        .feature-card .image-container {
+            height: 140px;
+            margin-top: 5px;
+        }
+
+        .feature-card .card-content {
+            padding: 5px;
+        }
+
+        .feature-title {
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        .feature-description {
+            font-size: 12px;
+            margin-top: 2px;
+        }
+
+        .tag {
+            font-size: 12px;
+            padding: 1px 6px;
+            top: 15px;
+            left: 7px;
+        }
+
+        .arrow-btn {
+            width: 35px;
+            height: 35px;
+            bottom: 8px;
+            right: 8px;
+        }
+
+        .arrow-btn::before {
+            font-size: 22px;
         }
 
         .features-description {
@@ -369,8 +414,6 @@
             line-height: 1.2;
             padding: 0 1rem;
         }
-
-
     }
 
 

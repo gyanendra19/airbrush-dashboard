@@ -15942,7 +15942,7 @@ body.sal-disabled [data-sal|="flip"] {
 
 @media only screen and (max-width: 767px) {
   .rts-banner-area-one {
-    height: 780px;
+    height: 750px;
   }
 }
 .rts-banner-area-one .bottom-mid-img {
@@ -16045,7 +16045,7 @@ header.header-one .header-main-wrapper {
 }
 @media only screen and (max-width: 767px) {
   header.header-one .header-main-wrapper {
-    padding: 15px 0;
+    padding: 15px 15px;
   }
 }
 
