@@ -570,6 +570,7 @@ ul li {
   margin-top: 10px;
   margin-bottom: 10px;
   color: var(--color-body);
+  white-space: nowrap;
 }
 ul li a {
   text-decoration: none;
