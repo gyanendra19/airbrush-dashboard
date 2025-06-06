@@ -1,12 +1,18 @@
 <style>
     @media (max-width: 576px) {
         .mobile-counter-section {
-            width: 65%;
+            width: 100%;
             margin: 0;
         }
 
         .mobile-padding {
             padding: 2rem 1rem;
+        }
+
+        .number-container{
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px !important;
         }
     }
 </style>
@@ -14,7 +20,7 @@
 <section class="counter-section" style="padding: 40px 0; width: 100%;">
   <div class="container">
     <h2 class="counter-title mb-5" style="font-weight:700; width: fit-content; padding: 10px 20px; border-radius: 10px; font-size: 3.5rem; margin: 0 auto; color: white;">Our Numbers</h2>
-    <div class="row justify-content-center" style="gap: 30px;">
+    <div class="row justify-content-center number-container" style="gap: 30px;">
       <div class="col-12 col-sm-6 col-md-4 col-lg-2 mobile-counter-section">
         <div class="counter-box text-center shadow-sm mobile-padding" style="background:#f5f6fa; border-radius:20px; padding:3rem 1rem;">
           <div class="counter-value" style="font-size:3.2rem; font-weight:800; color:#222;">
