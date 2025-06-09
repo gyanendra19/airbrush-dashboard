@@ -497,6 +497,7 @@
         color: rgba(255, 255, 255, 0.8);
         padding: 0.75rem 1.25rem;
         white-space: nowrap;
+        min-width: fit-content;
         font-size: 1.6rem;
         cursor: pointer;
         transition: all 0.3s ease;
@@ -789,21 +790,24 @@
 
         .options-left{
             align-items: center;
+            width: 80%;
         }
 
         .character-options{
             margin-inline: 0 !important;
-            width: 100% !important;
             margin-top: 0rem !important;
+            justify-content: center !important;
+            width: 100% !important;
         }
 
         .subscription-container{
-            min-width: 40% !important;
+            min-width: fit-content !important;
             padding: 0.8rem !important;
         }
 
         .subscription-container img{
-            height: 25px !important;
+            height: 30px !important;
+            width: 30px !important;
         }
 
         .subtitle{
@@ -852,6 +856,7 @@
     .category-dropdown {
         position: relative;
         display: inline-block;
+        width: 100%;
     }
 
     .category-btn {
@@ -876,13 +881,13 @@
     }
 
     .category-btn .icon {
-        display: flex;
         align-items: center;
     }
 
     .category-btn .arrow {
         margin-left: 0.5rem;
         transition: transform 0.3s ease;
+        padding-left: 0px !important;
     }
 
     .category-btn.active .arrow {
