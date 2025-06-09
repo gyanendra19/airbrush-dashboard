@@ -28,12 +28,10 @@
 
     .filter-section {
         display: flex;
-        background-color: rgba(255, 255, 255, 0.2);
         justify-content: space-between;
         flex-direction: column;
         align-items: center;
         margin-bottom: 1rem;
-        padding: 1.2rem 1.5rem;
         border-radius: 1.5rem;
     }
 
@@ -217,6 +215,7 @@
         width: 90%;
         margin-inline: auto;
         display: none;
+        margin-bottom: 4rem;
         transition: all 0.3s ease;
     }
 
@@ -234,26 +233,113 @@
     }
 
     .character-model-preview {
-        background-color: #fff;
         display: grid;
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(5, 1fr);
         border-radius: 12px;
-        padding: 2rem;
         gap: 1.8rem;
     }
 
     .thumbnail-wrapper {
         position: relative;
+        aspect-ratio: 1;
+        height: 235px;
     }
 
-    .thumbnail-actions {
+    .thumbnail {
+        height: 100%;
+        width: 100%;
+        border-radius: 8px;
+        object-fit: cover;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .hover-overlay {
         position: absolute;
-        left: 0.5rem;
-        top: 0.5rem;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        border-radius: 8px;
+    }
+
+    .thumbnail-wrapper:hover .hover-overlay {
+        opacity: 1;
+    }
+
+    .hover-content {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        color: white;
         display: flex;
         flex-direction: column;
-        gap: 0.25rem;
-        z-index: 2;
+        justify-content: space-between;
+        padding: 1rem;
+    }
+
+    .thumbnail-wrapper:hover .hover-content {
+        opacity: 1;
+    }
+
+    .text-content {
+        margin-top: auto;
+        background-color: rgba(0, 0, 0, 0.3);
+        padding: 1rem;
+        border-radius: 0 0 8px 8px;
+        margin: 0 -1rem -1rem -1rem;
+    }
+
+    .text-content h3 {
+        font-size: 1.4rem;
+        font-weight: bold;
+        margin-bottom: 0.5rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .text-content p {
+        font-size: 1rem;
+        line-height: 1.3;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        margin: 0;
+    }
+
+    .hover-buttons {
+        display: flex;
+        gap: 0.75rem;
+        align-self: flex-end;
+    }
+
+    .hover-buttons button {
+        background-color: rgba(0, 0, 0, 0.4);
+        border: none;
+        width: 2.5rem;
+        height: 2.5rem;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: background 0.3s ease;
+    }
+
+    .hover-buttons button:hover {
+        background: rgba(255, 255, 255, 0.3);
+    }
+
+    .hover-buttons img {
+        width: 1.2rem;
+        height: 1.2rem;
     }
 
     .prompt-and-subscription {
@@ -381,6 +467,10 @@
         width: 100%;
         border-radius: 8px;
         padding: 1rem;
+    }
+
+    .prompt-input img {
+        border-radius: 7px;
     }
 
     .ai-icon {
@@ -621,13 +711,35 @@
         }
 
         .character-model-preview {
-            display: grid;
-            grid-template-columns: repeat(1, 1fr);
-            !important
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
         }
 
-        .character-model-preview video {
-            height: 300px;
+        .thumbnail-wrapper {
+            height: 100%;
+        }
+
+        .hover-buttons button {
+            width: 2rem;
+            height: 2rem;
+        }
+
+        .hover-buttons img {
+            width: 1rem;
+            height: 1rem;
+        }
+
+        .text-content {
+            padding: 0.75rem;
+        }
+
+        .text-content h3 {
+            font-size: 1.2rem;
+        }
+
+        .text-content p {
+            font-size: 0.9rem;
+            -webkit-line-clamp: 2;
         }
 
         .character-image {
@@ -981,6 +1093,49 @@
             display: flex;
         }
     }
+
+    /* Skeleton Loading Styles */
+    @keyframes shimmer {
+        0% {
+            background-position: -1000px 0;
+        }
+        100% {
+            background-position: 1000px 0;
+        }
+    }
+
+    .skeleton {
+        background: linear-gradient(90deg, #2a1c4f 25%, #3a2a5f 50%, #2a1c4f 75%);
+        background-size: 1000px 100%;
+        animation: shimmer 2s infinite linear;
+        border-radius: 8px;
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        top: 0;
+        left: 0;
+    }
+
+    .thumbnail {
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .thumbnail.loaded {
+        opacity: 1;
+    }
+
+    .thumbnail-wrapper .hover-overlay {
+        display: none;
+    }
+
+    .thumbnail-wrapper.loaded .hover-overlay {
+        display: block;
+    }
+
+    .thumbnail-wrapper.loaded .skeleton {
+        display: none;
+    }
 </style>
 
 {{!-- Character Showcase Content --}}
@@ -988,7 +1143,7 @@
     <div class="prompt-and-subscription">
         <div class="character-prompt-container">
             <div class="prompt-input">
-                <div class="ai-icon"><img src="/images/svg/AIIcon.svg" alt="AI" width="28" height="28"></div>
+                <div class="ai-icon"><img src="/images/aiicon.png" alt="AI" width="28" height="28"></div>
                 <textarea
                     id="text-to-image-textarea"
                     placeholder="A modern and sleek banner design for UX/UI design, featuring a minimalist layout with ample negative space........."
@@ -1049,9 +1204,6 @@
                 <div class="filter-section">
                     <div class="filters">
                         <div style="display: flex; gap: 0.5rem;">
-                            <button class="filter-dropdown">
-                                All Styles &nbsp;&nbsp;<span>▼</span>
-                            </button>
                             <button class="filter-dropdown filter-dropdown-delete">
                                 <p style="color: white; font-size: 1.4rem;">Clear History</p>&nbsp;
                                 <img style="width: 1.8rem; height: 1.8rem;" src="/images/download.svg" alt="Download">
@@ -1147,6 +1299,19 @@
         const generateBtn = document.getElementById('generateTextToImageButton');
         const textarea = document.getElementById('text-to-image-textarea');
         
+        function scrollToMainContainer() {
+            const mainContainer = document.querySelector('.character-main');
+            if (mainContainer) {
+                // Add a small delay to ensure the scroll happens after any DOM updates
+                setTimeout(() => {
+                    window.scrollTo({
+                        top: mainContainer.offsetTop + 400, // Slight offset from the top
+                        behavior: 'smooth'
+                    });
+                }, 100);
+            }
+        }
+
         // Add textarea animation
         if (textarea) {
             textarea.addEventListener('focus', function() {
@@ -1156,6 +1321,20 @@
             textarea.addEventListener('blur', function() {
                 if (!this.value.trim()) {
                     this.style.minHeight = '2.5rem';
+                }
+            });
+
+            // Add Enter key handler for generation
+            textarea.addEventListener('keydown', async function(e) {
+                // Check if the key pressed is Enter without Shift
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault(); // Prevent newline
+                    try {
+                        scrollToMainContainer();
+                        await handleGenerateTextToImage();
+                    } catch (error) {
+                        console.error('Error in handleGenerateTextToImage:', error);
+                    }
                 }
             });
 
@@ -1172,6 +1351,7 @@
             generateBtn.addEventListener('click', async function(e) {
                 e.preventDefault();
                 try {
+                    scrollToMainContainer();
                     await handleGenerateTextToImage();
                 } catch (error) {
                     console.error('Error in handleGenerateTextToImage:', error);
@@ -1209,7 +1389,7 @@
                 mainContainer.classList.add('show');
 
                 // Make API request
-                const imageResponse = await fetch('https://airbrush-admin-backend.onrender.com/api/images/generate-image', {
+                const imageResponse = await fetch('https://75flfep31k.execute-api.us-east-1.amazonaws.com/default/airbrushImageGeneration', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -1255,7 +1435,12 @@
                 
                 if (uploadResult && uploadResult.files && uploadResult.files.length > 0) {
                     const imageUrl = uploadResult.files[0].url;
+                    console.log('Generated image URL:', imageUrl);
                     
+                    // Save to history
+                    await saveImageToHistory(imageUrl, prompt);
+                    
+                    // Update the container with the generated image
                     mainContainer.innerHTML = `
                         <div class="preview-container">
                             <button class="download-button" data-image-url="${imageUrl}">
@@ -1264,6 +1449,12 @@
                             <img src="${imageUrl}" alt="Generated Image" class="preview-image-generate" id="mainTextToImagePreview">
                         </div>
                     `;
+
+                    // Show the history section
+                    const thumbnailsContainer = document.querySelector('.character-thumbnails');
+                    if (thumbnailsContainer) {
+                        thumbnailsContainer.style.display = 'block';
+                    }
                 }
             }
         } catch (error) {
@@ -1299,6 +1490,120 @@
             console.error('Error downloading image:', error);
         }
     }
+
+    // Function to save image to history
+    async function saveImageToHistory(imageUrl, prompt) {
+        const currentCategoryId = document.querySelector('.category-text').getAttribute('data-current-category-id');
+        const categories = await fetchCategories()
+        const category = categories.find(cat => cat._id === currentCategoryId);
+        let history = JSON.parse(localStorage.getItem('textToImageHistory') || '[]');
+        const newImage = {
+            url: imageUrl,
+            category: category,
+            prompt: prompt,
+            timestamp: new Date().toISOString()
+        };
+        history.unshift(newImage); // Add new image to the start
+        if (history.length > 6) { // Keep only last 6 images
+            history = history.slice(0, 6);
+        }
+        localStorage.setItem('textToImageHistory', JSON.stringify(history));
+        updateHistoryDisplay();
+    }
+
+    // Function to update history display
+    function updateHistoryDisplay() {
+        const history = JSON.parse(localStorage.getItem('textToImageHistory') || '[]');
+        const thumbnailsContainer = document.querySelector('.character-thumbnails');
+        
+        if (!history.length) {
+            if (thumbnailsContainer) {
+                thumbnailsContainer.style.display = 'none';
+            }
+            return;
+        }
+
+        if (thumbnailsContainer) {
+            thumbnailsContainer.style.display = 'block';
+        }
+
+        const previewContainer = document.querySelector('.character-model-preview');
+        if (!previewContainer) return;
+
+        previewContainer.innerHTML = history.map(image => {
+            return `
+            <div class="thumbnail-wrapper">
+                <div class="skeleton"></div>
+                <img src="${image.url}" 
+                     alt="Generated Image" 
+                     class="thumbnail"
+                     onload="this.classList.add('loaded'); this.parentElement.classList.add('loaded')"
+                     onerror="this.parentElement.querySelector('.skeleton').style.backgroundColor = '#ff6b6b'">
+                <div class="hover-overlay">
+                    <div class="hover-content">
+                        <div class="hover-buttons">
+                            <button class="download-btn">
+                                <img src="/images/download.svg" alt="Download">
+                            </button>
+                            <button class="expand-btn">
+                                <img src="/images/delete.svg" alt="Delete">
+                            </button>
+                        </div>
+                        <div class="text-content">
+                            <p>${image.prompt}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `}).join('');
+
+        addHistoryEventListeners();
+    }
+
+    // Function to handle history actions
+    function addHistoryEventListeners() {
+        // Download button handler
+        document.querySelectorAll('.download-btn').forEach(btn => {
+            btn.addEventListener('click', async function(e) {
+                e.stopPropagation();
+                const imageUrl = this.closest('.thumbnail-wrapper').querySelector('.thumbnail').src;
+                if (imageUrl) {
+                    await downloadImage(imageUrl);
+                }
+            });
+        });
+
+        // Delete button handler
+        document.querySelectorAll('.expand-btn').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const imageUrl = this.closest('.thumbnail-wrapper').querySelector('.thumbnail').src;
+                if (imageUrl) {
+                    let history = JSON.parse(localStorage.getItem('textToImageHistory') || '[]');
+                    history = history.filter(img => img.url !== imageUrl);
+                    localStorage.setItem('textToImageHistory', JSON.stringify(history));
+                    updateHistoryDisplay();
+                }
+            });
+        });
+
+        // Clear history button handler
+        const clearHistoryBtn = document.querySelector('.filter-dropdown-delete');
+        if (clearHistoryBtn) {
+            clearHistoryBtn.addEventListener('click', function() {
+                localStorage.removeItem('textToImageHistory');
+                const thumbnailsContainer = document.querySelector('.character-thumbnails');
+                if (thumbnailsContainer) {
+                    thumbnailsContainer.style.display = 'none';
+                }
+            });
+        }
+    }
+
+    // Initialize history display on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        updateHistoryDisplay();
+    });
 
     // Add download button click handler
     document.addEventListener('click', async function(e) {

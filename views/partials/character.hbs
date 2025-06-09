@@ -420,6 +420,10 @@
         padding: 1rem;
     }
 
+    .prompt-input-headshot img {
+        border-radius: 7px;
+    }
+
     .prompt-input-headshot textarea {
         flex: 1;
         resize: none;
@@ -1005,7 +1009,7 @@
    <div class="prompt-and-subscription">
         <div class="character-prompt-container">
             <div class="prompt-input-headshot">
-                <div class="ai-icon"><img src="/images/svg/AIIcon.svg" alt="AI" width="28" height="28"></div>
+                <div class="ai-icon"><img src="/images/aiicon.png" alt="AI" width="28" height="28"></div>
                 <textarea
                     id="character-prompt-textarea"
                     placeholder="A modern and sleek banner design for UX/UI design, featuring a minimalist layout with ample negative spacesssss........."
@@ -1180,6 +1184,19 @@
     document.addEventListener('DOMContentLoaded', function() {
         console.log('DOM Content Loaded');
         
+        function scrollToMainContainer() {
+            const mainContainer = document.querySelector('.character-main');
+            if (mainContainer) {
+                // Add a small delay to ensure the scroll happens after any DOM updates
+                setTimeout(() => {
+                    window.scrollTo({
+                        top: mainContainer.offsetTop + 400, // Offset to match text-to-image behavior
+                        behavior: 'smooth'
+                    });
+                }, 100);
+            }
+        }
+
         // Add click event listener to generate button using ID
         const generateBtn = document.getElementById('generateButton');
         console.log('Generate button found by ID:', generateBtn);
@@ -1190,6 +1207,7 @@
                 e.preventDefault();
                 console.log('Generate button clicked!');
                 try {
+                    scrollToMainContainer();
                     await handleGenerateImage();
                     console.log('Generate button completed!');
                 } catch (error) {
@@ -1233,6 +1251,20 @@
                     this.style.minHeight = '2.5rem';
                 }
             });
+
+            // Add Enter key handler for generation
+            textarea.addEventListener('keydown', async function(e) {
+                // Check if the key pressed is Enter without Shift
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault(); // Prevent newline
+                    try {
+                        scrollToMainContainer();
+                        await handleGenerateImage();
+                    } catch (error) {
+                        console.error('Error in handleGenerateImage:', error);
+                    }
+                }
+            });
         }
     });
 
@@ -1249,9 +1281,7 @@
             timestamp: new Date().toISOString()
         };
         history.unshift(newImage); // Add new image to the start
-        if (history.length > 6) { // Keep only last 6 images
-            history = history.slice(0, 6);
-        }
+        
         localStorage.setItem('generatedImages', JSON.stringify(history));
         updateHistoryDisplay();
     }
@@ -1410,7 +1440,7 @@
 
                     console.log('Making API request with prompt:', prompt);
                     // Generate the image using the API
-                    const imageResponse = await fetch('https://airbrush-admin-backend.onrender.com/api/images/generate-image', {
+                    const imageResponse = await fetch('https://75flfep31k.execute-api.us-east-1.amazonaws.com/default/airbrushImageGeneration', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'

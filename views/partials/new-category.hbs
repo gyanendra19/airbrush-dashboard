@@ -947,7 +947,7 @@
 
               // Generate all images in parallel
               const imagePromises = prompts.map(promptText =>
-                fetch('https://airbrush-admin-backend.onrender.com/api/images/generate-image', {
+                fetch('https://75flfep31k.execute-api.us-east-1.amazonaws.com/default/airbrushImageGeneration', {
                   method: 'POST',
                   headers: {
                     'Content-Type': 'application/json'
@@ -1069,7 +1069,7 @@
 
               // Generate all images in parallel
               const imagePromises = promptsAndContent.map(({ prompt }) =>
-                fetch('https://airbrush-admin-backend.onrender.com/api/images/generate-image', {
+                fetch('https://75flfep31k.execute-api.us-east-1.amazonaws.com/default/airbrushImageGeneration', {
                   method: 'POST',
                   headers: {
                     'Content-Type': 'application/json'
@@ -1196,7 +1196,7 @@
 
               // Generate all images in parallel
               const imagePromises = gridItems.map(({ prompt }) =>
-                fetch('https://airbrush-admin-backend.onrender.com/api/images/generate-image', {
+                fetch('https://75flfep31k.execute-api.us-east-1.amazonaws.com/default/airbrushImageGeneration', {
                   method: 'POST',
                   headers: {
                     'Content-Type': 'application/json'
@@ -1279,7 +1279,7 @@
 
             let mainImageUrl = '';
             if(section.name === 'Hero Section' || section.name === 'Text to Anything' || section.name === 'Why Use tool') {
-              const imageResponse = await fetch('https://airbrush-admin-backend.onrender.com/api/images/generate-image', {
+              const imageResponse = await fetch('https://75flfep31k.execute-api.us-east-1.amazonaws.com/default/airbrushImageGeneration', {
                 method: 'POST',
                 headers: {
                   'Content-Type': 'application/json'
