@@ -183,6 +183,21 @@ async function fetchCategories() {
   }
 }
 
+// Function to fetch free generators content
+async function fetchFreeGenerators() {
+  try {
+    const response = await fetch('https://airbrush-admin-backend.onrender.com/api/free-generators');
+    if (!response.ok) {
+      throw new Error(`Failed to fetch free generators: ${response.status} ${response.statusText}`);
+    }
+    const generators = await response.json();
+    console.log('Full generators response:', JSON.stringify(generators, null, 2));
+    return generators.data;
+  } catch (error) {
+    console.error('Error fetching free generators:', error);
+    return [];
+  }
+}
 
 MongoClient.connect(connectionString, {
   useNewUrlParser: true,
@@ -322,11 +337,10 @@ MongoClient.connect(connectionString, {
 
   app.get("/blog", async (req, res) => {
     try {
-      const articles = await blogCollection.find({}).toArray();
-      articles.forEach((article) => {
-        article.date = article.date.toISOString().split("T")[0];
+      res.render('allBlog', {
+        layout: 'main',
+        section: { title: 'Blog', description: 'Blog' }
       });
-      res.render("blog", { articles: [...articles].reverse() });
     } catch (error) {
       console.error("Error fetching blog articles:", error);
       res.redirect("/error-page");
@@ -335,18 +349,31 @@ MongoClient.connect(connectionString, {
 
   app.get("/pages/:url", async (req, res) => {
     try {
-      const generatorPage = await generatorCollection.findOne({
-        url: req.params.url,
-      });
-      if (!generatorPage) {
+      const generatorPage = await fetchFreeGenerators();
+      
+      // Check if generatorPage is an array and find the matching page
+      const page = Array.isArray(generatorPage) 
+        ? generatorPage.find(p => p.url === req.params.url)
+        : null;
+        
+      if (!page) {
+        console.log('No matching page found for URL:', req.params.url);
         return res.redirect("/404");
       }
+
+      // Sanitize the page content to prevent script errors
+      if (page.content) {
+        // Remove any script tags from content
+        page.content = page.content.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');
+      }
+
       res.render("generator-page", {
-        generatorPage: generatorPage,
+        generatorPage: page,
+        section: { title: "Free Tools", description: "Free Tools" },
       });
     } catch (error) {
-      console.error("Error fetching blog article or related articles:", error);
-      res.redirect("/error-page");
+      console.error("Error fetching generator page:", error);
+      res.redirect("/404");
     }
   });
 
@@ -695,10 +722,7 @@ app.get('/category-video', (req, res) => {
     return data;
   }
 
-  app.get("/blog/:url", (req, res) => {
-    const newUrl = `/${req.params.url}`;
-    res.redirect(301, newUrl);
-  });
+  
 
   // Add route update endpoint
   app.post("/api/update-routes", async (req, res) => {
@@ -734,6 +758,17 @@ app.get('/category-video', (req, res) => {
       res.redirect('/404');
     }
   }); 
+
+  app.get("/blog/:id", async (req, res) => {
+    try {
+      res.render("blogPost", {
+        layout: "main",
+        section: { title: "Blog", description: "Blog Post" }
+      });
+    } catch (error) {
+      console.error("Error fetching blog article:", error);
+    }
+  });
 
   app.all("*", (req, res) => {
     res.redirect("/404");

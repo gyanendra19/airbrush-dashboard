@@ -741,13 +741,14 @@
         }
 
         .character-model-preview {
-            grid-template-columns: 1fr;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
             gap: 1rem;
 
         }
 
         .thumbnail-wrapper {
-            height: 180px;
+            height: 100%;
         }
 
         .hover-buttons button {
