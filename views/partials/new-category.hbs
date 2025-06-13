@@ -917,7 +917,7 @@
               loaderStatus.textContent = `Generating gallery images (this may take a few minutes)...`;
 
               // Generate all prompts in parallel
-              const promptPromises = Array(20).fill().map(() => 
+              const promptPromises = Array(15).fill().map(() => 
                 fetch('https://airbrush-admin-backend.onrender.com/api/images/generate-prompt', {
                   method: 'POST',
                   headers: {
@@ -946,70 +946,63 @@
               });
 
               // Generate all images in parallel
-              const imagePromises = prompts.map(promptText =>
-                fetch('https://75flfep31k.execute-api.us-east-1.amazonaws.com/default/airbrushImageGeneration', {
-                  method: 'POST',
-                  headers: {
-                    'Content-Type': 'application/json'
-                  },
-                  body: JSON.stringify({
-                    prompt: promptText
-                  })
-                }).then(res => {
-                  if (!res.ok) throw new Error('Image generation failed');
-                  return res.json();
-                })
-              );
-
-              const imageResults = await Promise.all(imagePromises);
-              loaderStatus.textContent = 'Processing generated images...';
-              updateProgress(sectionIndex, 0.8);
-
-              // Process all images
-              const processedImages = await Promise.all(imageResults.map(async (data, index) => {
-                // Extract the base64 data - remove the prefix if it exists
-                const base64Data = data.imageData.replace(/^data:image\/\w+;base64,/, '');
-                const byteCharacters = atob(base64Data);
-                const byteArrays = [];
-                
-                for (let i = 0; i < byteCharacters.length; i++) {
-                  byteArrays.push(byteCharacters.charCodeAt(i));
-                }
-                
-                const byteArray = new Uint8Array(byteArrays);
-                const blob = new Blob([byteArray], { type: 'image/png' });
-                const file = new File([blob], `ai-generated-image-${index + 1}.png`, { type: 'image/png' });
-                
-                const formData = new FormData();
-                formData.append('images', file);
-                
-                const uploadResponse = await fetch('https://airbrush-admin-backend.onrender.com/api/images', {
-                  method: 'POST',
-                  body: formData
-                });
-
-                if (!uploadResponse.ok) throw new Error('Upload failed');
-                return uploadResponse.json();
-              }));
-
-              loaderStatus.textContent = 'Finalizing...';
-              updateProgress(sectionIndex, 1);
-
-              // Add all processed images to the gallery with their prompts
               const galleryImages = [];
-              processedImages.forEach((uploadData, index) => {
-                if (uploadData.files && uploadData.files.length > 0) {
-                  galleryImages.push({
-                    url: uploadData.files[0].url,
-                    alt: "Gallery image",
-                    prompt: prompts[index],
-                    width: 1200,
-                    height: 800,
-                    order: index + 1
-                  });
-                }
-              });
+              for (let i = 0; i < prompts.length; i++) {
+                const promptText = prompts[i];
+                try {
+                  const res = await fetchWithRetry(
+                    'https://airbrush-admin-backend.onrender.com/api/images/generate-image',
+                    {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ prompt: promptText })
+                    },
+                    3,
+                    1000
+                  );
+                  await delay(1000);
+                  if (!res.ok) throw new Error('Image generation failed');
+                  const data = await res.json();
 
+                  // --- Upload the generated image to Cloudinary/backend ---
+                  if (data.imageData) {
+                    // Extract MIME type and base64 data
+                    const matches = data.imageData.match(/^data:(image\/[a-zA-Z0-9.+-]+);base64,(.+)$/);
+                    if (!matches) {
+                      console.warn('Invalid imageData format:', data.imageData);
+                      continue;
+                    }
+                    const mimeType = matches[1];
+                    const base64Data = matches[2];
+
+                    const byteCharacters = atob(base64Data);
+                    const byteArrays = [];
+                    for (let j = 0; j < byteCharacters.length; j++) {
+                      byteArrays.push(byteCharacters.charCodeAt(j));
+                    }
+                    const byteArray = new Uint8Array(byteArrays);
+                    const blob = new Blob([byteArray], { type: mimeType });
+                    const extension = mimeType.split('/')[1];
+                    const file = new File([blob], `gallery-image-${i + 1}.${extension}`, { type: mimeType });
+
+                    // Upload to backend/cloudinary
+                    const uploadUrl = await uploadImage(file, token);
+                    if (uploadUrl) {
+                      galleryImages.push({
+                        url: uploadUrl,
+                        alt: "Gallery image",
+                        prompt: promptText,
+                        width: 1200,
+                        height: 800,
+                        order: i + 1
+                      });
+                    }
+                  }
+                } catch (error) {
+                  console.warn(`Error generating gallery image ${i + 1}:`, error);
+                }
+              }
+              console.log(galleryImages, 'galleryImages');
               contentDataArray.push({
                 section: 'Images Gallery',
                 slug: `${section.slug}`,
@@ -1068,27 +1061,32 @@
               }));
 
               // Generate all images in parallel
-              const imagePromises = promptsAndContent.map(({ prompt }) =>
-                fetch('https://75flfep31k.execute-api.us-east-1.amazonaws.com/default/airbrushImageGeneration', {
-                  method: 'POST',
-                  headers: {
-                    'Content-Type': 'application/json'
-                  },
-                  body: JSON.stringify({
-                    prompt: prompt
-                  })
-                }).then(res => {
+              const blogImages = [];
+              for (let i = 0; i < promptsAndContent.length; i++) {
+                const { prompt } = promptsAndContent[i];
+                try {
+                  const res = await fetchWithRetry(
+                    'https://airbrush-admin-backend.onrender.com/api/images/generate-image',
+                    {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ prompt })
+                    },
+                    3,
+                    1000
+                  );
+                  await delay(1000);
                   if (!res.ok) throw new Error('Image generation failed');
-                  return res.json();
-                })
-              );
-
-              const imageResults = await Promise.all(imagePromises);
-              loaderStatus.textContent = 'Processing blog images...';
-              updateProgress(sectionIndex, 0.6);
+                  const data = await res.json();
+                  blogImages.push(data);
+                } catch (error) {
+                  console.warn(`Error generating blog image ${i + 1}:`, error);
+                  blogImages.push({ imageData: null });
+                }
+              }
 
               // Process all images in parallel
-              const processedImages = await Promise.all(imageResults.map(async (imageData, index) => {
+              const processedImages = await Promise.all(blogImages.map(async (imageData, index) => {
                 // Extract the base64 data - remove the prefix if it exists
                 const base64Data = imageData.imageData.replace(/^data:image\/\w+;base64,/, '');
                 const byteCharacters = atob(base64Data);
@@ -1106,7 +1104,7 @@
               }));
 
               loaderStatus.textContent = 'Finalizing blog content...';
-              updateProgress(sectionIndex, 0.8);
+              updateProgress(sectionIndex, 0.6);
 
               // Create the content object with all blog posts
               blogDataArray.push({
@@ -1195,30 +1193,32 @@
               });
 
               // Generate all images in parallel
-              const imagePromises = gridItems.map(({ prompt }) =>
-                fetch('https://75flfep31k.execute-api.us-east-1.amazonaws.com/default/airbrushImageGeneration', {
-                  method: 'POST',
-                  headers: {
-                    'Content-Type': 'application/json'
-                  },
-                  body: JSON.stringify({
-                    prompt: prompt
-                  })
-                }).then(res => {
+              const gridImageResults = [];
+              for (let i = 0; i < gridItems.length; i++) {
+                const { prompt } = gridItems[i];
+                try {
+                  const res = await fetchWithRetry(
+                    'https://airbrush-admin-backend.onrender.com/api/images/generate-image',
+                    {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ prompt })
+                    },
+                    3,
+                    1000
+                  );
+                  await delay(1000);
                   if (!res.ok) throw new Error('Image generation failed');
-                  return res.json();
-                }).catch(error => {
-                  console.error('Error generating image:', error);
-                  return { imageData: null };
-                })
-              );
-
-              const imageResults = await Promise.all(imagePromises);
-              loaderStatus.textContent = 'Processing transform grid images...';
-              updateProgress(sectionIndex, 0.6);
+                  const data = await res.json();
+                  gridImageResults.push(data);
+                } catch (error) {
+                  console.warn(`Error generating grid image ${i + 1}:`, error);
+                  gridImageResults.push({ imageData: null });
+                }
+              }
 
               // Process all images in parallel
-              const processedImages = await Promise.all(imageResults.map(async (imageData, index) => {
+              const processedImages = await Promise.all(gridImageResults.map(async (imageData, index) => {
                 try {
                   if (!imageData || !imageData.imageData) {
                     console.error(`No image data for index ${index}`);
@@ -1246,7 +1246,7 @@
               }));
 
               loaderStatus.textContent = 'Finalizing transform grid content...';
-              updateProgress(sectionIndex, 0.8);
+              updateProgress(sectionIndex, 0.6);
 
               console.log(processedImages, 'processedImages');
               
@@ -1279,16 +1279,17 @@
 
             let mainImageUrl = '';
             if(section.name === 'Hero Section' || section.name === 'Text to Anything' || section.name === 'Why Use tool') {
-              const imageResponse = await fetch('https://75flfep31k.execute-api.us-east-1.amazonaws.com/default/airbrushImageGeneration', {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json'
+              const imageResponse = await fetchWithRetry(
+                'https://airbrush-admin-backend.onrender.com/api/images/generate-image',
+                {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ prompt: section.promptTemplate })
                 },
-                body: JSON.stringify({
-                  prompt: section.promptTemplate
-                })
-              });
-
+                3,
+                1000
+              );
+              await delay(1000);
               if (!imageResponse.ok) {
                 throw new Error('Image generation failed');
               }
@@ -1496,6 +1497,27 @@
         // Hide loader
         loader.classList.add('d-none');
       }
+    }
+
+    // Helper delay function
+    function delay(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    // Helper function to fetch with retry
+    async function fetchWithRetry(url, options, maxRetries, delayBetweenRetries) {
+      for (let attempt = 0; attempt < maxRetries; attempt++) {
+        try {
+          const response = await fetch(url, options);
+          if (response.ok) {
+            return response;
+          }
+        } catch (error) {
+          console.warn(`Attempt ${attempt + 1} failed. Retrying in ${delayBetweenRetries}ms...`);
+          await delay(delayBetweenRetries);
+        }
+      }
+      throw new Error('Max retries reached');
     }
     } 
   );
