@@ -840,28 +840,3 @@ function startServer() {
 
 startServer();
 
-// Error handling for uncaught exceptions
-process.on('uncaughtException', (error) => {
-  console.error('Uncaught Exception:', error);
-  if (server) {
-    server.close(() => {
-      console.log('Server closed due to uncaught exception');
-      process.exit(1);
-    });
-  } else {
-    process.exit(1);
-  }
-});
-
-// Error handling for unhandled promise rejections
-process.on('unhandledRejection', (reason, promise) => {
-  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
-  if (server) {
-    server.close(() => {
-      console.log('Server closed due to unhandled rejection');
-      process.exit(1);
-    });
-  } else {
-    process.exit(1);
-  }
-});
