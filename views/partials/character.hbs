@@ -1447,7 +1447,7 @@
                             'Content-Type': 'application/json'
                         },
                         body: JSON.stringify({
-                            prompt: prompt
+                            prompt: `Generate an image for ${document.querySelector('.category-text').textContent} category with the following prompt: ${prompt}`
                         })
                     });
 

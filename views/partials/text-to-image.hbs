@@ -1394,7 +1394,9 @@
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ prompt: prompt })
+                    body: JSON.stringify({
+                        prompt: `Generate an image for ${document.querySelector('.category-text').textContent} category with the following prompt: ${prompt}`
+                    })
                 });
 
                 if (!imageResponse.ok) {
