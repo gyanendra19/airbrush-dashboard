@@ -315,12 +315,12 @@
           if (data.title) sectionTitleInput.value = data.title;
           
           // Check if fields array exists
-          if (data.fields && Array.isArray(data.fields) && data.fields.length >= 4) {
+          if (data.fields && Array.isArray(data.fields)) {
             // Populate the four text fields from the fields array
-            titleInput.value = data.fields[0].value.title || '';
-            subtitleInput.value = data.fields[1].value.title || '';
-            primaryTextInput.value = data.fields[2].value.title || '';
-            secondaryTextInput.value = data.fields[3].value.title || '';
+            titleInput.value = data.fields[0]?.value?.title || 'Fast generation';
+            subtitleInput.value = data.fields[1]?.value?.title || 'No design skills needed';
+            primaryTextInput.value = data.fields[2]?.value?.title || 'Free to try';
+            secondaryTextInput.value = data.fields[3]?.value?.title || 'Multiple 3D styles';
             
             // If there's a fifth field, use it for additional notes
             if (data.fields.length >= 5) {

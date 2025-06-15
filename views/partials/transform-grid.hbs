@@ -75,8 +75,14 @@
         // Check if we have fields in the response
         if (data && data.fields && Array.isArray(data.fields) && data.fields.length > 0) {
           // Store items and render them
-          gridItems = [...data.fields];
-          data.fields.forEach(item => {
+          gridItems = data.fields.map(field => ({
+            id: field.id || 'item-' + Date.now(),
+            url: field.value?.url || '/images/placeholder.png',
+            title: field.value?.title || '',
+            content: field.value?.content || ''
+          }));
+          
+          gridItems.forEach(item => {
             addItemToGrid(item);
           });
         }
@@ -87,6 +93,22 @@
     
     // Save grid changes
     const saveGridChanges = async () => {
+      // Get all current values from the form
+      const gridCards = document.querySelectorAll('.grid-item-card');
+      gridItems = Array.from(gridCards).map(card => {
+        const id = card.dataset.id;
+        const img = card.querySelector('img');
+        const titleInput = card.querySelector('.item-title');
+        const contentInput = card.querySelector('.item-content');
+        
+        return {
+          id: id,
+          url: img.src,
+          title: titleInput.value,
+          content: contentInput.value
+        };
+      });
+
       const urlParams = new URLSearchParams(window.location.search);
       const categoryId = urlParams.get('categoryId');
       
@@ -133,7 +155,16 @@
               section: sectionResult._id,
               slug: 'transform-grid',
               title: 'Transform Grid',
-              fields: gridItems,
+              fields: gridItems.map(item => ({
+                id: item.id,
+                value: {
+                  url: item.url,
+                  title: item.title,
+                  content: item.content,
+                  type: 'grid',
+                  key: item.id
+                }
+              })),
               isActive: true
             })
           });
@@ -158,7 +189,16 @@
               'Authorization': `Bearer ${token}` 
             },
             body: JSON.stringify({
-              fields: gridItems
+              fields: gridItems.map(item => ({
+                id: item.id,
+                value: {
+                  url: item.url,
+                  title: item.title,
+                  content: item.content,
+                  type: 'grid',
+                  key: item.id
+                }
+              }))
             })
           });
           
@@ -191,6 +231,16 @@
     function addItemToGrid(itemData = {}) {
       const itemId = 'item-' + Date.now();
       
+      // Ensure itemData has the correct structure
+      if (!itemData.url) {
+        itemData = {
+          id: itemId,
+          url: '/images/placeholder.png',
+          title: '',
+          content: ''
+        };
+      }
+      
       const gridItem = document.createElement('div');
       gridItem.className = 'position-relative grid-item-card';
       gridItem.style.width = '300px';
@@ -199,9 +249,9 @@
       gridItem.innerHTML = `
         <div class="card h-100">
           <div class="position-relative" style="height: 200px;">
-            <img src="${itemData.value.url || '/images/placeholder.png'}" 
+            <img src="${itemData.url || '/images/placeholder.png'}" 
                  class="img-cover rounded-top h-100 w-100" 
-                 alt="${itemData.value.title || 'Grid item'}">
+                 alt="${itemData.title || 'Grid item'}">
             <button class="btn-upload-image btn btn-sm btn-primary position-absolute bottom-0 start-0 m-1">
               <i class="bi bi-upload"></i> Upload
             </button>
@@ -214,14 +264,14 @@
               <label class="form-label">Title</label>
               <input type="text" 
                      class="form-control item-title" 
-                     value="${itemData.value.title || ''}" 
+                     value="${itemData.title || ''}" 
                      placeholder="Enter title">
             </div>
             <div class="mb-2">
               <label class="form-label">Content</label>
               <textarea class="form-control item-content" 
                         rows="3" 
-                        placeholder="Enter content">${itemData.value.content || ''}</textarea>
+                        placeholder="Enter content">${itemData.content || ''}</textarea>
             </div>
           </div>
         </div>
@@ -244,6 +294,21 @@
       // Handle image upload
       uploadBtn.addEventListener('click', () => fileInput.click());
       
+      // Handle input changes
+      titleInput.addEventListener('change', function() {
+        const index = gridItems.findIndex(item => item.id === itemId);
+        if (index !== -1) {
+          gridItems[index].title = this.value;
+        }
+      });
+
+      contentInput.addEventListener('change', function() {
+        const index = gridItems.findIndex(item => item.id === itemId);
+        if (index !== -1) {
+          gridItems[index].content = this.value;
+        }
+      });
+      
       fileInput.addEventListener('change', async function(e) {
         if (e.target.files && e.target.files[0]) {
           try {
@@ -257,11 +322,11 @@
               // Update item data
               const index = gridItems.findIndex(item => item.id === itemId);
               if (index !== -1) {
-                gridItems[index].image = uploadedImage.url;
+                gridItems[index].url = uploadedImage.url;
               } else {
                 gridItems.push({
                   id: itemId,
-                  image: uploadedImage.url,
+                  url: uploadedImage.url,
                   title: titleInput.value,
                   content: contentInput.value
                 });
@@ -272,26 +337,6 @@
           }
         }
       });
-      
-      // Handle input changes
-      titleInput.addEventListener('change', updateItemData);
-      contentInput.addEventListener('change', updateItemData);
-      
-      function updateItemData() {
-        const index = gridItems.findIndex(item => item.id === itemId);
-        const newData = {
-          id: itemId,
-          image: gridItem.querySelector('img').src,
-          title: titleInput.value,
-          content: contentInput.value
-        };
-        
-        if (index !== -1) {
-          gridItems[index] = newData;
-        } else {
-          gridItems.push(newData);
-        }
-      }
       
       // Handle item removal
       gridItem.querySelector('.btn-remove-item').addEventListener('click', () => {

@@ -426,16 +426,7 @@
       galleryContainer.appendChild(imageCard);
       
       // Add input change handlers
-      {{!-- const titleInput = imageCard.querySelector('.image-title'); --}}
       const promptInput = imageCard.querySelector('.image-prompt');
-      
-      {{!-- titleInput.addEventListener('change', function() {
-        const imageUrl = imageSrc;
-        const index = galleryImages.findIndex(img => img.url === imageUrl);
-        if (index !== -1) {
-          galleryImages[index].title = this.value;
-        }
-      }); --}}
       
       promptInput.addEventListener('change', function() {
         const imageUrl = imageSrc;

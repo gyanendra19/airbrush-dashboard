@@ -84,6 +84,82 @@
                 opacity: 0;
             }
         }
+
+        /* Add floating alert styles */
+        .floating-alert {
+            position: fixed;
+            bottom: 30px;
+            right: -500px; /* Start off-screen */
+            background: #5558f1;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            z-index: 9999;
+            transition: right 0.5s ease-in-out;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 16px;
+        }
+
+        .floating-alert.show {
+            right: 30px;
+        }
+
+        .floating-alert .signup-btn {
+            background: white;
+            color: #142bff;
+            padding: 8px 15px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .floating-alert .signup-btn:hover {
+            background: #f8f9fa;
+            transform: translateY(-1px);
+        }
+
+        /* Responsive styles for floating alert */
+        @media (max-width: 768px) {
+            .floating-alert {
+                bottom: 20px;
+                right: -500px;
+                padding: 12px 2px;
+                font-size: 14px;
+                gap: 10px;
+                max-width: 100%;
+                margin: 0 auto;
+                flex-wrap: wrap;
+                justify-content: center;
+                text-align: center;
+            }
+
+            .floating-alert.show {
+                transform: translateX(0%);
+            }
+
+            .floating-alert .signup-btn {
+                padding: 6px 12px;
+                font-size: 13px;
+                text-align: center;
+                margin-top: 2px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .floating-alert {
+                bottom: 15px;
+                padding: 10px 15px;
+                font-size: 13px;
+            }
+
+            .floating-alert span {
+                width: 100%;
+            }
+        }
     </style>
 
     <!-- GSAP Animation Library -->
@@ -135,7 +211,7 @@
 
                                         .hero-description{
                                             width: 100% !important; 
-                                            font-size: 11px !important;
+                                            font-size: 13px !important;
                                         }
 
                                         .image-grid{
@@ -382,6 +458,12 @@
 
     <div class="floating-circles" id="floatingCircles"></div>
 
+    <!-- Add floating alert HTML -->
+    <div class="floating-alert" id="signupAlert">
+        <span>Want to generate unlimited AI images?</span>
+        <a href="https://app.airbrush.ai/signup" class="signup-btn">Sign Up Now</a>
+    </div>
+
     <script>
         // Initialize GSAP animations
         gsap.registerPlugin(ScrollTrigger);
@@ -434,7 +516,20 @@
         }
 
         // Call the function when the document is loaded
-        document.addEventListener('DOMContentLoaded', createFloatingCircles);
+        document.addEventListener('DOMContentLoaded', () => {
+            createFloatingCircles();
+            
+            // Show floating alert after a delay
+            setTimeout(() => {
+                const signupAlert = document.getElementById('signupAlert');
+                signupAlert.classList.add('show');
+                
+                // Hide alert after 5 seconds
+                setTimeout(() => {
+                    signupAlert.classList.remove('show');
+                }, 7000);
+            }, 7000); // Show after 2 second delay
+        });
     </script>
 
 </body>

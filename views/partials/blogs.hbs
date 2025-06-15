@@ -532,7 +532,6 @@
       
       // JWT Token for authorization
       const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4MDQ5MWRmMzljZmYwNTljMDY1NWZkMSIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc0NTIyNTEyMSwiZXhwIjoxNzQ1MzExNTIxfQ.O1xfunWURBxt7tqcgXH_yWEyq-7VOA61LX6qrmEHXoA';
-      console.log(contentId, 'contentId');
       
       // Helper function to save changes to database
       const saveChangesToDatabase = async () => {
@@ -550,8 +549,6 @@
           blogData[index].content = card.editor ? card.editor.getData() : '';
           blogData[index].isLead = isLeadCheckbox ? isLeadCheckbox.checked : false;
         });
-
-        console.log(blogData, 'blogData');
         
         // Prepare fields array according to the expected format with nested value objects
         const fields = [];
@@ -573,9 +570,7 @@
           fields: fields,
           isActive: true
         };
-        
-        console.log('Saving blog data to database:', updateData);
-        
+                
         try {
           // Send update request
           const response = await fetch(`https://airbrush-admin-backend.onrender.com/api/content/${contentId}`, {
@@ -1047,7 +1042,7 @@
                     url: field.value.url || '',
                     alt: `Blog image ${index + 1}`
                   },
-                  isLead: field.value.isLead || false
+                  isLead: field.value.lead || false
                 };
               }
             });

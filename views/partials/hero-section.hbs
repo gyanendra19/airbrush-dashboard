@@ -228,6 +228,8 @@
     }, 4000);
   };
 
+    let currentMedia = null;
+
   // Only execute this code when hero-section is loaded
   document.addEventListener('DOMContentLoaded', function() {
     // Hide any existing alerts when page loads
@@ -266,7 +268,6 @@
       console.log('Category ID:', categoryId);
       
       // Current media content holder
-      let currentMedia = null;
       
       // Handle image replace functionality
       const replaceButton = document.querySelector('.btn-replace-image');
@@ -759,7 +760,14 @@
         const file = new File([blob], 'ai-generated-image.png', { type: 'image/png' });
         
         // Upload to Cloudinary using existing function
-        const uploadResponse = await uploadMediaToServer(file, contentId);
+        const uploadResponse = uploadMediaToServer(file, contentId).then(response => {
+              if (response && response.url) {
+                // Update the currentMedia with the server URL
+                currentMedia.serverUrl = response.url;
+                currentMedia.url = response.url;
+                console.log('Media uploaded to server:', response);
+              }
+            });
         
         if (uploadResponse) {
           // Create media object using Cloudinary URL
@@ -774,9 +782,9 @@
 
           // Update the gallery with the new image
           updateGallery(mediaObject);
+
+
           
-          // Update the content in the database with the new image
-          updateContent(contentId, mediaObject);
           
           showAlert('AI image generated and saved successfully!', 'success');
         } else {
